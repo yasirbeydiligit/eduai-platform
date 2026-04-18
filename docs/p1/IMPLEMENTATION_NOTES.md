@@ -197,6 +197,13 @@
 - **Sebep:** GitHub Actions `actions/setup-python@v5` pip wheel cache desteği veriyor; ikinci run'dan itibaren install süresi dakikalardan saniyelere iner. Zararsız, opt-in feature.
 - **Etki:** CI run süresi ~3-4dk → ~1-2dk (cache hit'te). PR iteration hızlanır.
 
+### Docker image size check: `--format '{{.Size}}'` kaldırıldı
+- **SPEC:** `docker images eduai-api:ci --format 'Size: {{.Size}}'`
+- **Uygulama:** `docker images eduai-api:ci` (template silindi) (`.github/workflows/ci.yml:78`)
+- **Sebep:** GitHub Actions workflow parser `{{ ... }}` ifadelerini expression syntax olarak yorumluyor → single-quoted olsa bile `Invalid workflow file` hatası (YAML syntax error L78). Bu, Actions'ın template preprocessor'ının bilinen davranışı.
+- **Etki:** Çıktı formatı farklı — tablo halinde tüm sütunlar (REPOSITORY/TAG/ID/CREATED/SIZE) görünür, SIZE bilgisi yine mevcut. SPEC niyeti (build log'da image boyutu görünür) korundu.
+- **Alternatif:** `${{ '{{.Size}}' }}` escape pattern denenebilirdi ama kırılgan; plain command daha okunaklı.
+
 ### Lint job'da `pip install ruff` — version pinlenmedi
 - **SPEC:** `pip install ruff` (version yok)
 - **Uygulama:** SPEC'e sadık, unpinned (`.github/workflows/ci.yml:22`)

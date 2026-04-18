@@ -75,4 +75,7 @@ jobs:
       - name: Image size check
         # Informational — fail eşiği yok. Size P1'de <200MB hedefine ulaşamadı
         # (~284MB, bilinçli kabul edildi; bkz. IMPLEMENTATION_NOTES.md Task 5).
-        run: docker images eduai-api:ci --format 'Size: {{.Size}}'
+        # NOT: SPEC `--format 'Size: {{.Size}}'` önerdi ama GitHub Actions
+        # workflow parser `{{ }}` template syntax'ını expression olarak değerlendirir
+        # → YAML parse error. Plain `docker images` zaten SIZE sütununu içerir.
+        run: docker images eduai-api:ci
