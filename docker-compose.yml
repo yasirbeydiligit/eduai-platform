@@ -7,6 +7,16 @@ services:
       - "8000:8000"
     environment:
       - DEBUG=true
+      - APP_NAME=EduAI API Dev
     volumes:
+      # Hot reload için app/ dizinini bind mount et.
+      # Container'daki /app/app → host'taki services/api/app (uvicorn --reload izler).
       - ./services/api/app:/app/app
+    # Dev command: --reload workers=1'e zorlar (Dockerfile'daki --workers 2 override'lanır).
+    # Production'da bu satır silinmeli; Dockerfile CMD'si devreye girer.
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

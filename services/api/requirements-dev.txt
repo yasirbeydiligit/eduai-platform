@@ -1,0 +1,12 @@
+# Development + test + lint bağımlılıkları.
+# -r ile production deps'i devralır → tek komutla tam dev env.
+# Kullanım: pip install -r requirements-dev.txt  (CI'de ve lokal dev'de)
+-r requirements.txt
+
+# Test
+httpx>=0.27.0         # FastAPI TestClient'ın altında kullandığı HTTP client
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+
+# Lint + format
+ruff>=0.4.0

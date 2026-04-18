@@ -241,7 +241,7 @@ GET /{session_id}: session getir → SessionResponse (404 if not found)
 ```bash
 # Sunucuyu başlat:
 cd services/api
-uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload
 
 # Tarayıcıda aç: http://localhost:8000/docs
 # Tüm endpoint'ler görünüyor mu? Her birini manuel test et.

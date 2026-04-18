@@ -10,8 +10,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install dependencies
-        run: pip install -r services/api/requirements.txt
+      - name: Install dependencies (prod + dev)
+        # requirements-dev.txt zaten -r ile requirements.txt'i çeker.
+        run: pip install -r services/api/requirements-dev.txt
       - name: Lint with ruff
         run: ruff check services/api/
       - name: Run tests

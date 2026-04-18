@@ -1,0 +1,43 @@
+# Bu dosya docker build context'ini küçültür — listedeki path'ler imaja kopyalanmaz.
+# Imajdan hariç tutulan = daha küçük image + daha hızlı build.
+
+# Python artifacts
+__pycache__
+*.py[cod]
+*$py.class
+*.egg-info
+.pytest_cache
+.ruff_cache
+.mypy_cache
+
+# Virtual environments
+.venv
+venv
+env
+
+# Testler production imajında olmamalı — CI lokalde çalıştırır
+tests/
+
+# Environment & logs
+.env
+.env.*
+*.log
+
+# Git metadata
+.git
+.gitignore
+.github
+
+# Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+
+# Docker kendisi
+Dockerfile
+docker-compose.yml
+.dockerignore
