@@ -183,6 +183,66 @@
 
 ---
 
+## Task 6 — GitHub Actions CI
+
+### Test job `requirements.txt` → `requirements-dev.txt`
+- **SPEC:** `pip install -r services/api/requirements.txt`
+- **Uygulama:** `pip install -r services/api/requirements-dev.txt` (`.github/workflows/ci.yml:44`)
+- **Sebep:** Task 5'te dev/prod requirements ayrımı yapıldı — `pytest` artık `requirements.txt`'te yok. SPEC'teki komutla test job `ModuleNotFoundError: No module named 'pytest'` hatası verirdi. `requirements-dev.txt` `-r requirements.txt` ile prod deps'i inherit eder (tek komut, tam env).
+- **Etki:** Test job yeşil geçer. SPEC güncellenince (Task 7) bu komut `requirements-dev.txt` olarak kalmalı.
+
+### `setup-python` cache: "pip" eklendi
+- **SPEC:** `cache` parametresi istenmedi
+- **Uygulama:** `cache: "pip"` lint + test job'larında (`.github/workflows/ci.yml:20, 43`)
+- **Sebep:** GitHub Actions `actions/setup-python@v5` pip wheel cache desteği veriyor; ikinci run'dan itibaren install süresi dakikalardan saniyelere iner. Zararsız, opt-in feature.
+- **Etki:** CI run süresi ~3-4dk → ~1-2dk (cache hit'te). PR iteration hızlanır.
+
+### Lint job'da `pip install ruff` — version pinlenmedi
+- **SPEC:** `pip install ruff` (version yok)
+- **Uygulama:** SPEC'e sadık, unpinned (`.github/workflows/ci.yml:22`)
+- **Sebep:** SPEC basitlik istedi; ruff her upgrade'de yeni rule aktif edebilir → CI kırılabilir
+- **Etki:** Küçük CI kırılma riski; yaşandığında `pip install ruff==X.Y.Z` ile pinlenecek. P4'te (production) muhtemelen fix'lenir.
+
+---
+
+## Task 6.5 — Ruff compliance düzeltmeleri
+
+İlk CI koşumundan önce lokalde `ruff check` 24 uyarı verdi. Modern Python / FastAPI best practice'e uyum için uygulanan düzeltmeler (hiçbirinin davranışsal etkisi yok; testler yeşil geçmeye devam etmeli):
+
+### UP017 — `datetime.UTC` alias
+- **Kapsam:** 5 yer (`app/main.py`, `app/schemas/documents.py`, `app/schemas/sessions.py`, `app/services/session_service.py` x2)
+- **Değişim:** `from datetime import timezone` + `timezone.utc` → `from datetime import UTC` + `UTC`
+- **Sebep:** Python 3.11+ `datetime.UTC` kısa alias sağlıyor; daha okunabilir, ruff default rule
+- **Etki:** Davranış birebir aynı; import satırı kısaldı
+
+### UP042 — `SubjectEnum(StrEnum)`
+- **Kapsam:** `app/schemas/questions.py` — `class SubjectEnum(str, Enum)` → `class SubjectEnum(StrEnum)`
+- **Sebep:** Python 3.11+ `StrEnum` tam olarak `(str, Enum)` çoklu miras pattern'ini tekleştirir; daha net niyet
+- **Uyumluluk:** `.value`, eşitlik, JSON serialization aynı. `str(enum)` davranışı farklı (StrEnum raw value döner) ama kodumuzda kullanılmıyor — kontrol edildi.
+
+### B008 — FastAPI `Annotated` pattern
+- **Kapsam:** 6 parametre (`routers/questions.py`, `routers/documents.py`, `routers/sessions.py`)
+- **Değişim:**
+  - Önce: `service: T = Depends(fn)` — `Depends()` çağrısı argument default'ta
+  - Sonra: `service: Annotated[T, Depends(fn)]` — çağrı type annotation içinde
+- **Sebep:** B008 generic bir kural (function call as default tehlikeli — sadece bir kez eval edilir). FastAPI 0.95+ **resmi olarak önerilen modern syntax** zaten bu. Ruff + best practice aynı yöne bakıyor.
+- **Etki:** Davranış + OpenAPI + Swagger UI birebir aynı. Router imzaları biraz daha uzun ama niyet daha net.
+
+### E501 — Uzun test assertion mesajları
+- **Kapsam:** 11 satır (`tests/test_questions.py`, `tests/test_documents.py`, `tests/test_sessions.py`)
+- **Değişim:** Assertion mesajları multi-line parantez ile bölündü:
+  ```python
+  assert response.status_code == 422, (
+      f"4 karakterlik soru 422 dönmeli, gelen {response.status_code}"
+  )
+  ```
+- **Sebep:** `pyproject.toml`'daki `line-length = 100` kuralı
+- **Etki:** Mesaj içeriği korundu (fail debug değeri aynı); satır sayısı marjinal arttı
+
+**Not:** UP017 ve UP042 modern Python'a doğal geçiş — geri dönülmemeli. Annotated pattern FastAPI'nin yeni standardı; P2/P3'te yeni router yazarken bu pattern kullanılmalı (eski `= Depends()` yazılmamalı).
+
+---
+
 ## Özet — Tekrar eden kararlar
 
 İki pattern sık görülüyor, P2/P3'te otomatik uygulanmalı:

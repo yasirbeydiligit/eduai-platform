@@ -5,6 +5,8 @@ Validasyon router'da (HTTP sınırı); iş mantığı (metadata kayıt) Document
 
 from __future__ import annotations
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 
 from app.dependencies import get_document_service
@@ -28,12 +30,13 @@ ALLOWED_EXTENSIONS: tuple[str, ...] = (".pdf", ".txt")
     description="PDF veya TXT dosyası (max 10MB). P1'de sadece metadata kaydedilir.",
 )
 async def upload_document(
-    # UploadFile streaming destekli — büyük dosyaları tamamen RAM'e yüklemez
-    file: UploadFile = File(..., description="PDF veya TXT dosyası (max 10MB)"),
-    title: str = Form(..., max_length=200, description="Döküman başlığı"),
-    subject: SubjectEnum = Form(..., description="Ders konusu"),
-    grade_level: int = Form(..., ge=1, le=12, description="Sınıf seviyesi (1-12)"),
-    service: DocumentService = Depends(get_document_service),
+    # Annotated[T, File/Form/Depends(...)] modern FastAPI pattern — ruff B008 uyumu.
+    # UploadFile streaming destekli — büyük dosyaları tamamen RAM'e yüklemez.
+    file: Annotated[UploadFile, File(description="PDF veya TXT dosyası (max 10MB)")],
+    title: Annotated[str, Form(max_length=200, description="Döküman başlığı")],
+    subject: Annotated[SubjectEnum, Form(description="Ders konusu")],
+    grade_level: Annotated[int, Form(ge=1, le=12, description="Sınıf seviyesi (1-12)")],
+    service: Annotated[DocumentService, Depends(get_document_service)],
 ) -> DocumentUploadResponse:
     """Dosyayı valide et, metadata'yı servise kaydet ve response döndür."""
     # --- 1) Extension validasyonu ---

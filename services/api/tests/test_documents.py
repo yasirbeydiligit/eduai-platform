@@ -33,13 +33,17 @@ def test_upload_valid_txt(client: TestClient) -> None:
 
     response = client.post("/v1/documents/upload", files=files, data=_form_data())
 
-    assert response.status_code == 201, f"Geçerli upload 201 dönmeli, gelen {response.status_code}: {response.text}"
+    assert response.status_code == 201, (
+        f"Geçerli upload 201 dönmeli, gelen {response.status_code}: {response.text}"
+    )
     body = response.json()
 
     # document_id UUID formatında olmalı — UUID(str) exception fırlatmazsa format doğru
     UUID(body["document_id"])
     assert body["title"] == "Test Dökümanı"
-    assert body["file_size_bytes"] == len(file_content), "file_size_bytes yüklenen içeriğin byte sayısına eşit olmalı"
+    assert body["file_size_bytes"] == len(file_content), (
+        "file_size_bytes yüklenen içeriğin byte sayısına eşit olmalı"
+    )
     assert body["status"] == "uploaded"
 
 

@@ -9,6 +9,8 @@ Router'ın sorumluluğu:
 
 from __future__ import annotations
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, status
 
 from app.dependencies import get_question_service, get_session_service
@@ -28,8 +30,10 @@ router = APIRouter(prefix="/v1/questions", tags=["Questions"])
 )
 async def ask_question(
     request: QuestionRequest,
-    question_service: QuestionService = Depends(get_question_service),
-    session_service: SessionService = Depends(get_session_service),
+    # Annotated[T, Depends(fn)] modern FastAPI DI pattern — ruff B008 uyumu sağlar
+    # (function call'ı argument default'ta değil, type annotation içinde taşır).
+    question_service: Annotated[QuestionService, Depends(get_question_service)],
+    session_service: Annotated[SessionService, Depends(get_session_service)],
 ) -> QuestionResponse:
     """Soruyu işle, cevabı döndür ve oturum istatistiklerini güncelle."""
     # Asıl iş: cevap üretimi. Mock P1'de; P3'te RAG + LLM gelecek.

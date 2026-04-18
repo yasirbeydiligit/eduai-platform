@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -21,7 +22,7 @@ router = APIRouter(prefix="/v1/sessions", tags=["Sessions"])
     description="Boş bir oturum oluşturur ve yeni oturum ID'sini döndürür.",
 )
 async def create_session(
-    service: SessionService = Depends(get_session_service),
+    service: Annotated[SessionService, Depends(get_session_service)],
 ) -> SessionCreateResponse:
     """Yeni boş oturum oluştur, UUID'sini döndür."""
     return await service.create_session()
@@ -37,7 +38,7 @@ async def create_session(
 async def get_session(
     # FastAPI UUID path param'ı otomatik parse eder; geçersiz format → 422
     session_id: UUID,
-    service: SessionService = Depends(get_session_service),
+    service: Annotated[SessionService, Depends(get_session_service)],
 ) -> SessionResponse:
     """Verilen ID ile oturumu getir; bulunamazsa 404."""
     session = await service.get_session(session_id)

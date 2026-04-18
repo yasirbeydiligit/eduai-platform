@@ -6,7 +6,7 @@ kullanılır. P3'te agent'lar bu bağlamı kullanarak conversation history kurac
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -35,9 +35,9 @@ class SessionService:
     async def create_session(self) -> SessionCreateResponse:
         """Yeni boş oturum oluştur ve minimal yanıt döndür."""
         session_id = uuid4()
-        # datetime.utcnow() deprecated — timezone-aware sürüm kullanıyoruz.
+        # datetime.UTC (Python 3.11+) timezone-aware — utcnow() deprecated yerine.
         # Store ile response'un aynı zaman değerini taşıması için now'ı yerel var'a alıyoruz.
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         self._store[session_id] = {
             "created_at": now,
@@ -81,7 +81,7 @@ class SessionService:
             return
 
         data["question_count"] += 1
-        data["last_activity"] = datetime.now(timezone.utc)
+        data["last_activity"] = datetime.now(UTC)
         # set.add idempotent — aynı subject tekrar eklense de liste büyümez
         data["subjects_accessed"].add(subject)
 

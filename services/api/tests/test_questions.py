@@ -27,13 +27,17 @@ def test_ask_question_valid(client: TestClient) -> None:
     payload = _base_payload()
     response = client.post("/v1/questions/ask", json=payload)
 
-    assert response.status_code == 201, f"Beklenen 201, gelen {response.status_code}: {response.text}"
+    assert response.status_code == 201, (
+        f"Beklenen 201, gelen {response.status_code}: {response.text}"
+    )
     body = response.json()
 
     # UUID parse edilebiliyorsa formatı doğru demektir
     UUID(body["question_id"])  # exception fırlatmazsa OK
     assert isinstance(body["answer"], str) and body["answer"], "answer non-empty string olmalı"
-    assert body["session_id"] == payload["session_id"], "response session_id, request ile aynı olmalı"
+    assert body["session_id"] == payload["session_id"], (
+        "response session_id, request ile aynı olmalı"
+    )
 
 
 def test_ask_question_too_short(client: TestClient) -> None:
@@ -42,7 +46,9 @@ def test_ask_question_too_short(client: TestClient) -> None:
     payload["question"] = "abcd"  # 4 karakter, min 5
 
     response = client.post("/v1/questions/ask", json=payload)
-    assert response.status_code == 422, f"4 karakterlik soru 422 dönmeli, gelen {response.status_code}"
+    assert response.status_code == 422, (
+        f"4 karakterlik soru 422 dönmeli, gelen {response.status_code}"
+    )
 
 
 def test_ask_question_too_long(client: TestClient) -> None:
@@ -51,7 +57,9 @@ def test_ask_question_too_long(client: TestClient) -> None:
     payload["question"] = "a" * 501
 
     response = client.post("/v1/questions/ask", json=payload)
-    assert response.status_code == 422, f"501 karakterlik soru 422 dönmeli, gelen {response.status_code}"
+    assert response.status_code == 422, (
+        f"501 karakterlik soru 422 dönmeli, gelen {response.status_code}"
+    )
 
 
 def test_ask_question_invalid_subject(client: TestClient) -> None:
@@ -64,7 +72,9 @@ def test_ask_question_invalid_subject(client: TestClient) -> None:
     payload["subject"] = "coğrafya"  # enum'da yok (ğ vs g farkı)
 
     response = client.post("/v1/questions/ask", json=payload)
-    assert response.status_code == 422, f"Geçersiz subject 422 dönmeli, gelen {response.status_code}"
+    assert response.status_code == 422, (
+        f"Geçersiz subject 422 dönmeli, gelen {response.status_code}"
+    )
 
 
 def test_ask_question_invalid_grade(client: TestClient) -> None:
@@ -73,7 +83,9 @@ def test_ask_question_invalid_grade(client: TestClient) -> None:
     payload["grade_level"] = 13
 
     response = client.post("/v1/questions/ask", json=payload)
-    assert response.status_code == 422, f"grade_level=13 için 422 dönmeli, gelen {response.status_code}"
+    assert response.status_code == 422, (
+        f"grade_level=13 için 422 dönmeli, gelen {response.status_code}"
+    )
 
 
 def test_ask_question_invalid_grade_zero(client: TestClient) -> None:
@@ -82,4 +94,6 @@ def test_ask_question_invalid_grade_zero(client: TestClient) -> None:
     payload["grade_level"] = 0
 
     response = client.post("/v1/questions/ask", json=payload)
-    assert response.status_code == 422, f"grade_level=0 için 422 dönmeli, gelen {response.status_code}"
+    assert response.status_code == 422, (
+        f"grade_level=0 için 422 dönmeli, gelen {response.status_code}"
+    )

@@ -8,7 +8,7 @@ Sorumluluklar:
 """
 
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -65,13 +65,13 @@ app.include_router(sessions.router)
 async def health() -> dict:
     """Monitoring/load balancer için basit sağlık ucu.
 
-    Not: datetime.utcnow() Python 3.12+ deprecated. timezone-aware sürüm kullanıyoruz
-    → JSON output ISO 8601 '+00:00' suffix'li olur, parsing daha güvenli.
+    Not: datetime.UTC (Python 3.11+) timezone-aware UTC sabiti — utcnow() deprecated yerine.
+    → JSON output ISO 8601 '+00:00' suffix'li olur, parsing/test assertion deterministik.
     """
     return {
         "status": "healthy",
         "version": settings.VERSION,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "services": {
             "api": "healthy",
             "storage": "healthy",

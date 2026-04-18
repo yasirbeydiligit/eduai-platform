@@ -1,28 +1,78 @@
-name: CI
+name: "CI — EduAI API"
 
+# Trigger: her push (tüm branch'lar) + her PR açılış/güncellemesi.
 on: [push, pull_request]
 
 jobs:
-  test:
+  # ----------------------------------------------------------------------------
+  # Job 1 — Code Quality: ruff lint + format kontrolü
+  # ----------------------------------------------------------------------------
+  lint:
+    name: "Code Quality"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install dependencies (prod + dev)
-        # requirements-dev.txt zaten -r ile requirements.txt'i çeker.
+          # pip wheel cache — ikinci run'dan itibaren install süresi saniyelere düşer
+          cache: "pip"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Ruff lint
+        # --output-format=github → hataları PR'da inline annotation olarak gösterir
+        run: ruff check services/api/ --output-format=github
+
+      - name: Ruff format check
+        # --check exit code ile fail eder; diff değişikliği isteyen yer varsa build kırmızı
+        run: ruff format services/api/ --check
+
+  # ----------------------------------------------------------------------------
+  # Job 2 — Tests: pytest
+  # needs: lint → lint geçmezse testler hiç koşmaz (fail-fast + CI dakikası tasarrufu)
+  # ----------------------------------------------------------------------------
+  test:
+    name: "Tests"
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        # SPEC'te `requirements.txt` yazıyor, ama Task 5'te dev/prod ayrımı yapıldı
+        # → pytest artık requirements-dev.txt'te (bkz. docs/p1/IMPLEMENTATION_NOTES.md Task 6).
+        # -r ile `requirements.txt`'i otomatik inherit eder, tek komutla tam env.
         run: pip install -r services/api/requirements-dev.txt
-      - name: Lint with ruff
-        run: ruff check services/api/
+
       - name: Run tests
         working-directory: services/api
-        run: pytest tests/ -v
+        # --tb=short: traceback'i kısalt (CI log'larında gürültü az)
+        run: pytest tests/ -v --tb=short
 
-  docker:
+  # ----------------------------------------------------------------------------
+  # Job 3 — Docker Build: production image'ı CI'da build et
+  # needs: test → test geçmeden image build edilmez.
+  # Push yok — sadece build başarılı mı kontrol. Registry push P4'te eklenecek.
+  # ----------------------------------------------------------------------------
+  docker-build:
+    name: "Docker Build"
     runs-on: ubuntu-latest
     needs: test
     steps:
       - uses: actions/checkout@v4
+
       - name: Build Docker image
         run: docker build -t eduai-api:ci services/api/
+
+      - name: Image size check
+        # Informational — fail eşiği yok. Size P1'de <200MB hedefine ulaşamadı
+        # (~284MB, bilinçli kabul edildi; bkz. IMPLEMENTATION_NOTES.md Task 5).
+        run: docker images eduai-api:ci --format 'Size: {{.Size}}'

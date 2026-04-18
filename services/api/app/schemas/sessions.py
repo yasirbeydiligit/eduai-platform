@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -49,6 +49,6 @@ class SessionCreateResponse(BaseModel):
         description="Yeni oluşturulan oturumun UUID'si.",
     )
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(UTC),
         description="Oturumun oluşturulma zamanı (UTC, timezone-aware).",
     )

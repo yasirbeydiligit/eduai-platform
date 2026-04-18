@@ -2,16 +2,17 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
 
 
 # Desteklenen ders konuları — platformun tamamında ortak enum olarak kullanılır.
-# str miras alındığı için JSON'da doğrudan string olarak serileşir ve Swagger'da
-# dropdown olarak görünür.
-class SubjectEnum(str, Enum):
+# StrEnum (Python 3.11+) str mirasını otomatik sağlar → JSON'da doğrudan string
+# serileşir ve Swagger'da dropdown olarak görünür. `str, Enum` çoklu miras
+# pattern'ine modern alternatif (ruff UP042 kuralı).
+class SubjectEnum(StrEnum):
     MATEMATIK = "matematik"
     FIZIK = "fizik"
     KIMYA = "kimya"

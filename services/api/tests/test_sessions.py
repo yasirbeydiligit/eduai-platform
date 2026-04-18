@@ -18,7 +18,9 @@ def test_create_session(client: TestClient) -> None:
     """POST /v1/sessions/ → 201 + geçerli UUID session_id."""
     response = client.post("/v1/sessions/")
 
-    assert response.status_code == 201, f"Beklenen 201, gelen {response.status_code}: {response.text}"
+    assert response.status_code == 201, (
+        f"Beklenen 201, gelen {response.status_code}: {response.text}"
+    )
     body = response.json()
 
     UUID(body["session_id"])  # UUID parse edilmezse AssertionError yerine ValueError → test fail
@@ -35,7 +37,9 @@ def test_get_session_exists(client: TestClient) -> None:
     # 2) Aynı session_id ile GET
     get_resp = client.get(f"/v1/sessions/{session_id}")
 
-    assert get_resp.status_code == 200, f"Var olan session için 200 dönmeli, gelen {get_resp.status_code}"
+    assert get_resp.status_code == 200, (
+        f"Var olan session için 200 dönmeli, gelen {get_resp.status_code}"
+    )
     body = get_resp.json()
     assert body["session_id"] == session_id, "Dönen session_id, create'teki ile aynı olmalı"
     assert body["question_count"] == 0, "Yeni session için question_count=0 olmalı"
