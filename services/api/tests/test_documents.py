@@ -66,6 +66,4 @@ def test_upload_too_large(client: TestClient) -> None:
 
     response = client.post("/v1/documents/upload", files=files, data=_form_data())
 
-    assert response.status_code == 413, (
-        f"11MB dosya için 413 dönmeli, gelen {response.status_code}"
-    )
+    assert response.status_code == 413, f"11MB dosya için 413 dönmeli, gelen {response.status_code}"
