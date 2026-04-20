@@ -1,0 +1,49 @@
+# P2 — EduAI fine-tuning bağımlılıkları
+# ------------------------------------------------------------------------
+# SPEC.md'deki orijinal pin'ler 2024 Q2-Q3 sürümleriydi (torch 2.3.1, trl
+# 0.9.6 vs). Python 3.13'te `torch==2.3.1` wheel yok (min 2.6). Ayrıca
+# Phi-4 Mini / Qwen3 gibi 2026 modelleri yeni transformers/peft gerektiriyor.
+# Detaylı gerekçe: docs/p2/IMPLEMENTATION_NOTES.md · Sapma 5 (2026-04-20).
+#
+# Strateji: torch sabit pin (CUDA/Metal uyumluluğu kritik), diğerleri floor
+# pin (>=). Kurulum sonrası `pip freeze > ml/requirements.lock.txt` ile tam
+# reproducibility sağlanır (iki dosya: bu okunabilir, .lock deterministik).
+# ------------------------------------------------------------------------
+
+# --- Core ML stack ---
+torch==2.9.1                     # 3.13 uyumlu stable orta yol (2.10/2.11 çok taze)
+transformers>=4.46,<5            # 4.46+ yeni model mimarilerini destekler
+datasets>=3.0                    # 3.x streaming + lazy loading iyileştirmeleri
+peft>=0.13                       # LoRA target_modules auto-detect
+trl>=0.12                        # SFTTrainer(processing_class=) yeni imza
+accelerate>=1.0                  # 1.x stable API
+
+# QLoRA 4-bit quantization — macOS Apple Silicon'da kurulamaz (CUDA-only).
+# Lokal env'de atlanır; Colab/Linux'ta training öncesi `!pip install bitsandbytes` manuel.
+bitsandbytes>=0.44 ; sys_platform != 'darwin'
+
+# --- Experiment tracking ---
+mlflow>=2.17
+
+# --- Evaluation metrikleri ---
+rouge-score>=0.1.2
+bert-score>=0.3.13
+
+# --- Yapılandırma & yardımcılar ---
+pyyaml>=6.0
+python-dotenv>=1.0               # .env yüklemesi (ANTHROPIC_API_KEY, HF_TOKEN)
+scikit-learn>=1.5                # stratified train/eval split
+
+# --- Opsiyonel: semantic deduplication (data_prep.py) ---
+sentence-transformers>=3.1
+
+# --- Opsiyonel: sentetik veri üretimi (Seçenek A — data_prep.py) ---
+anthropic>=0.40
+
+# --- Notebook altyapısı ---
+jupyter>=1.1
+nbstripout>=0.7                  # notebook output'larını git diff'inden ayıklar
+
+# --- Dev / CI ---
+pytest>=8.3
+ruff>=0.6
