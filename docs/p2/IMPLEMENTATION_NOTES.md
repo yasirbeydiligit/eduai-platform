@@ -112,3 +112,75 @@
   farklı sürümler çekebilir. `requirements.lock.txt` bu riski azaltır
   ama SPEC'teki "tam aynı sürüm garantisi" artık yok. Öğrenme projesi
   için kabul edilebilir bir takas.
+
+---
+
+## Task 1 — Veri seti oluştur (2026-04-20)
+
+### Sapma 6 · Strateji seçimi: Seçenek A + prompt'ta MEB zorunluluğu
+- **SPEC/TASKS beklentisi:** Seçenek A/B/C arasından bir strateji seç,
+  `ml/README.md`'de dokümante et. Kullanıcı ek olarak
+  **"MEB güncel müfredatına uygun olması çok önemli"** şartı koydu.
+- **Seçim:** Seçenek A (Sentetik, Claude API).
+- **Gerekçe:** `ml/README.md` "Veri stratejisi" bölümünde açık.
+- **MEB uyumluluk iki kat enforce edildi** (`data_prep.py:build_prompt`):
+  1. System persona: *"Sen Türkiye Milli Eğitim Bakanlığı (MEB) güncel
+     öğretim programlarına hakim bir eğitim asistanısın."*
+  2. Kurallar #1: *"Sorular MEB güncel müfredatı ile uyumlu, sınıf
+     seviyesine uygun olmalı."*
+- **Konu seed stratejisi:** SUBJECT_TOPICS dict'i ile her subject × grade
+  için 4-5 konu verilip Claude'a expand ettiriliyor. **Spesifik kazanım
+  kodları (örn. "9.1.1.1") verilmiyor** çünkü:
+  - MEB müfredatı periyodik revize ediliyor; kod formatı dönemsel değişir
+  - Claude'un corpus'undaki MEB bilgisi konu-çerçeve seviyesinde güvenilir;
+    spesifik kazanım kodları için hallucination riski yüksek
+
+### Sapma 7 · Token sayımı karakter sayımına indirgendi
+- **SPEC beklentisi (TASKS Task 1, item 5):**
+  *"Ortalama output token uzunluğu (tokenizer'la)"*
+- **Gerçek uygulama:** Karakter bazlı ortalama/medyan/min/max
+  (`data_prep.py:print_statistics`).
+- **Neden:**
+  - Phi-3 tokenizer için `transformers` + `trust_remote_code` + model
+    download (~500 KB) gerekir
+  - `data_prep.py` şu an torch/transformers bağımsız çalışabiliyor
+    (sadece `anthropic`, `sklearn`, `dotenv`) — bu hafif kalabalığı
+    bozmak istenmedi
+  - **Task 5 notebook**'unda (hücre 6) tokenizer analizi zaten var;
+    detaylı token dağılımı oraya bırakıldı
+- **Etki kabul edilebilir:** Türkçe için Phi karakter/token oranı ~3-4.
+  500 karakter ≈ 125-165 token → `max_output_len=1000` karakter filtresi
+  zaten 512 token sınırının altında.
+
+### Sapma 8 · Subject × grade kombinasyon kapsama boşlukları
+- **SPEC beklentisi:** Subject başına 50 örnek, grade 9-12 dengeli.
+- **Gerçek kapsama:** MEB müfredatında **felsefe 9. sınıfta yok** (10-12 var).
+  `SUBJECT_TOPICS[subject].get(grade)` None dönerse o (subject, grade) kombinasyonu
+  atlanıyor. `data_prep.py:generate_dataset` her subject için `target/len(grades)`
+  bölüp min 5 garanti ediyor — dengeli dağılım korunuyor.
+- **Beklenen toplam:** 9 subject × 4 grade × ~12 örnek = ~432. Felsefe yoksunluğu
+  ve kalite filtresi (~5-10% elenme) ile **~400-420 final kayıt** bekleniyor.
+
+### Sapma 9 · `test_data_schema.py` bu task'ta yazılmadı
+- **TASKS Task 1 "Bunu kendin yap":** `cd ml && pytest tests/ -v` istiyor.
+- **Sorun:** `test_data_schema.py` SPEC.md'de tam kodu olmasına rağmen
+  **TASKS Task 6**'ya yerleştirilmiş. Task 1'de pytest çalıştırılırsa
+  "no tests collected" → exit code 5 alır.
+- **Karar:** Test dosyasını Task 6'ya bıraktım (TASKS disiplini). Kullanıcıya
+  alternatif olarak iki yol sunuldu:
+  1. Task 6'ya kadar pytest satırını atla
+  2. Test'i şimdi yazmak istersek ml/tests/test_data_schema.py'yi eklemek
+     (SPEC'teki kod birebir)
+- **Öneri → Karar (2026-04-20):** Test dosyası **Task 1'e çekildi**.
+  Kullanıcı veri üretiminden sonra `pytest tests/ -v` çalıştırdığında
+  test dosyası olmadığı için exit code 5 aldı. Pragmatik çözüm:
+  `ml/tests/test_data_schema.py` Task 1 sonunda yazıldı. Kapsamı:
+  - SPEC'teki 4 baseline assertion (required keys, subject enum,
+    grade range, min output len)
+  - Ek kontrol: **max output len** (1000 char), **boş instruction/output**,
+    **input string tipi**
+  - `test_no_exact_duplicate_instructions` — dataset içi dup yok
+  - `test_train_eval_no_leakage` — split sonrası train/eval ortak
+    instruction barındırmamalı (data leakage koruması)
+- **Task 6'ya kalan:** Sadece CI wiring (`.github/workflows/ci.yml`'e
+  `ml-quality` job eklemek). Test dosyası zaten yerinde.
