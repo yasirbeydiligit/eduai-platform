@@ -42,3 +42,11 @@ htmlcov/
 
 # macOS
 .DS_Store
+
+# ML artifacts (P2+)
+ml/models/checkpoints/
+ml/data/raw/
+ml/mlruns/
+ml/.env
+notebooks/.ipynb_checkpoints/
+*.ipynb_checkpoints/
