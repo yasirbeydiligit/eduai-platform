@@ -184,3 +184,72 @@
     instruction barındırmamalı (data leakage koruması)
 - **Task 6'ya kalan:** Sadece CI wiring (`.github/workflows/ci.yml`'e
   `ml-quality` job eklemek). Test dosyası zaten yerinde.
+
+---
+
+## Task 2 — config.yaml + train.py (2026-04-20)
+
+### Sapma 10 · Chat template hardcoded string yerine `tokenizer.apply_chat_template`
+- **SPEC beklentisi (SPEC.md satır 188-193):** `format_prompt` Phi-3 chat
+  formatını string olarak hardcoded yazıyor:
+  ```python
+  f"<|user|>\n{example['instruction']}\n<|end|>\n"
+  f"<|assistant|>\n{example['output']}\n<|end|>"
+  ```
+- **Gerçek uygulama (`train.py:build_formatting_func`):**
+  `tokenizer.apply_chat_template(messages, tokenize=False)` kullanıldı.
+- **Neden:**
+  - Hardcoded template model'e bağımlı. `config.yaml`'da model Phi-4 Mini
+    veya Qwen3'e geçilirse string yanlış olur, sessizce bozuk training
+    yapar (farklı BOS/EOS → modelin bilmediği pattern).
+  - `apply_chat_template` tokenizer'dan model spesifik template okur —
+    model-agnostik adaptation.
+- **Risk:** Çok eski modellerin tokenizer'ında chat_template yok (Phi-2
+  öncesi). Phi-3/4 + Qwen2/3 + LLaMA-3 hepsinde var. Dataset'e etki yok.
+
+### Sapma 11 · SFTConfig `eval_strategy` + `save_strategy` explicit set edildi
+- **SPEC beklentisi:** Sadece `eval_steps`, `save_steps` veriyordu.
+- **Gerçek uygulama:** `eval_strategy="steps"` + `save_strategy="steps"`
+  explicit eklendi.
+- **Neden:** Modern `transformers` (4.46+) bazı sürümlerde `eval_steps`
+  ayarlı ama `eval_strategy="no"` default ise silently eval atlayabiliyor.
+  Explicit strategy → bug-proof.
+
+### Sapma 12 · `load_best_model_at_end` smoke mode'da force-disable
+- **SPEC beklentisi:** Config'teki `load_best_model_at_end: true` hep
+  geçerli.
+- **Gerçek:** `--smoke` modunda `load_best_model_at_end=False`'a zorlanır.
+- **Neden:** Smoke 10 step + save_steps=100 → hiç checkpoint oluşmaz;
+  `load_best_model_at_end=True` bu durumda trainer.train() exception
+  atar. Smoke asıl checkpoint kaydı istemez (pipeline testi).
+
+### Sapma 13 · SIGTERM → KeyboardInterrupt köprüsü
+- **Görev beklentisi:** "Keyboard interrupt (Ctrl+C) → adapter save,
+  graceful exit"
+- **Ek koruma:** Sadece SIGINT değil SIGTERM de yakalanıyor
+  (`signal.signal(SIGTERM, ...)` → `KeyboardInterrupt` raise). Çünkü:
+  - Colab idle timeout veya OOM killer SIGTERM gönderir
+  - Container orchestration (K8s preemption, P4 senaryosu) SIGTERM ile
+    öldürür
+  - Her iki durumda da 30-60dk'lık training'i kaybetmemek için elde
+    olanı diske yazmak kritik.
+
+### Sapma 14 · MLflow `report_to="none"` + manuel callback
+- **SPEC beklentisi:** `report_to="none"` + MLflow manuel
+- **Uyum:** Aynı; sadece manuel yazımı `StepMetricsCallback` class'ına
+  çıkardık (logic merkezi, her step'te sync log).
+- **Alternatif düşünülen:** `report_to="mlflow"` TRL integration;
+  atıldı çünkü run lifecycle kontrolünü manuel tutmak (`with
+  mlflow.start_run()`) artifacts + params + metrics'i tek context'te
+  tutuyor. Integration path'inde nested run'lar oluşabilir, debugging
+  zor.
+
+### Not · Sürüm kontrolü Mac lokal'de yapılamadı
+- **Görev talimatı:** `pip show trl transformers peft` ile sürüm
+  doğrulama; API farkı varsa uyarla.
+- **Gerçek:** Mac lokal shell'de `trl` modülü yok (`bitsandbytes`
+  platform marker ile skip, training Colab'da). Gerçek API doğrulaması
+  Colab'da `%pip list | grep -E 'trl|transformers|peft'` ile yapılmalı.
+- **Varsayım:** TRL 0.12+ (`processing_class=`), transformers 4.46+,
+  peft 0.13+. SPEC + görev talimatındaki tabloya dayalı. Colab'da
+  import hatası çıkarsa Task 2 içine ek sapma (15) olarak geri yansıtılır.

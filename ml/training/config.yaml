@@ -1,0 +1,71 @@
+# EduAI P2 — Fine-tuning konfigürasyonu
+# ------------------------------------------------------------------------
+# Tüm hyperparametreler tek yerde; train.py bunu okur, MLflow'a param olarak yazar.
+# Deney varyasyonları için: ya bu dosyayı override et, ya da farklı isimle
+# kopyala (config_r32.yaml) + train.py'ye --config flag'i ekle (Task 3).
+#
+# 2026 model seçim notu (docs/p2/CONCEPT.md § Model seçimi):
+#   - Phi-3 Mini: T4 Colab uyumlu, MIT, Türkçe orta (bu config baseline)
+#   - Phi-4 Mini: aynı boyut + iyileştirilmiş; MIT; Colab T4 yeter
+#   - Qwen3 7B: Türkçe'de en iyi; Colab Pro (A100) gerek
+#   Base model'i değiştirirken target_modules'i modele göre revize et.
+# ------------------------------------------------------------------------
+
+# Reproducibility — set_seed() ile torch + numpy + random + cuda hepsi sabitlenir
+seed: 42
+
+model:
+  # Phi-3 Mini — T4 Colab'da QLoRA ile 3.8B parametre eğitilebilir
+  name: "microsoft/Phi-3-mini-4k-instruct"
+  max_length: 512                     # Türkçe için yeterli (karakter/token oranı ~3-4)
+  trust_remote_code: true             # Phi-3 custom model kodu — güvenilir model, OK
+
+lora:
+  r: 16                               # Rank — 8/16/32 sweep Task 3'te
+  lora_alpha: 32                      # Scale factor; konvansiyon alpha = r * 2
+  lora_dropout: 0.05                  # Düşük overfitting riski var; 0.1'e yükseltilebilir
+  bias: "none"
+  # Target modules — Phi-3 için attention projeksiyonları
+  # MLP katmanlarını (gate_proj/up_proj/down_proj) dahil etmek daha geniş adaptation
+  # ama VRAM + eğitim süresi artar. Baseline: sadece attention.
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+
+quantization:
+  load_in_4bit: true                  # QLoRA — VRAM'ı ~4x küçültür
+  bnb_4bit_compute_dtype: "float16"   # Hesaplama fp16; weights int4
+  bnb_4bit_quant_type: "nf4"          # NormalFloat4 — fp4'ten daha iyi
+  bnb_4bit_use_double_quant: true     # Quant scalars'ı da quantize — ~0.4 bit tasarruf
+
+training:
+  num_epochs: 3
+  per_device_train_batch_size: 4      # T4 (16GB) uyumlu; OOM olursa 2'ye düş
+  gradient_accumulation_steps: 4      # Effective batch = 4*4 = 16
+  learning_rate: 2.0e-4               # LoRA için tipik; 5e-5 ile 5e-4 arası sweep
+  warmup_ratio: 0.03                  # İlk %3 step'te lr 0'dan hedefe çıkar
+  lr_scheduler_type: "cosine"         # Kademeli düşüş → son epoch fine convergence
+  max_grad_norm: 1.0                  # Gradient clipping — instability koruması
+  weight_decay: 0.0                   # LoRA tipik olarak WD kullanmaz
+  logging_steps: 10                   # Her 10 step'te loss/lr konsola yaz
+  eval_steps: 100                     # 100 step'te bir eval set üzerinde loss
+  save_steps: 100                     # Checkpoint disk'e
+  save_total_limit: 2                 # En yeni 2 checkpoint kalır — disk korumalı
+  load_best_model_at_end: true        # Eval loss'a göre en iyiyi yükle
+  metric_for_best_model: "eval_loss"
+  bf16: false                         # T4 bf16 desteklemez; A100'de true yapılabilir
+  fp16: true                          # Mixed precision — QLoRA ile uyumlu
+
+paths:
+  train_data: "data/processed/train.jsonl"
+  eval_data: "data/processed/eval.jsonl"
+  output_dir: "models/checkpoints"
+
+mlflow:
+  tracking_uri: "mlruns"              # Lokal file store; Colab'da Drive path override
+  experiment_name: "eduai-fine-tuning"
+  run_tags:
+    project: "EduAI Platform P2"
+    phase: "p2"
