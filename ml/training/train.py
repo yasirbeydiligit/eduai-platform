@@ -28,7 +28,7 @@ import mlflow
 import torch
 import yaml
 from datasets import load_dataset
-from peft import LoraConfig, TaskType, get_peft_model
+from peft import LoraConfig, TaskType, get_peft_model, prepare_model_for_kbit_training
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -85,8 +85,20 @@ def setup_model_and_tokenizer(config: dict) -> tuple:
         config["model"]["name"],
         quantization_config=bnb_config,
         device_map="auto",
+        # T4 BF16 desteklemez (compute capability 7.5 < 8.0). Phi-3 default
+        # torch_dtype="bfloat16" — override etmezsek non-quantized katmanlar
+        # (embedding, layer_norm, lm_head) bf16'da kalır ve gradient scaler
+        # T4'te çöker. fp16'ya zorluyoruz.
+        torch_dtype=torch.float16,
         trust_remote_code=config["model"].get("trust_remote_code", False),
     )
+
+    # QLoRA hazırlığı — SPEC'te atlanmış ama standart pattern:
+    #   - layer_norm ve output head'i fp32'ye taşır (stability)
+    #   - gradient checkpointing'i aktive eder (VRAM tasarrufu)
+    #   - input embedding'e require_grad hook ekler
+    # Bu olmadan 4-bit quantized model üzerinde gradient akışı hatalı olur.
+    model = prepare_model_for_kbit_training(model)
 
     tokenizer = AutoTokenizer.from_pretrained(
         config["model"]["name"],

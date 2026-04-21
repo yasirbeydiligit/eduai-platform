@@ -277,3 +277,36 @@
   Sıradaki smoke hatası çıkarsa aynı yöntemle:
   `list(inspect.signature(SFTConfig).parameters)` veya
   `list(inspect.signature(SFTTrainer).parameters)` ile kontrol.
+
+### Sapma 16 · T4 BF16 uyumsuzluğu + eksik `prepare_model_for_kbit_training`
+- **Tetikleyen (2026-04-21):** Smoke #2:
+  ```
+  NotImplementedError: "_amp_foreach_non_finite_check_and_unscale_cuda"
+  not implemented for 'BFloat16'
+  ```
+- **Kök sebep:** İki birleşik problem:
+  1. **Model dtype:** Phi-3 Mini'nin config'inde `torch_dtype="bfloat16"`.
+     `from_pretrained`'e `torch_dtype` override geçirmezsek non-quantized
+     katmanlar (embedding, layer_norm, lm_head) bf16'da kalır. T4 (compute
+     capability 7.5) BF16 CUDA kernel'lerini destekler **ancak** AMP
+     grad scaler'ın `_amp_foreach_non_finite_check_and_unscale_cuda`
+     BFloat16 için T4'te implement edilmemiş (kernel sadece FP16 ve
+     CC≥8.0 için BF16).
+  2. **Eksik QLoRA prep:** SPEC `prepare_model_for_kbit_training` call'unu
+     atlamış. Bu standart QLoRA pattern — layer_norm ve output head'i
+     fp32'ye promote eder, gradient checkpointing'i aktive eder, input
+     embedding'e `require_grad` hook'u ekler. Olmadan 4-bit model üzerinde
+     gradient flow bozuk.
+- **Fix (`ml/training/train.py:setup_model_and_tokenizer`):**
+  ```python
+  model = AutoModelForCausalLM.from_pretrained(
+      ...,
+      torch_dtype=torch.float16,       # T4 uyumluluğu için bf16→fp16 override
+  )
+  model = prepare_model_for_kbit_training(model)   # QLoRA standart hazırlık
+  ```
+- **A100/H100 için not:** Bu değişiklik T4-odaklı. A100+ (CC≥8.0) için
+  `torch.bfloat16` + config'te `bf16: true` daha iyi numeric stability
+  sağlar. Colab Pro A100 kullanılacaksa config.yaml'a bir
+  `bf16: true/fp16: false` + train.py'de device capability check
+  eklenebilir (Task 3 sweep'ine bırakıldı).
