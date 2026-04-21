@@ -286,7 +286,7 @@ def train(config: dict, smoke: bool) -> None:
             metric_for_best_model=config["training"]["metric_for_best_model"],
             fp16=config["training"].get("fp16", True),
             bf16=config["training"].get("bf16", False),
-            max_seq_length=config["model"]["max_length"],
+            max_length=config["model"]["max_length"],   # TRL 1.0+ yeni isim (eski: max_seq_length)
             seed=config["seed"],
             report_to="none",                # MLflow'u callback üzerinden manuel yazıyoruz
         )

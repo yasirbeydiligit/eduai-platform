@@ -253,3 +253,27 @@
 - **Varsayım:** TRL 0.12+ (`processing_class=`), transformers 4.46+,
   peft 0.13+. SPEC + görev talimatındaki tabloya dayalı. Colab'da
   import hatası çıkarsa Task 2 içine ek sapma (15) olarak geri yansıtılır.
+
+### Sapma 15 · TRL 1.0+ API rename: `max_seq_length` → `max_length`
+- **Tetikleyen (2026-04-21):** Colab smoke test:
+  ```
+  TypeError: SFTConfig.__init__() got an unexpected keyword argument 'max_seq_length'
+  ```
+- **Ortam sürümleri:** trl 1.2.0, transformers 4.57.6, peft 0.18.1
+  (bizim varsayımdan — trl 0.12+, tx 4.46+ — oldukça ileride).
+- **Doğrulama:**
+  ```python
+  [p for p in inspect.signature(SFTConfig).parameters if "seq" in p or "length" in p]
+  # → ['group_by_length', 'length_column_name', 'max_length']
+  ```
+  `max_seq_length` parametresi TRL 1.0 breaking release'inde `max_length`
+  olarak yeniden adlandırıldı (HuggingFace naming convention uyumu).
+- **Fix:** `ml/training/train.py:289` → `max_length=config["model"]["max_length"]`.
+  Config tarafındaki key adı (`model.max_length`) zaten `max_length`;
+  sadece SFTConfig kwarg adı değişti.
+- **Öngörülen sonraki olası breaking (TRL 1.x):** `processing_class=` hâlâ
+  destekleniyor ama yumuşak deprecated olabilir; `packing`, `dataset_text_field`
+  gibi parametrelerin bazıları 1.x'te `SFTConfig`'e taşınmış olabilir.
+  Sıradaki smoke hatası çıkarsa aynı yöntemle:
+  `list(inspect.signature(SFTConfig).parameters)` veya
+  `list(inspect.signature(SFTTrainer).parameters)` ile kontrol.
