@@ -100,6 +100,10 @@ def setup_model_and_tokenizer(config: dict) -> tuple:
     # Bu olmadan 4-bit quantized model üzerinde gradient akışı hatalı olur.
     model = prepare_model_for_kbit_training(model)
 
+    # use_cache + gradient_checkpointing birlikte warning verir ve bazen
+    # backward pass'i bozar. QLoRA'da cache'e ihtiyaç yok (training mode).
+    model.config.use_cache = False
+
     tokenizer = AutoTokenizer.from_pretrained(
         config["model"]["name"],
         trust_remote_code=config["model"].get("trust_remote_code", False),
@@ -298,6 +302,11 @@ def train(config: dict, smoke: bool) -> None:
             metric_for_best_model=config["training"]["metric_for_best_model"],
             fp16=config["training"].get("fp16", True),
             bf16=config["training"].get("bf16", False),
+            # paged_adamw_8bit — bitsandbytes canonical QLoRA optimizer'ı.
+            # Kendi grad unscale'ini yapar, torch AMP foreach kernel'lerini
+            # bypass eder (T4'te BF16 grad unscale kernel'i yok — hatanın kökü).
+            # Ek yarar: optimizer state 8-bit → VRAM ~%30 tasarruf.
+            optim=config["training"].get("optim", "paged_adamw_8bit"),
             max_length=config["model"]["max_length"],   # TRL 1.0+ yeni isim (eski: max_seq_length)
             seed=config["seed"],
             report_to="none",                # MLflow'u callback üzerinden manuel yazıyoruz

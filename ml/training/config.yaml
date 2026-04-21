@@ -57,6 +57,9 @@ training:
   metric_for_best_model: "eval_loss"
   bf16: false                         # T4 bf16 desteklemez; A100'de true yapılabilir
   fp16: true                          # Mixed precision — QLoRA ile uyumlu
+  # Optimizer — paged_adamw_8bit T4 uyumluluğu ve VRAM tasarrufu için
+  # canonical QLoRA tercihi. A100+'ta paged_adamw_32bit daha iyi numeric.
+  optim: "paged_adamw_8bit"
 
 paths:
   train_data: "data/processed/train.jsonl"

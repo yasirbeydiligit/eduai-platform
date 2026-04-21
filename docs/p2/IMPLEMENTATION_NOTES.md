@@ -310,3 +310,32 @@
   sağlar. Colab Pro A100 kullanılacaksa config.yaml'a bir
   `bf16: true/fp16: false` + train.py'de device capability check
   eklenebilir (Task 3 sweep'ine bırakıldı).
+
+### Sapma 17 · T4 BF16 hatası tekrarı — canonical QLoRA optimizer şart
+- **Tetikleyen (2026-04-21, smoke #3):** Sapma 16'daki fix'ler (`torch_dtype=float16` +
+  `prepare_model_for_kbit_training`) **uygulandıktan sonra** aynı hata yine alındı:
+  ```
+  NotImplementedError: "_amp_foreach_non_finite_check_and_unscale_cuda"
+  not implemented for 'BFloat16'
+    0% 0/10 [00:10<?, ?it/s]
+  ```
+- **Kök sebep:** `GradScaler.unscale_()` foreach kernel'i çağırırken grad
+  tensor'lerini BFloat16 görüyor. Kaynağı tam belirsiz — muhtemelen HF
+  Trainer default `optim="adamw_torch"` + bnb 4-bit dequant pipeline'ının
+  etkileşimi; yeni torch 2.10 AMP policy'si de etken olabilir. Kanonik
+  çözüm: **optimizer değişikliği**, dtype çözümleri değil.
+- **Fix:**
+  - `train.py`: SFTConfig'e `optim="paged_adamw_8bit"` eklendi
+  - `config.yaml`: `training.optim: "paged_adamw_8bit"` eklendi
+  - `train.py`: `model.config.use_cache = False` set edildi (gradient
+    checkpointing + cache çatışma warning'i + bazı backward hataları önlenir)
+- **Neden `paged_adamw_8bit` çalışıyor:** bitsandbytes optimizer'ı kendi
+  grad unscale implementasyonu var, torch AMP foreach kernel'lerini
+  kullanmıyor. T4'te BF16 kernel eksikliği bypass oluyor. Ek bonus:
+  optimizer state 8-bit → ~%30 VRAM tasarrufu.
+- **A100+ için alternatif:** `optim: "paged_adamw_32bit"` — aynı paged
+  mekaniği, 32-bit state (daha iyi numeric). T4'te yer almaz ama A100'de
+  tercih edilir. Task 3 sweep'inde device-capability-aware seçim düşünülebilir.
+- **SPEC'e geri yansıma:** QLoRA setup'ında `optim` açıkça belirtilmeliydi;
+  default `adamw_torch` QLoRA için yanlış seçim. SPEC P2 finalize'da
+  callout eklenecek.
