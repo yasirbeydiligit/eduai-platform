@@ -50,15 +50,21 @@ training:
   max_grad_norm: 1.0                  # Gradient clipping — instability koruması
   weight_decay: 0.0                   # LoRA tipik olarak WD kullanmaz
   logging_steps: 10                   # Her 10 step'te loss/lr konsola yaz
-  eval_steps: 100                     # 100 step'te bir eval set üzerinde loss
-  save_steps: 100                     # Checkpoint disk'e
+  eval_steps: 20                      # 66 step'lik 3-epoch baseline için 3-4 eval
+  save_steps: 20                      # eval ile uyumlu — load_best_model_at_end için şart
   save_total_limit: 2                 # En yeni 2 checkpoint kalır — disk korumalı
   load_best_model_at_end: true        # Eval loss'a göre en iyiyi yükle
   metric_for_best_model: "eval_loss"
-  bf16: false                         # T4 bf16 desteklemez; A100'de true yapılabilir
-  fp16: true                          # Mixed precision — QLoRA ile uyumlu
-  # Optimizer — paged_adamw_8bit T4 uyumluluğu ve VRAM tasarrufu için
-  # canonical QLoRA tercihi. A100+'ta paged_adamw_32bit daha iyi numeric.
+  # --- Precision mode ---
+  # T4 + Phi-3 Mini + TRL 1.2 kombinasyonunda AMP GradScaler persistent BF16
+  # kernel hatası veriyor (detay: IMPLEMENTATION_NOTES Sapma 18). Geçici
+  # workaround: fp32 training. Bedeli ~1.5-2x yavaşlama; T4'te 66-step full
+  # run ~15 dk (kabul edilebilir). A100 veya gelecek TRL/transformers
+  # release'inde yeniden fp16/bf16 denenebilir.
+  bf16: false
+  fp16: false
+  # Optimizer — paged_adamw_8bit T4 VRAM tasarrufu için canonical QLoRA
+  # tercihi. fp32 mode'da da işe yarıyor (optimizer state 8-bit kalıyor).
   optim: "paged_adamw_8bit"
 
 paths:

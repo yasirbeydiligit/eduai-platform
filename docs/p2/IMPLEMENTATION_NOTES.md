@@ -339,3 +339,47 @@
 - **SPEC'e geri yansıma:** QLoRA setup'ında `optim` açıkça belirtilmeliydi;
   default `adamw_torch` QLoRA için yanlış seçim. SPEC P2 finalize'da
   callout eklenecek.
+
+### Sapma 18 · AMP mixed precision bypass — fp32 training'e düşüldü
+- **Tetikleyen (2026-04-21, smoke #4):** Tüm önceki fix'ler
+  (`torch_dtype=float16`, `prepare_model_for_kbit_training`,
+  `use_cache=False`, `optim=paged_adamw_8bit`) uygulandıktan sonra
+  aynı hata persist etti:
+  ```
+  File ".../torch/amp/grad_scaler.py", line 280, in _unscale_grads_
+    torch._amp_foreach_non_finite_check_and_unscale_(...)
+  NotImplementedError: ... not implemented for 'BFloat16'
+  ```
+- **Kök sebep teorisi:** Grad tensor'leri Phi-3 Mini'nin modeling_phi3.py
+  içinde bir yerde (muhtemelen attention/RoPE) hard-coded BF16 cast
+  görüyor. HuggingFace'in son Phi-3 remote code revision'u
+  (`f39ac1d28e925b323eae81227eaba4464caced4e`) bu cast'i içeriyor olmalı.
+  `prepare_model_for_kbit_training` sadece top-level parametreleri cast
+  eder, ara tensor'leri değil. `paged_adamw_8bit` de torch AMP
+  GradScaler'ını bypass etmiyor — bizim önceki hipotezimiz yanlıştı.
+- **Fix:** AMP'yi tamamen kapat → saf fp32 training.
+  `config.yaml`: `fp16: false, bf16: false`.
+- **Maliyet:** ~1.5-2x yavaşlama. Baseline run (66 step, 348 örnek, 3 epoch)
+  **14.7 dakika** — T4'te kabul edilebilir. VRAM yaklaşık aynı çünkü
+  `prepare_model_for_kbit_training` gradient_checkpointing'i aktive
+  etti (aktivasyonlar recompute edilir).
+- **Baseline sonucu (MLflow run `1fd87131dcd04114b5068370a51b57d6`):**
+  - train_loss: 2.11 → 1.80 (% 15 azalma)
+  - mean_token_accuracy: 0.55 → 0.60
+  - grad_norm stabil (0.23-0.37)
+  - entropy stabil (1.68-1.83)
+  - Eval loss **hiç çalışmadı** (eval_steps=100 > max_steps=66).
+    Config'te eval_steps=20'ye düşürüldü → Task 3'te 3-4 eval noktası.
+- **İleride tekrar fp16 denemek için tetikleyiciler:**
+  - Colab Pro A100 — CC 8.0 BF16 hardware desteği
+  - TRL veya Phi-3 remote code update'i BF16 cast'i FP16-uyumlu yapması
+  - Alternatif model (Qwen3 gibi) BF16 hard-coded değilse
+- **Not:** Bu sapma P2 baseline için geçici workaround; P3 inference
+  pipeline'ı adapter'ı kendi precision'ıyla yükler, etkilenmez.
+
+### Gözlem · `eval_steps=100` + `max_steps=66` uyumsuzluğu
+- Baseline config'teki `eval_steps: 100` Phi-3 + 348 train örnek + 3 epoch
+  senaryosunda **hiç eval tetiklemedi** (toplam 66 step). Config
+  `eval_steps: 20 + save_steps: 20`'ye güncellendi. Task 3 sweep'inde
+  her run'da 3-4 eval noktası olacak; overfitting grafiği (train vs
+  eval loss) görülebilecek.
