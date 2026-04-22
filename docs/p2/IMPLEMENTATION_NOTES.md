@@ -498,3 +498,81 @@ sonrası r=16 yetersiz çıkarsa tercih edilir.
 - **Gelecek deneyler için:** r=32 + 5 epoch + lr=1e-4 kombinasyonu
   "production quality" adayı olabilir. Task 4 sonrası fine-tune sweep
   kararına bırakıldı.
+
+---
+
+## Task 4 — Evaluation (2026-04-22 →)
+
+### Hedef
+Seçilen adapter'ın (r=16 lr=2e-4) Türkçe pedagojik cevap üretme
+kalitesini ROUGE + BERTScore + manuel QA ile ölç; P3 RAG'a
+entegrasyon öncesi "yeterince iyi mi?" kararını ver.
+
+### evaluate.py tasarımı
+- Base Phi-3 Mini + LoRA adapter yükler (4-bit quantize + PeftModel)
+- `eval.jsonl`'den **ilk 20 örnek** (deterministic — seed 42 ile sıralı)
+- Her instruction için `do_sample=False` + `max_new_tokens=256` → tekrarlanabilir
+- Metric seti:
+  - **ROUGE-1 / ROUGE-L** (rouge-score, use_stemmer=False) — Türkçe
+    morfolojide zayıf, yine de karşılaştırma noktası
+  - **BERTScore F1** (lang="tr" → xlm-roberta-large) — semantik örtüşme,
+    Türkçe için güvenilir sinyal
+  - **Avg inference latency** (ms) — P3 RAG pipeline'ında throughput
+    tahmini için
+- 5 örnek yan yana yazdırır (Soru/Referans/Üretilen/ROUGE-L) — manuel
+  denetim için
+- Sonuçlar MLflow'a **ayrı evaluation run**'ı olarak: `evaluation_rouge1`,
+  `evaluation_rougeL`, `evaluation_bertscore_f1`,
+  `evaluation_avg_inference_ms`. Training run'larını kirletmez,
+  `tags={"type": "evaluation"}` ile filtrelenebilir.
+
+### Sapma 21 · SPEC'teki `format_prompt` raw template yerine
+- **SPEC (evaluate.py satır 376):** Hardcoded Phi-3 chat template
+  ```python
+  prompt = f"<|user|>\n{instruction}\n<|end|>\n<|assistant|>\n"
+  ```
+- **Uygulama:** `tokenizer.apply_chat_template(messages,
+  add_generation_prompt=True)`. Train.py'deki Sapma 10 ile tutarlı —
+  model değişirse format otomatik adapte olur.
+
+### Sapma 22 · Tokenizer önce adapter dizininden yüklenir
+- **SPEC:** Tokenizer config.yaml'daki base model adından yükleniyor.
+- **Değişiklik:** Önce `adapter_dir/tokenizer_config.json` kontrol edilir;
+  varsa oradan. Nedenleri:
+  - Training sırasında `tokenizer.save_pretrained(output_dir)` ile
+    adapter yanına kaydedildi (pad_token eşitlemesi dahil)
+  - Adapter portable — base model HF'den yeniden çekilse bile tokenizer
+    aynı state'te kalır
+  - Fallback: adapter'da yoksa base model adından
+
+### Sapma 23 · BERTScore model indirme uyarısı (operasyonel)
+- **Ekleme:** `compute_metrics` içinde ilk BERTScore çağrısından önce
+  konsola "model indirilir" bilgi notu basılıyor.
+- **Neden:** İlk eval Colab session'da ~1.5GB xlm-roberta-large
+  indirme → kullanıcı "takıldı mı?" diye kuşkulanabilir. Operasyonel UX.
+
+### Sonuç tablosu (eval çalıştıktan sonra doldurulacak)
+
+| Metric | Değer | Eşik | Durum |
+| --- | --- | --- | --- |
+| ROUGE-1 (avg) | _TBD_ | — | — |
+| ROUGE-L (avg) | _TBD_ | 0.25-0.40 makul, >0.40 iyi | _TBD_ |
+| BERTScore F1 | _TBD_ | 0.60-0.75 orta, >0.75 iyi | _TBD_ |
+| Avg inference (ms) | _TBD_ | < 3000 ms makul (T4) | _TBD_ |
+| Manuel QA (avg /20) | _TBD_ | ≥ 15 (75%) geçer | _TBD_ |
+
+### Karar ağacı (eval sonrası)
+
+```
+ROUGE-L ≥ 0.35 + BERTScore ≥ 0.75 + Manuel QA ≥ 15/20
+  → Taşı P3'e (Task 5-7 tamamla, P2 FINALIZE)
+
+ROUGE-L 0.25-0.35 + Manuel QA 12-15/20
+  → Task 3.5: 5 epoch sweep OR dataset 435 → 800 büyütme
+
+ROUGE-L < 0.25 OR Manuel QA < 12/20
+  → Dataset kalite/prompt revize (Task 1'e kısmi geri dönüş)
+
+Hallucination var ama otomatik metrikler iyi
+  → P3 RAG context-grounded cevapla düzeltir; P2 yeterli
+```

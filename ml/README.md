@@ -89,5 +89,45 @@ tablosuna referans olacak).
 
 ---
 
-> Training workflow, MLflow kullanımı, Colab adımları ve manuel evaluation
-> tablosu **Task 7**'de genişletilecek.
+## Evaluation — manuel QA tablosu (Task 4)
+
+Otomatik metrikler (ROUGE + BERTScore) otomatik pipeline verir ama Türkçe
+için insan gözü şart. 10 rastgele soruda 1-5 skala değerlendir.
+
+### Manuel örnek seçimi
+```bash
+# Eval.jsonl'den rastgele 10 soru seç
+shuf -n 10 ml/data/processed/eval.jsonl > /tmp/manual_eval_sample.jsonl
+cat /tmp/manual_eval_sample.jsonl | python -m json.tool
+```
+
+Sonra Colab'da adapter ile her soruyu çalıştır (`evaluate.py` çıktısı veya
+interaktif). Cevapları bu tabloda değerlendir:
+
+| # | Konu | Dilbilgisi (1-5) | Pedagojik ton (1-5) | Bilgi doğruluğu (1-5) | Format (1-5) | Toplam /20 | Notlar |
+| - | --- | :-: | :-: | :-: | :-: | :-: | --- |
+| 1 | _TBD_ | _ | _ | _ | _ | _ | _ |
+| 2 | _TBD_ | _ | _ | _ | _ | _ | _ |
+| 3 | _TBD_ | _ | _ | _ | _ | _ | _ |
+| 4 | _TBD_ | _ | _ | _ | _ | _ | _ |
+| 5 | _TBD_ | _ | _ | _ | _ | _ | _ |
+| 6 | _TBD_ | _ | _ | _ | _ | _ | _ |
+| 7 | _TBD_ | _ | _ | _ | _ | _ | _ |
+| 8 | _TBD_ | _ | _ | _ | _ | _ | _ |
+| 9 | _TBD_ | _ | _ | _ | _ | _ | _ |
+| 10 | _TBD_ | _ | _ | _ | _ | _ | _ |
+| **Ortalama** | | | | | | | |
+
+### Kabul eşikleri
+- **Dilbilgisi** ortalama ≥ 4.0 — Türkçe akıcı ve hatasız
+- **Pedagojik ton** ≥ 3.5 — öğretici, adım adım açıklayıcı
+- **Bilgi doğruluğu** ≥ 3.5 — hallucination nadir (P3 RAG bunu güçlendirecek)
+- **Format** ≥ 4.0 — instruction'a uygun yanıt yapısı
+
+Eşik altındaki metrik varsa: prompt revize (`data_prep.py:build_prompt`),
+dataset büyütme, veya 5 epoch ile yeniden sweep.
+
+---
+
+> Training workflow, MLflow kullanımı, Colab adımları ve detaylı
+> dokümantasyon **Task 7**'de genişletilecek.
