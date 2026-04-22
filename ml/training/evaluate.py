@@ -66,8 +66,15 @@ def load_adapter(config: dict, adapter_dir: Path) -> tuple:
         config["model"]["name"],
         quantization_config=bnb_config,
         device_map="auto",
-        torch_dtype=torch.float16,
-        trust_remote_code=config["model"].get("trust_remote_code", False),
+        dtype=torch.float16,             # transformers 4.57: torch_dtype → dtype
+        # Inference'ta transformers **native** Phi-3 code path kullanılır.
+        # Remote `modeling_phi3.py`'deki `DynamicCache.seen_tokens` (deprecated
+        # transformers 4.50+) hatasından kaçınmak için trust_remote_code=False.
+        # Model weights aynı; sadece Python code path native'e döner.
+        trust_remote_code=False,
+        # Eager attention — SDPA/flash path'inde olası cache uyumsuzluklarını
+        # önler. T4 flash-attn desteklemiyor zaten (warning'e göre).
+        attn_implementation="eager",
     )
 
     # LoRA adapter'ı base model'e bağla — PeftModel ağırlıkları merge etmez,
@@ -83,7 +90,7 @@ def load_adapter(config: dict, adapter_dir: Path) -> tuple:
     )
     tokenizer = AutoTokenizer.from_pretrained(
         str(tokenizer_source),
-        trust_remote_code=config["model"].get("trust_remote_code", False),
+        trust_remote_code=False,         # Native — custom code path hatasından kaçın
     )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token

@@ -551,6 +551,42 @@ entegrasyon öncesi "yeterince iyi mi?" kararını ver.
 - **Neden:** İlk eval Colab session'da ~1.5GB xlm-roberta-large
   indirme → kullanıcı "takıldı mı?" diye kuşkulanabilir. Operasyonel UX.
 
+### Sapma 24 · Inference'ta `trust_remote_code=False` + eager attention
+- **Tetikleyen (2026-04-22):** İlk eval çalıştırması:
+  ```
+  AttributeError: 'DynamicCache' object has no attribute 'seen_tokens'
+  File ".../modeling_phi3.py", line 1291, in prepare_inputs_for_generation
+    past_length = past_key_values.seen_tokens
+  ```
+- **Kök sebep:** Microsoft'un Phi-3 HF Hub deposundaki custom
+  `modeling_phi3.py` (commit `f39ac1d2…`) eski transformers API
+  kullanıyor — `DynamicCache.seen_tokens` attribute'u transformers 4.50+
+  sürümde kaldırıldı (yeni API: `DynamicCache.get_seq_length()`).
+  Remote Phi-3 code uzun süredir güncellenmemiş.
+- **Fix (`evaluate.py:load_adapter`):**
+  ```python
+  trust_remote_code=False      # Native transformers Phi-3 code path
+  attn_implementation="eager"  # SDPA/flash cache uyumsuzluğu önleme
+  ```
+  transformers 4.40+ Phi-3 için native implementasyon içeriyor; model
+  weights aynı, sadece Python code path değişiyor.
+- **Neden training'de hata yok?** Training forward-only (generation yok).
+  Inference'ta `model.generate()` `prepare_inputs_for_generation`
+  call eder → broken custom code path tetiklenir.
+- **Training tarafı ne olacak?** Training'de `trust_remote_code=True`
+  kaldı — fine-tuning çalışıyor, degişiklik gereksiz risk. Sadece
+  inference (evaluate.py + P3 RAG) için native path.
+- **P3'e etki:** P3 inference wrapper'ı da `trust_remote_code=False`
+  + `attn_implementation="eager"` kullanmalı. P3_HANDOFF.md'ye not düşülecek.
+
+### Sapma 25 · `torch_dtype` → `dtype` rename (transformers 4.57)
+- **Tetikleyen:** Eval başlangıcında warning:
+  `torch_dtype is deprecated! Use dtype instead!`
+- **Fix:** Her iki yerde (`train.py:setup_model_and_tokenizer`,
+  `evaluate.py:load_adapter`) `torch_dtype=` → `dtype=`.
+- **Etki:** Yalnızca uyarı susturmak; davranış aynı. `torch_dtype`
+  hâlâ çalışıyor ama deprecated; temizlik için güncelleme.
+
 ### Sonuç tablosu (eval çalıştıktan sonra doldurulacak)
 
 | Metric | Değer | Eşik | Durum |

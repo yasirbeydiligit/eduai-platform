@@ -89,7 +89,7 @@ def setup_model_and_tokenizer(config: dict) -> tuple:
         # torch_dtype="bfloat16" — override etmezsek non-quantized katmanlar
         # (embedding, layer_norm, lm_head) bf16'da kalır ve gradient scaler
         # T4'te çöker. fp16'ya zorluyoruz.
-        torch_dtype=torch.float16,
+        dtype=torch.float16,             # transformers 4.57: torch_dtype → dtype
         trust_remote_code=config["model"].get("trust_remote_code", False),
     )
 
