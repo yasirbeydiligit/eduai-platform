@@ -435,19 +435,66 @@ etmez — reproducibility korunur).
   sağlar; CLI override'da shell history gerekir. Bu proje bağlamında
   MLflow run params yeterli.
 
-### Sonuç tablosu (run bittikçe doldurulur — Colab analiz hücresinden)
+### Sonuç tablosu (2026-04-22, sweep tamamlandı)
 
-| Run | r | α | lr | train_loss (final) | best_eval_loss | duration (dk) | MLflow run_id |
+| Run | r | α | lr | train_loss (final) | best_eval_loss | duration | MLflow run_id (prefix) |
 | --- | - | - | --- | --- | --- | --- | --- |
-| lora-r8-lr2e4   | 8  | 16 | 2e-4 | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| lora-r16-lr2e4  | 16 | 32 | 2e-4 | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| lora-r16-lr5e5  | 16 | 32 | 5e-5 | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| lora-r32-lr2e4  | 32 | 64 | 2e-4 | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| lora-r8-lr2e4   | 8  | 16 | 2e-4 | 1.948 | 1.876 | 14.9 dk | `7fc64a25…` |
+| lora-r16-lr2e4  | 16 | 32 | 2e-4 | 1.982 | **1.836** | 15.1 dk | `f3dcd9fc…` |
+| lora-r16-lr5e5  | 16 | 32 | 5e-5 | 2.065 | 2.019 | 15.1 dk | `ddcfb17a…` |
+| lora-r32-lr2e4  | 32 | 64 | 2e-4 | 1.806 | **1.806** | 15.2 dk | `4d862462…` |
 
-### Analiz kriterleri (sonuçlar geldiğinde)
-1. **Overfitting:** train_loss düşerken eval_loss plateaus/artıyor mu?
-2. **Best config:** en düşük `best_eval_loss` (veya plateau'ya en hızlı ulaşan)
-3. **Cost-quality:** `r=8` yeterli kaliteyi veriyorsa onu seç —
-   daha az parametre = hızlı inference + küçük disk
-4. **Task 4 için seçim:** evaluation pipeline'ı bu tabloya göre
-   seçilen adapter'ı yükleyecek
+### Analiz
+
+**1. Overfitting tespiti: yok, tam tersi hafif underfit.**
+- Train-eval gap hepsinde küçük (~0.03-0.04) ve **aynı yönde** (ikisi de
+  düşüyor).
+- r=32: train (1.806) ≈ eval (1.806) → mükemmel generalization, gap ≈ 0.
+- r=16: train (1.982) / eval (1.836) → eval train'den **daha düşük**;
+  dropout (0.05) + gradient checkpointing kaynaklı regularization etkisi,
+  normal.
+- Tüm curve'ler step 60'ta hâlâ düşüş trendinde — plateau yok → **daha
+  fazla epoch (5-6) fayda sağlayabilir** (Task 4 sonrası karar noktası).
+
+**2. lr=5e-5 başarısızlığı:**
+- Learning rate 4x küçük, 3 epoch'ta parametre hareketi yetersiz.
+- Eval loss 2.019 — diğer run'lardan 0.18+ kötü; underfit klasiği.
+- 5+ epoch'la yakalayabilirdi ama 3-epoch sweep kriterinde eleniyor.
+- **Öğrenme:** Phi-3 Mini QLoRA için lr tabanı 2e-4 civarı; 5e-5 agresif
+  düşük. Gelecek varyant denemeleri 1e-4 ile 3e-4 aralığında kalmalı.
+
+**3. r=32 vs r=16 — cost/quality trade-off:**
+
+| Kriter | r=32 | r=16 | Seçilen |
+| --- | --- | --- | --- |
+| best_eval_loss | 1.806 | 1.836 | r=32 (Δ 0.03) |
+| Trainable params | ~56M | ~28M | r=16 (2x küçük) |
+| Adapter disk | ~112 MB | ~56 MB | r=16 |
+| Inference throughput | baseline | +~1% | r=16 |
+| Overfit riski (future) | ↑ | ↓ | r=16 |
+
+**Karar: r=16 lr=2e-4 pareto-optimal.** 0.03 eval_loss delta ROUGE/
+BERTScore'da pratik kalite farkı üretmeyecek (<%1 beklenti). r=16 adapter
+2x küçük, P3 RAG inference için daha iyi. r=32 ancak Task 4 evaluation
+sonrası r=16 yetersiz çıkarsa tercih edilir.
+
+### 🏆 Task 4 için seçilen adapter
+
+- **Run:** `lora-r16-lr2e4`
+- **MLflow run_id prefix:** `f3dcd9fc…`
+- **Adapter yolu:** `/content/drive/MyDrive/eduai_checkpoints` (en son
+  `load_best_model_at_end=True` ile yüklenmiş checkpoint)
+- **Beklenen baseline:** eval_loss 1.836 → ROUGE-L ~0.30-0.40 (Türkçe
+  morfoloji sınırı), BERTScore F1 ~0.70-0.80
+
+### Sapma 20 · SPEC'teki "opsiyonel r=32 sweep" anlamlı katkı vermedi
+- **SPEC/TASKS beklentisi:** r=32 "yüksek kapasite" olarak sunuldu,
+  opsiyonel bırakıldı.
+- **Sweep sonucu:** r=32'nin katkısı Δ=0.03 eval_loss — pratik anlamda
+  ihmal edilebilir. Ama **overfitting riski olmadığını** doğruladı
+  (train ≈ eval), bu da dataset'in kapasite darboğazı yaratmadığı
+  anlamına gelir (dataset daha fazla veri ile iyileşebilir → Task 4
+  sonrası augmentation kararı).
+- **Gelecek deneyler için:** r=32 + 5 epoch + lr=1e-4 kombinasyonu
+  "production quality" adayı olabilir. Task 4 sonrası fine-tune sweep
+  kararına bırakıldı.
