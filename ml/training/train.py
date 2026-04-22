@@ -167,7 +167,7 @@ class StepMetricsCallback(TrainerCallback):
 
         step = state.global_step
 
-        # Training step (loss + lr + epoch)
+        # Training step (loss + lr + epoch + grad_norm)
         if "loss" in logs and "learning_rate" in logs:
             print(
                 f"  Step {step:>5} | Loss: {logs['loss']:.4f} | "
@@ -176,10 +176,22 @@ class StepMetricsCallback(TrainerCallback):
             mlflow.log_metric("train_loss", logs["loss"], step=step)
             mlflow.log_metric("learning_rate", logs["learning_rate"], step=step)
 
-        # Evaluation step (eval_loss vs.)
+        # Grad norm — overfitting/instability sinyali (düşüş tümü = healthy)
+        if "grad_norm" in logs:
+            mlflow.log_metric("grad_norm", logs["grad_norm"], step=step)
+
+        # Mean token accuracy — Türkçe pedagojik token tahmin doğruluğu
+        if "mean_token_accuracy" in logs:
+            mlflow.log_metric("mean_token_accuracy", logs["mean_token_accuracy"], step=step)
+
+        # Evaluation step
         if "eval_loss" in logs:
             print(f"  [eval] Step {step:>5} | Eval loss: {logs['eval_loss']:.4f}")
             mlflow.log_metric("eval_loss", logs["eval_loss"], step=step)
+            if "eval_mean_token_accuracy" in logs:
+                mlflow.log_metric(
+                    "eval_mean_token_accuracy", logs["eval_mean_token_accuracy"], step=step
+                )
 
 
 # --- Trainable parametre sayısı ----------------------------------------
@@ -221,7 +233,7 @@ def save_artifacts(trainer, tokenizer, output_dir: Path, mlflow_active: bool = T
 
 # --- Ana training loop --------------------------------------------------
 
-def train(config: dict, smoke: bool) -> None:
+def train(config: dict, smoke: bool, run_name_override: str | None = None) -> None:
     """Full training pipeline: model + LoRA + SFTTrainer + MLflow wrap."""
     require_cuda()
     set_seed(config["seed"])
@@ -230,11 +242,14 @@ def train(config: dict, smoke: bool) -> None:
     mlflow.set_tracking_uri(config["mlflow"]["tracking_uri"])
     mlflow.set_experiment(config["mlflow"]["experiment_name"])
 
-    # Run adı: model + r + lr → deney karşılaştırmasında okunaklı
-    model_short = config["model"]["name"].split("/")[-1]
-    run_name = (
-        f"{model_short}-r{config['lora']['r']}-lr{config['training']['learning_rate']}"
-    )
+    # Run adı: user override varsa onu kullan, yoksa otomatik model-r-lr
+    if run_name_override:
+        run_name = run_name_override
+    else:
+        model_short = config["model"]["name"].split("/")[-1]
+        run_name = (
+            f"{model_short}-r{config['lora']['r']}-lr{config['training']['learning_rate']}"
+        )
     if smoke:
         run_name += "-SMOKE"
 
@@ -361,7 +376,7 @@ def train(config: dict, smoke: bool) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="EduAI P2 — QLoRA fine-tuning (config.yaml driven)"
+        description="EduAI P2 — QLoRA fine-tuning (config.yaml + CLI override)"
     )
     parser.add_argument(
         "--config", type=str, default="training/config.yaml",
@@ -369,15 +384,53 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--smoke", action="store_true",
-        help="Hızlı pipeline testi: max_steps=10 (training'i kapsam olarak doğrular)",
+        help="Hızlı pipeline testi: max_steps=10",
+    )
+
+    # --- Task 3 sweep için CLI override'lar ---
+    # Config dosyasını duplicate etmek yerine in-memory override:
+    # ayrı varyasyonlar için aynı config + farklı CLI arg'ları.
+    parser.add_argument(
+        "--lora-r", type=int, default=None,
+        help="Override config.lora.r (alpha otomatik r*2'ye ayarlanır)",
+    )
+    parser.add_argument(
+        "--lr", type=float, default=None,
+        help="Override config.training.learning_rate",
+    )
+    parser.add_argument(
+        "--num-epochs", type=int, default=None,
+        help="Override config.training.num_epochs",
+    )
+    parser.add_argument(
+        "--run-name-suffix", type=str, default=None,
+        help="MLflow run adı (None ise otomatik: model-r{R}-lr{LR})",
     )
     return parser.parse_args()
+
+
+def apply_cli_overrides(config: dict, args: argparse.Namespace) -> dict:
+    """CLI argümanlarını config dict'i üzerine in-memory override uygula.
+
+    Not — `lora_alpha` otomatik `r * 2`'ye ayarlanır. Bu scale factor
+    (`alpha/r = 2.0`) sabit tutar; konvansiyonel LoRA davranışı.
+    Ayrı alpha istenirse bu fonksiyona `--lora-alpha` eklenebilir.
+    """
+    if args.lora_r is not None:
+        config["lora"]["r"] = args.lora_r
+        config["lora"]["lora_alpha"] = args.lora_r * 2
+    if args.lr is not None:
+        config["training"]["learning_rate"] = args.lr
+    if args.num_epochs is not None:
+        config["training"]["num_epochs"] = args.num_epochs
+    return config
 
 
 def main() -> None:
     args = parse_args()
     config = load_config(args.config)
-    train(config, smoke=args.smoke)
+    config = apply_cli_overrides(config, args)
+    train(config, smoke=args.smoke, run_name_override=args.run_name_suffix)
 
 
 if __name__ == "__main__":

@@ -383,3 +383,71 @@
   `eval_steps: 20 + save_steps: 20`'ye güncellendi. Task 3 sweep'inde
   her run'da 3-4 eval noktası olacak; overfitting grafiği (train vs
   eval loss) görülebilecek.
+
+---
+
+## Task 3 — Hyperparameter sweep (2026-04-21 →)
+
+### Deney planı
+
+4 varyant (3 zorunlu + 1 opsiyonel). Her run ~15 dk T4'te, toplam ~60 dk:
+
+| # | Run name | `lora.r` | `lora_alpha` | `lr` | Hipotez |
+| - | --- | --- | --- | --- | --- |
+| 1 | `lora-r8-lr2e4` | 8 | 16 | 2e-4 | Küçük adapter yeterli mi? (inference hızı + disk avantajı) |
+| 2 | `lora-r16-lr2e4` | 16 | 32 | 2e-4 | Yeni config baseline (eval_steps=20 ile) |
+| 3 | `lora-r16-lr5e5` | 16 | 32 | 5e-5 | Düşük lr → daha kararlı yakınsama |
+| 4 | `lora-r32-lr2e4` | 32 | 64 | 2e-4 | Yüksek kapasite — overfit eder mi? (opsiyonel) |
+
+**Not:** `lora_alpha = 2 * r` otomatik ayarlanır (scale factor `α/r = 2.0`
+konvansiyonel sabit). Önceki baseline (`1fd87131…`) `eval_steps=100` ile
+koştuğu için eval_loss loglu değil — karşılaştırmada **run #2 yeniden
+çalıştırılır** (yeni config'te eval_steps=20).
+
+### CLI override mekaniği
+`train.py` üzerine 4 CLI arg eklendi (Sapma 19):
+```bash
+python training/train.py \
+  --lora-r 8 \
+  --lr 2e-4 \
+  --num-epochs 3 \
+  --run-name-suffix "lora-r8-lr2e4"
+```
+`--lora-r N` verildiğinde `lora_alpha = N * 2` otomatik. Override
+verilmeyen değerler config.yaml'dan okunur (in-memory, dosya mutate
+etmez — reproducibility korunur).
+
+### Yeni metric'ler (StepMetricsCallback güncellemesi)
+- `grad_norm` (step-by-step) — instability/overfitting sinyali
+- `mean_token_accuracy` (step-by-step) — pedagojik token tahmin doğruluğu
+- `eval_mean_token_accuracy` (eval_steps'te) — generalization
+
+### Sapma 19 · CLI override pattern — 4 ayrı config dosyası yerine
+- **Alternatif değerlendirildi:** SPEC/TASKS "4 farklı config dosyası"
+  önerdi (`config_r8_lr2e4.yaml`, ...).
+- **Seçim:** CLI override. Gerekçe:
+  - Tek source of truth (`config.yaml`), varyantlar sadece delta
+  - YAML duplication yok — 4 dosya × 45 satır × her commit'te senkron
+    tutma zorunluluğu ağır
+  - `--run-name-suffix` ile MLflow tarafında yine ayrık run'lar
+  - Reproducibility korunur: run parametreleri MLflow'a loglanır
+- **Trade-off:** Config dosyaları commit'lenirse fully frozen reproducibility
+  sağlar; CLI override'da shell history gerekir. Bu proje bağlamında
+  MLflow run params yeterli.
+
+### Sonuç tablosu (run bittikçe doldurulur — Colab analiz hücresinden)
+
+| Run | r | α | lr | train_loss (final) | best_eval_loss | duration (dk) | MLflow run_id |
+| --- | - | - | --- | --- | --- | --- | --- |
+| lora-r8-lr2e4   | 8  | 16 | 2e-4 | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| lora-r16-lr2e4  | 16 | 32 | 2e-4 | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| lora-r16-lr5e5  | 16 | 32 | 5e-5 | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| lora-r32-lr2e4  | 32 | 64 | 2e-4 | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+
+### Analiz kriterleri (sonuçlar geldiğinde)
+1. **Overfitting:** train_loss düşerken eval_loss plateaus/artıyor mu?
+2. **Best config:** en düşük `best_eval_loss` (veya plateau'ya en hızlı ulaşan)
+3. **Cost-quality:** `r=8` yeterli kaliteyi veriyorsa onu seç —
+   daha az parametre = hızlı inference + küçük disk
+4. **Task 4 için seçim:** evaluation pipeline'ı bu tabloya göre
+   seçilen adapter'ı yükleyecek
