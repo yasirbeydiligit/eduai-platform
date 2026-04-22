@@ -15,10 +15,14 @@
 seed: 42
 
 model:
-  # Phi-3 Mini — T4 Colab'da QLoRA ile 3.8B parametre eğitilebilir
-  name: "microsoft/Phi-3-mini-4k-instruct"
+  # Qwen2.5-3B-Instruct — Phi-3 Mini'den geçildi (Sapma 27).
+  # Phi-3 Mini Türkçe'de yetersiz çıktı (repetition loops, uydurma kelimeler);
+  # Qwen2.5 multilingual training sayesinde akıcı Türkçe + pedagojik yapı (bold,
+  # liste) native olarak üretiyor. T4'te aynı QLoRA setup'ıyla çalışır.
+  # Lisans: Apache 2.0 (serbest kullanım).
+  name: "Qwen/Qwen2.5-3B-Instruct"
   max_length: 512                     # Türkçe için yeterli (karakter/token oranı ~3-4)
-  trust_remote_code: true             # Phi-3 custom model kodu — güvenilir model, OK
+  trust_remote_code: false            # Qwen native transformers desteği — custom code gerekmez
 
 lora:
   r: 16                               # Rank — 8/16/32 sweep Task 3'te

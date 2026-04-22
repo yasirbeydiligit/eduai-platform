@@ -622,6 +622,51 @@ entegrasyon öncesi "yeterince iyi mi?" kararını ver.
   edilir hale getirilebilir (macOS dev için hâlâ pinli). Task 6
   CI wiring aşamasında değerlendirilecek.
 
+### Sapma 27 · Base model değişimi: Phi-3 Mini → Qwen2.5-3B-Instruct
+- **Tetikleyen (2026-04-22):** İlk evaluation fine-tuning sonrası bozuk
+  çıktı verdi (ROUGE-L 0.18, BERTScore F1 0.53). Ancak **vanilla base
+  Phi-3 Mini'nin Türkçe çıktısı da bozuktu** (kelime salatası,
+  repetition loops). Teşhis adımları:
+  1. Base Phi-3 vanilla (`trust_remote_code=True/False`, `eager`/`SDPA`,
+     greedy, `repetition_penalty=1.3`) — hepsi uydurma kelimeler
+     ("Burs Gündoğmuş Enerji Sanatör", "metyolozitör", "kerogennin")
+     veya döngüsel tekrar
+  2. Base Qwen2.5-3B-Instruct aynı prompt'lar — **akıcı Türkçe + markdown
+     + liste formatı native olarak üretiyor**
+- **Kök sebep:** Phi-3 Mini (3.8B) ağırlıklı İngilizce training; Türkçe
+  "biliyor gibi" ama 4-bit quantization ile akıcılık çöküyor.
+  **CONCEPT.md § 7 Model seçimi** tablosunda zaten "Orta" olarak
+  işaretliydi — biz o uyarıyı erkenden değerlendirmedik. Qwen2.5
+  multilingual dataset ile Türkçe'de belirgin üstün.
+- **Değişiklikler (tek yerde):**
+  - `config.yaml`: `model.name: "Qwen/Qwen2.5-3B-Instruct"`,
+    `trust_remote_code: false` (Qwen native, custom code yok)
+  - `evaluate.py`: `attn_implementation="eager"` kaldırıldı (Phi-3'e
+    özel idi), `trust_remote_code` config'ten okunur (hardcoded False değil)
+  - `train.py`: değişiklik yok — TRL/PEFT pipeline model-agnostik
+  - `target_modules`: aynı (`q_proj, k_proj, v_proj, o_proj`) — Qwen2.5
+    de Llama-benzeri arch, naming aynı
+  - `lora.r=16, α=32, lr=2e-4` baseline korunur
+- **Bertaraf edilen Sapma'lar:** 24 (Phi-3 custom code DynamicCache bug)
+  artık irrelevant — Qwen native. Sapma 16 (BF16 T4 bug) yine geçerli
+  olabilir çünkü Qwen2.5 default dtype `bfloat16`; `dtype=torch.float16`
+  override önemli.
+- **Maliyet:** Model indirme 6GB (~3 dk T4 Colab), training baştan ~20 dk
+  (Qwen biraz büyük), evaluation ~5 dk. Toplam ~30 dk ek iş, kalite
+  sıçraması garantili.
+- **Phi-3 sonuçları silinmiyor:** MLflow'da eski run'lar (baseline +
+  sweep + ilk eval) Phi-3 model adıyla kayıtlı; karşılaştırma için
+  değerli **ne yapmamalı** dersi. Yeni Qwen run'ları ayrı işaretlenir.
+- **Base Qwen2.5 gözlemleri (fine-tuning öncesi, 3 soru testi):**
+  - Akıcı Türkçe ✓
+  - Markdown yapısı (bold başlık, liste) otomatik ✓
+  - Minor hallucinations: "benset" (benzen?), "bitkisel organeller"
+    (doğal gaz için yanlış), Tanzimat "19. yüzyıl başları" (ortası)
+  - Matematik reading comprehension: "3. terim" → "12. terim" okumuş
+    (fine-tuning reading'i düzeltmez; P3 RAG context'i halledecek)
+  - Sonuç: **fine-tuning için sağlam bir baseline** — pedagojik ton
+    zaten var, daha güçlendirilebilir.
+
 ### Sonuç tablosu (eval çalıştıktan sonra doldurulacak)
 
 | Metric | Değer | Eşik | Durum |
