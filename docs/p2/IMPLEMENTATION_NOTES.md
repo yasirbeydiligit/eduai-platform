@@ -587,6 +587,41 @@ entegrasyon öncesi "yeterince iyi mi?" kararını ver.
 - **Etki:** Yalnızca uyarı susturmak; davranış aynı. `torch_dtype`
   hâlâ çalışıyor ama deprecated; temizlik için güncelleme.
 
+### Sapma 26 · Colab'da torch'u **reinstall etmeyin** — torchvision mismatch
+- **Tetikleyen (2026-04-22):** Evaluation import'unda:
+  ```
+  RuntimeError: operator torchvision::nms does not exist
+  ModuleNotFoundError: Could not import module 'PreTrainedModel'
+  ```
+  Import zinciri: `peft` → `transformers` → `transformers.image_utils`
+  → `torchvision` → `torch.library.register_fake("torchvision::nms")`
+  **FAIL** (torch ↔ torchvision operator mismatch).
+- **Kök sebep:** Colab fresh session `torch 2.10.0+cu128` + `torchvision
+  0.25.0+cu128` uyumlu ikili ile gelir (CUDA 12.8 build tag'li). Bizim
+  erken oturumda `pip install -q torch==2.10.0 --upgrade` komutu
+  **PyPI vanilla 2.10.0** (farklı CUDA build) ile native'i değiştirdi.
+  Operator ABI uyumsuzluğu import'ta patladı.
+- **Neden training'de görülmedi?** Training import chain'i
+  `peft → transformers.modeling_utils` (text modeling) ile sınırlıydı;
+  `transformers.image_utils` tetiklenmedi → torchvision import
+  edilmedi → mismatch görünmedi. Evaluation'da `peft` init chain
+  tam load → fail.
+- **Fix (Colab tek-hücre template'te):** requirements.txt'ten **torch
+  satırını filter out et**, Colab native torch+torchvision+torchaudio
+  ikilisini bozma:
+  ```bash
+  grep -v '^torch==' ml/requirements.txt > /tmp/colab_req.txt
+  pip install -q -r /tmp/colab_req.txt
+  pip install -q bitsandbytes
+  ```
+- **Durumu kurtarma:** Mevcut session bozulduysa `Runtime > Disconnect
+  and delete runtime` → fresh runtime. Yeniden install "torch upgrade"
+  içermediği için tutarlı kalır.
+- **Kalıcı çözüm için ileri dönüş:** requirements.txt'te torch
+  pin'ini `sys_platform == 'linux'` marker'ıyla Colab için skip
+  edilir hale getirilebilir (macOS dev için hâlâ pinli). Task 6
+  CI wiring aşamasında değerlendirilecek.
+
 ### Sonuç tablosu (eval çalıştıktan sonra doldurulacak)
 
 | Metric | Değer | Eşik | Durum |
