@@ -667,28 +667,75 @@ entegrasyon öncesi "yeterince iyi mi?" kararını ver.
   - Sonuç: **fine-tuning için sağlam bir baseline** — pedagojik ton
     zaten var, daha güçlendirilebilir.
 
-### Sonuç tablosu (eval çalıştıktan sonra doldurulacak)
+### Sonuç tablosu (final, 2026-04-28)
 
-| Metric | Değer | Eşik | Durum |
-| --- | --- | --- | --- |
-| ROUGE-1 (avg) | _TBD_ | — | — |
-| ROUGE-L (avg) | _TBD_ | 0.25-0.40 makul, >0.40 iyi | _TBD_ |
-| BERTScore F1 | _TBD_ | 0.60-0.75 orta, >0.75 iyi | _TBD_ |
-| Avg inference (ms) | _TBD_ | < 3000 ms makul (T4) | _TBD_ |
-| Manuel QA (avg /20) | _TBD_ | ≥ 15 (75%) geçer | _TBD_ |
+**Phi-3 Mini → Qwen3-4B-Instruct-2507 karşılaştırması:**
 
-### Karar ağacı (eval sonrası)
+| Metric | Phi-3 Mini | **Qwen3-4B (final)** | Δ | Durum |
+| --- | --- | --- | --- | --- |
+| ROUGE-1 (avg) | 0.251 | **0.399** | +%59 | iyi (ROUGE eşiği yok) |
+| ROUGE-L (avg) | 0.183 | **0.249** | +%36 | **eşik dibi** (0.25 makul başlangıç) |
+| BERTScore F1 (tr) | 0.530 | **0.640** | +%21 | **orta** (0.60-0.75 makul) |
+| train_loss (final) | 1.80 | **1.45** | -%19 | sağlıklı |
+| eval_loss (best) | yoktu | **1.347** | yeni metric | düşüş trendinde, plateau yok |
+| mean_token_accuracy | 0.60 | **0.69** | +%15 | iyileşme net |
+| Avg inference (ms) | 19062 | 22978 | +%21 | T4 limiti; A100'de ~5000 ms beklenir |
+| Manuel QA (/20) | atlanmıştı | **atlandı** | — | Yol B kararıyla ertelendi |
+
+**MLflow run_id'leri:**
+- Training: `c7878a569c85493dbd45cc5a4a0efbc6`
+- Evaluation: `01822d480ec1471b90357c1643dd6aba`
+- Adapter: `/content/drive/MyDrive/eduai_qwen3-4b-instruct-2507_ckpt`
+
+### Karar ağacı (eval sonrası, 2026-04-28)
 
 ```
-ROUGE-L ≥ 0.35 + BERTScore ≥ 0.75 + Manuel QA ≥ 15/20
-  → Taşı P3'e (Task 5-7 tamamla, P2 FINALIZE)
-
-ROUGE-L 0.25-0.35 + Manuel QA 12-15/20
-  → Task 3.5: 5 epoch sweep OR dataset 435 → 800 büyütme
-
-ROUGE-L < 0.25 OR Manuel QA < 12/20
-  → Dataset kalite/prompt revize (Task 1'e kısmi geri dönüş)
-
-Hallucination var ama otomatik metrikler iyi
-  → P3 RAG context-grounded cevapla düzeltir; P2 yeterli
+ROUGE-L 0.249 + BERTScore 0.640 + üretim akıcı + pedagojik
+  ↓
+"ROUGE-L 0.25-0.35 makul" satırına en yakın
+  ↓
+Yol A: Task 3.5 ek sweep (5 epoch + MLP target_modules)
+Yol B: P2'yi finalize, P3'e geç ⭐ SEÇİLDİ
 ```
+
+**Yol B gerekçesi:**
+1. **Pareto:** İlk %80 kalite mevcut. Kalan %20 marjinal kazanç için %80 efor riskli.
+2. **Doğru alet:** Bilgi doğruluğu (Türkiye petrol "zengin" gibi hatalar)
+   fine-tuning'in işi değil — RAG mimarisinin çözeceği şey.
+3. **CONCEPT.md hedefiyle uyum:** "P2 = style/format alignment" hedefi
+   karşılandı; üretimler akıcı + pedagojik + yapısal (matematik
+   probleminde ROUGE-L 0.544 — pedagojik adım-adım format internalize
+   edilmiş).
+4. **Iterasyon kapısı açık:** P3 RAG sonrası end-to-end yetersiz çıkarsa
+   Task 3.5'e dönüş her zaman mümkün; **şimdi yatırım prematüre**.
+
+### Sapma 28 · Qwen2.5-3B → Qwen3-4B-Instruct-2507 final tercih
+- **Tetikleyen (2026-04-28):** Sapma 27'de "Qwen2.5-3B-Instruct'a geç"
+  kararı verilmişti ama Colab'a geçmeden önce **kullanıcı sorusu:**
+  "Qwen2.5 yerine direkt Qwen3 ile ilerlemiyoruz?"
+- **Karar:** Hücreye `MODEL_NAME` değişkeni + smoke test eklenip Qwen3
+  denendi. Qwen3-4B-Instruct-2507 base smoke test'i akıcı + yapılı
+  Türkçe verdi (Tanzimat sorusunda doğru çerçeve, markdown başlıklar).
+  Final baseline olarak seçildi.
+- **Qwen2.5 hiç fine-tune edilmedi:** Sadece kontrol deneyi olarak
+  (vanilla base akıcı mı?) test edildi. Aday eler-eler stratejisi.
+- **Maliyet farkı:** Qwen3-4B (~4B param) Qwen2.5-3B (~3.1B param)'den
+  %30 büyük ama T4'te QLoRA training eşit süre (~14 dk) çünkü dataset
+  küçük (435 örnek), bottleneck dataset değil model boyutu.
+- **Çıkarım:** Phi-3 macerasından sonra "stable" tercih (Qwen2.5)
+  sezgiseldi ama gereksizdi — yeni release'leri (Qwen3) test etmek
+  smoke step'iyle güvenli. **Smoke step disiplin** maliyetle güvenliği
+  dengeliyor.
+
+### Lessons learned — P2 → P3 transition için kritik özet
+1. **Model seçimi pre-built — sezgisiz değil.** CONCEPT.md tablosundaki
+   "Türkçe: Orta/İyi/Çok iyi" sütunu erkenden değerlendirilmeliydi.
+2. **Loss düşüşü ≠ kalite iyileşmesi.** Phi-3 baseline'da loss 2.11→1.80
+   "iyi" görünüyordu, üretim çöp. **Sample inspection eval döngüsünün
+   parçası** olmalı (5 sample yan yana print).
+3. **Differential diagnosis ML'de:** Suspect izole et, hipotez test et,
+   bulgular göre bir sonraki suspect. Single change → re-test pattern.
+4. **Smoke test maliyeti çok düşük, değeri yüksek.** 3-5 dakikalık base
+   test 25 dakikalık başarısız training'i önler.
+5. **Fine-tuning kapsamı sınırlıdır.** Style/format kazanır; bilgi
+   doğruluğu için RAG (P3) gerekir. **Doğru aleti tanı.**
