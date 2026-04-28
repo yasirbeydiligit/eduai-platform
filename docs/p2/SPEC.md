@@ -1,5 +1,15 @@
 # P2 — Model Fabrikası: Proje Spesifikasyonu
 
+> **📝 P2 FINALIZED — 2026-04-28**
+>
+> Bu spec implementation sırasında **31 bilinçli sapma** ile evrildi. Aşağıdaki
+> **inline callout'lar** kritik kararları işaretler. Tam sapma tarihçesi:
+> [`IMPLEMENTATION_NOTES_ARCHIVED.md`](IMPLEMENTATION_NOTES_ARCHIVED.md).
+> P3 transfer paketi: [`P3_HANDOFF.md`](P3_HANDOFF.md).
+>
+> **Final base model:** `Qwen/Qwen3-4B-Instruct-2507` (SPEC'teki Phi-3 başlangıçtı —
+> Türkçe yetersizliği nedeniyle değiştirildi, Sapma 27→28).
+
 > **Scope:** LoRA adapter üreten bir ML pipeline. P1 API'ye dokunmaz, bağımsız çalışır. Çıktı (adapter + tokenizer config + metrics) P3'te tüketilir.
 >
 > **Gerçekçi hedef:** "Tek başına mükemmel model" değil, P3 RAG pipeline'ının arkasına takılacak, Türkçe pedagojik tonu kazanmış bir adapter. Bilgi doğruluğu P3'teki retrieval ile sağlanır, P2'de değil.
@@ -48,6 +58,16 @@ eduai-platform/
 
 ## Dataset spesifikasyonu
 
+> **📝 Implementation note (Sapma 6, 7, 8):** Strateji **A (Sentetik, Claude API)**
+> seçildi; prompt template'inde **MEB güncel müfredatı** zorunluluğu iki katmanlı
+> (system persona + rule #1). MEB kazanım kodları (örn. `9.1.1.1`) verilmiyor —
+> hallucination riski. Konu seed'leri `data_prep.py:SUBJECT_TOPICS`'ta. Token
+> sayımı **karakter bazlı** indirgendi (tokenizer dependency hafifletmek için);
+> token analizi `notebooks/01_data_exploration.ipynb` Hücre 6'da yapılır. Felsefe
+> 9. sınıfta yok (MEB realitesi); subject × grade coverage script tarafından
+> dengeleniyor. **Üretim sonucu: 348 train + 87 eval = 435 örnek** (hedef ~450
+> civarı, kalite filtreleri sonrası).
+
 ### Format: JSONL (her satır bir JSON)
 
 ```jsonl
@@ -95,6 +115,18 @@ SPEC tek bir yol dayatmaz; `data_prep.py`'de aşağıdakilerden birini (veya hib
 ---
 
 ## config.yaml
+
+> **📝 Implementation note (Sapma 17, 18, 27, 28):** Bu spec'teki config baseline'dı;
+> implementation'da **5 kritik değişiklik** uygulandı:
+> 1. `model.name` → `Qwen/Qwen3-4B-Instruct-2507` (Phi-3 Türkçe yetersiz)
+> 2. `model.trust_remote_code` → `false` (Qwen native, custom code gerekmez)
+> 3. `training.fp16/bf16` → **ikisi de `false`** (T4 + Qwen3 AMP grad scaler bug;
+>    fp32 training maliyet ~%30 yavaşlama, kabul edildi)
+> 4. `training.optim: "paged_adamw_8bit"` eklendi (canonical QLoRA optimizer)
+> 5. `training.eval_steps: 20` (orjinal 100 idi → max_steps=66'ya göre hiç eval
+>    tetiklenmiyordu)
+> Güncel config: `ml/training/config.yaml`. CLI override Task 3 sweep için
+> Sapma 19'da eklendi (`--lora-r`, `--lr`, `--num-epochs`, `--run-name-suffix`).
 
 ```yaml
 # P2 fine-tuning configuration
@@ -158,6 +190,20 @@ mlflow:
 ## train.py — mimari referansı
 
 > ⚠️ Aşağıdaki kod **mimari yol haritasıdır**, birebir kopyala-yapıştır **değil**. `trl` / `transformers` sürüm farkları olabilir. Uygularken `pip show trl` ile versiyon kontrol et, API farkı varsa uyarla (ör. `tokenizer=` → `processing_class=`, `SFTConfig` parametre adları vs.).
+
+> **📝 Implementation note (Sapma 10, 15, 16, 25):** SPEC kodu üzerine **dört
+> kritik değişiklik** yapıldı (TRL 1.2 + transformers 4.57 + peft 0.18 ile
+> uyum):
+> 1. **Chat template:** Hardcoded `<\|user\|>...` → `tokenizer.apply_chat_template`
+>    (model-agnostik; Qwen, Phi-3, LLaMA hepsi kendi template'i ile çalışır)
+> 2. **TRL 1.0+ rename:** `SFTConfig(max_seq_length=...)` → `max_length=...`
+> 3. **transformers 4.57 rename:** `torch_dtype=torch.float16` → `dtype=torch.float16`
+> 4. **QLoRA prep eksikliği:** `prepare_model_for_kbit_training(model)` çağrısı
+>    ekledildi (SPEC'te yoktu; layer_norm fp32, gradient checkpointing, embedding
+>    require_grad — QLoRA standart pattern, eksiklik T4 BF16 grad scaler
+>    çökmesinin parçası idi)
+> Final implementation: `ml/training/train.py`. Smoke mode (`--smoke`),
+> KeyboardInterrupt + SIGTERM handler, MLflow callback hepsi eklendi.
 
 ```python
 """
@@ -333,6 +379,19 @@ if __name__ == "__main__":
 
 ## evaluate.py — tam implementation
 
+> **📝 Implementation note (Sapma 21, 22, 24, 25):** SPEC kodu üzerine dört
+> uyarlama yapıldı:
+> 1. **Chat template:** Hardcoded prompt → `tokenizer.apply_chat_template`
+>    (`add_generation_prompt=True`)
+> 2. **Tokenizer source:** Önce adapter dizininden (training'de oraya save
+>    edildi); yoksa base model'inden (defensive fallback)
+> 3. **Phi-3 dönemi (artık irrelevant):** `trust_remote_code=False` +
+>    `attn_implementation="eager"` Phi-3 custom code'unun `DynamicCache.seen_tokens`
+>    bug'ından kaçınmak içindi. Final base **Qwen3 native** olduğu için
+>    `attn_implementation="eager"` kaldırıldı (SDPA default Qwen için optimal),
+>    `trust_remote_code` config'ten okunur.
+> 4. **dtype rename** (transformers 4.57): `torch_dtype` → `dtype`
+
 ```python
 """
 Fine-tuned adapter'ı ROUGE + BERTScore ile değerlendir,
@@ -467,6 +526,14 @@ if __name__ == "__main__":
 
 ## requirements.txt
 
+> **📝 Implementation note (Sapma 5):** SPEC'teki tam pin'ler (torch 2.3.1,
+> trl 0.9.6, transformers 4.43.3 — 2024-Q2/Q3 sürümleri) Python 3.13'te wheel
+> bulunmaması nedeniyle uygulanmadı. **Modern floor pin'lere geçildi:**
+> torch==2.9.1 (T4 + 3.13 uyumlu), transformers>=4.46, trl>=0.12, peft>=0.13,
+> accelerate>=1.0, bitsandbytes>=0.44 (`sys_platform != 'darwin'` marker — Mac'te
+> skip, Colab'da manuel). Reproducibility için `requirements.lock.txt`
+> opsiyonel (pip freeze çıktısı). Final dosya: `ml/requirements.txt`.
+
 ```
 # Pinned versions — reproducibility için.
 # Yeni sürümlerde API değişiklikleri olabilir; upgrade etmeden önce test.
@@ -519,6 +586,15 @@ HF_TOKEN=
 
 ## Colab workflow (GPU yoksa)
 
+> **📝 Implementation note (Sapma 26):** Colab'da **torch'u reinstall etmeyin**.
+> Native `torch 2.10.0+cu128` + `torchvision 0.25.0+cu128` ikilisi uyumlu
+> gelir; `pip install torch==X --upgrade` PyPI vanilla build'ini yükleyip
+> torchvision ile operator mismatch yaratır (`RuntimeError: torchvision::nms`).
+> Doğru pattern: `grep -v '^torch==' requirements.txt > /tmp/colab_req.txt`
+> ve sadece geri kalanları kur. `bitsandbytes`'ı manuel ekle (Mac
+> environment marker ile skip oldu). Tam Colab tek-hücre template'i için
+> [`P3_HANDOFF.md`](P3_HANDOFF.md) referans alınır.
+
 Lokal GPU yoksa Colab free tier (T4, 16GB VRAM) Phi-3 Mini + QLoRA için yeterli.
 
 ```python
@@ -552,6 +628,15 @@ with open("training/config.yaml", "w") as f:
 ---
 
 ## GitHub Actions CI — P2 için
+
+> **📝 Implementation note (Sapma 9, 29, 30):** SPEC'te `ml-quality` job vardı
+> ama dependency graph belirsizdi. **Karar: top-level paralel** (`needs:` yok)
+> — P1 (`services/api`) ve P2 (`ml/`) bağımsız kod alanları, biri kırmızı
+> olsa diğeri block olmasın. **Install minimal'leştirildi** (`ruff pytest`
+> yeterli; SPEC'in `pyyaml jsonschema` önerisi unused, YAGNI). `test_data_schema.py`
+> Task 6 yerine **Task 1 sonunda yazıldı** (Sapma 9 — veri üretildikten hemen
+> sonra schema doğrulama yapılabilsin). Final 4-job graph:
+> `[lint] [ml-quality] → [test] → [docker-build]`.
 
 `ml/` dizini eklendiğinde mevcut `ci.yml`'e **yeni bir job** eklenmeli:
 
@@ -611,6 +696,28 @@ def test_jsonl_schema(path: str) -> None:
 ---
 
 ## Teslim kriterleri
+
+> **📝 P2 FINALIZE STATUS — 2026-04-28**
+>
+> **Final metrikler (Qwen3-4B-Instruct-2507 baseline, MLflow run
+> `01822d480ec1471b90357c1643dd6aba`):**
+> - ROUGE-1: 0.399 / **ROUGE-L: 0.249** (Türkçe morfolojisi → eşik dibi normal)
+> - **BERTScore F1 (tr): 0.640** (orta — RAG'a uygun)
+> - eval_loss best: 1.347 / train_loss final: 1.45
+> - mean_token_accuracy: 0.62 → 0.69
+> - Avg inference latency: 22978 ms (T4 + 4-bit)
+>
+> **Bilinçli kabul edilen istisnalar (Yol B, Sapma 28 sonrası):**
+> 1. **ROUGE-L 0.249 eşik dibinde** — Türkçe morfolojisi yapısal düşüş, RAG
+>    context'i ile gerçek kalite P3 sonrası ölçülecek
+> 2. **Manuel QA atlandı** — saf P2 manuel QA "RAG'sız" kullanım senaryosunu
+>    yansıtmıyor; P3 sonrası A/B test (RAG-with vs RAG-without) daha değerli
+> 3. **Inference latency 22 sn T4'te** — production değil; A100 ~5s veya P3
+>    vLLM serving ile aşılır
+>
+> **Yol B gerekçesi:** Pareto disiplini — ilk %80 kalite mevcut, kalan %20
+> için marjinal kazanç vs RAG mimarisinin dramatik kazanımı. Detaylar:
+> `IMPLEMENTATION_NOTES_ARCHIVED.md` Task 4 sonuç tablosu.
 
 - [ ] `python training/data_prep.py` → `train.jsonl` + `eval.jsonl` üretiyor
 - [ ] `pytest ml/tests/` → schema test'leri geçiyor
