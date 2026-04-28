@@ -89,43 +89,26 @@ tablosuna referans olacak).
 
 ---
 
-## Evaluation — manuel QA tablosu (Task 4)
+## Evaluation — manuel QA durumu (Task 4)
 
-Otomatik metrikler (ROUGE + BERTScore) otomatik pipeline verir ama Türkçe
-için insan gözü şart. 10 rastgele soruda 1-5 skala değerlendir.
+**Status: Skipped — Yol B kararıyla (2026-04-28).**
 
-### Manuel örnek seçimi
-```bash
-# Eval.jsonl'den rastgele 10 soru seç
-shuf -n 10 ml/data/processed/eval.jsonl > /tmp/manual_eval_sample.jsonl
-cat /tmp/manual_eval_sample.jsonl | python -m json.tool
-```
+P2-only manuel QA bilinçli olarak atlandı; **gerekçe IMPLEMENTATION_NOTES.md
+Task 4 karar ağacında detaylı.** Özet:
 
-Sonra Colab'da adapter ile her soruyu çalıştır (`evaluate.py` çıktısı veya
-interaktif). Cevapları bu tabloda değerlendir:
+- P2 fine-tuning hedefi: **style/format alignment** (CONCEPT.md § 1)
+- Otomatik metrikler bu hedefin karşılandığını gösterdi:
+  ROUGE-L 0.249, BERTScore F1 0.640, train/eval loss sağlıklı
+- **Bilgi doğruluğu fine-tuning'in işi değil — RAG'ın** (P3 scope'u).
+  Saf P2 manuel QA "Türkiye petrol zengini mi?" gibi hata türlerini
+  ölçer ama bu hatalar P3 RAG context-grounded cevap üretiminde
+  kaybolacak.
+- **Daha değerli ölçüm:** P3 sonunda **A/B karşılaştırması** —
+  RAG-with vs RAG-without manuel QA. Bu gerçek kullanım senaryosunu
+  yansıtır.
 
-| # | Konu | Dilbilgisi (1-5) | Pedagojik ton (1-5) | Bilgi doğruluğu (1-5) | Format (1-5) | Toplam /20 | Notlar |
-| - | --- | :-: | :-: | :-: | :-: | :-: | --- |
-| 1 | _TBD_ | _ | _ | _ | _ | _ | _ |
-| 2 | _TBD_ | _ | _ | _ | _ | _ | _ |
-| 3 | _TBD_ | _ | _ | _ | _ | _ | _ |
-| 4 | _TBD_ | _ | _ | _ | _ | _ | _ |
-| 5 | _TBD_ | _ | _ | _ | _ | _ | _ |
-| 6 | _TBD_ | _ | _ | _ | _ | _ | _ |
-| 7 | _TBD_ | _ | _ | _ | _ | _ | _ |
-| 8 | _TBD_ | _ | _ | _ | _ | _ | _ |
-| 9 | _TBD_ | _ | _ | _ | _ | _ | _ |
-| 10 | _TBD_ | _ | _ | _ | _ | _ | _ |
-| **Ortalama** | | | | | | | |
-
-### Kabul eşikleri
-- **Dilbilgisi** ortalama ≥ 4.0 — Türkçe akıcı ve hatasız
-- **Pedagojik ton** ≥ 3.5 — öğretici, adım adım açıklayıcı
-- **Bilgi doğruluğu** ≥ 3.5 — hallucination nadir (P3 RAG bunu güçlendirecek)
-- **Format** ≥ 4.0 — instruction'a uygun yanıt yapısı
-
-Eşik altındaki metrik varsa: prompt revize (`data_prep.py:build_prompt`),
-dataset büyütme, veya 5 epoch ile yeniden sweep.
+P3 sonrası 10 rastgele soruya manuel QA P3 handoff doc'unda planlanır
+(Task 7 → P3_HANDOFF.md).
 
 ---
 
