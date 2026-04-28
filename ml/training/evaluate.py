@@ -57,16 +57,20 @@ def load_adapter(config: dict, adapter_dir: Path) -> tuple:
     """
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=config["quantization"]["load_in_4bit"],
-        bnb_4bit_compute_dtype=getattr(torch, config["quantization"]["bnb_4bit_compute_dtype"]),
+        bnb_4bit_compute_dtype=getattr(
+            torch, config["quantization"]["bnb_4bit_compute_dtype"]
+        ),
         bnb_4bit_quant_type=config["quantization"]["bnb_4bit_quant_type"],
-        bnb_4bit_use_double_quant=config["quantization"].get("bnb_4bit_use_double_quant", True),
+        bnb_4bit_use_double_quant=config["quantization"].get(
+            "bnb_4bit_use_double_quant", True
+        ),
     )
 
     base_model = AutoModelForCausalLM.from_pretrained(
         config["model"]["name"],
         quantization_config=bnb_config,
         device_map="auto",
-        dtype=torch.float16,             # transformers 4.57: torch_dtype → dtype
+        dtype=torch.float16,  # transformers 4.57: torch_dtype → dtype
         trust_remote_code=config["model"].get("trust_remote_code", False),
         # attn_implementation default (SDPA) bırakıldı — Qwen için optimal.
         # Phi-3 zamanında Sapma 24'te "eager" zorunluydu (custom code cache bug);
@@ -76,12 +80,13 @@ def load_adapter(config: dict, adapter_dir: Path) -> tuple:
     # LoRA adapter'ı base model'e bağla — PeftModel ağırlıkları merge etmez,
     # forward pass'te base + adapter paralel çalışır (yine 4-bit VRAM'inde)
     model = PeftModel.from_pretrained(base_model, str(adapter_dir))
-    model.eval()   # inference — dropout/batchnorm kapalı, deterministic
+    model.eval()  # inference — dropout/batchnorm kapalı, deterministic
 
     # Tokenizer adapter dizininden; training sırasında oraya kaydedildi.
     # Dosya yoksa base model'in tokenizer'ına düş (defensive).
     tokenizer_source = (
-        adapter_dir if (adapter_dir / "tokenizer_config.json").exists()
+        adapter_dir
+        if (adapter_dir / "tokenizer_config.json").exists()
         else config["model"]["name"]
     )
     tokenizer = AutoTokenizer.from_pretrained(
@@ -116,13 +121,13 @@ def generate_answer(
         outputs = model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
-            do_sample=False,                     # deterministic — eval için şart
+            do_sample=False,  # deterministic — eval için şart
             pad_token_id=tokenizer.eos_token_id,
         )
     duration_ms = (time.monotonic() - start) * 1000
 
     # Üretilen kısım prompt'tan sonrası — sadece yeni token'lar
-    generated_ids = outputs[0][inputs.input_ids.shape[1]:]
+    generated_ids = outputs[0][inputs.input_ids.shape[1] :]
     text = tokenizer.decode(generated_ids, skip_special_tokens=True)
     return text.strip(), duration_ms
 
@@ -147,7 +152,11 @@ def compute_metrics(
     # İlk çağrıda internet'ten ~1.5GB indirilir, sonrasında HF cache'li
     print("  → BERTScore hesaplanıyor (ilk çağrıda model indirilir)...")
     _, _, bert_f1 = bert_score_fn(
-        generated, references, lang="tr", verbose=False, batch_size=8,
+        generated,
+        references,
+        lang="tr",
+        verbose=False,
+        batch_size=8,
     )
     bert_f1_scores: list[float] = bert_f1.tolist()
 
@@ -196,9 +205,7 @@ def interpret_scores(rouge_l_mean: float, bert_f1_mean: float) -> list[str]:
             "Kabul edilebilir, manuel QA ile doğrula."
         )
     else:
-        notes.append(
-            f"✓ BERTScore F1 {bert_f1_mean:.3f} > 0.75: semantik örtüşme iyi."
-        )
+        notes.append(f"✓ BERTScore F1 {bert_f1_mean:.3f} > 0.75: semantik örtüşme iyi.")
 
     return notes
 
@@ -229,19 +236,27 @@ def parse_args() -> argparse.Namespace:
         description="EduAI P2 — Fine-tuned adapter evaluation (ROUGE + BERTScore)"
     )
     parser.add_argument(
-        "--config", type=str, default="training/config.yaml",
+        "--config",
+        type=str,
+        default="training/config.yaml",
         help="Yapılandırma YAML (ml/ kökünden relative)",
     )
     parser.add_argument(
-        "--adapter", type=str, default=None,
+        "--adapter",
+        type=str,
+        default=None,
         help="Adapter dizini (default: config.paths.output_dir)",
     )
     parser.add_argument(
-        "--n", type=int, default=20,
+        "--n",
+        type=int,
+        default=20,
         help="eval.jsonl'den değerlendirilecek örnek sayısı (default 20)",
     )
     parser.add_argument(
-        "--run-name", type=str, default="evaluation",
+        "--run-name",
+        type=str,
+        default="evaluation",
         help="MLflow evaluation run adı (default: 'evaluation')",
     )
     return parser.parse_args()
@@ -261,7 +276,8 @@ def main() -> None:
 
     # Adapter yolu — CLI arg > config default
     adapter_dir = (
-        Path(args.adapter) if args.adapter
+        Path(args.adapter)
+        if args.adapter
         else (ML_ROOT / config["paths"]["output_dir"])
     )
     if not adapter_dir.exists():
@@ -282,8 +298,7 @@ def main() -> None:
 
     # Eval data — ilk n örnek (deterministic, seed zaten aynı)
     records = [
-        json.loads(line)
-        for line in eval_path.read_text(encoding="utf-8").splitlines()
+        json.loads(line) for line in eval_path.read_text(encoding="utf-8").splitlines()
     ]
     samples = records[: args.n]
     instructions = [s["instruction"] for s in samples]
@@ -299,7 +314,9 @@ def main() -> None:
         durations_ms.append(dur)
         if i % 5 == 0 or i == len(instructions):
             running_avg = sum(durations_ms) / len(durations_ms)
-            print(f"  [{i}/{len(instructions)}] rolling avg latency: {running_avg:.0f} ms")
+            print(
+                f"  [{i}/{len(instructions)}] rolling avg latency: {running_avg:.0f} ms"
+            )
 
     avg_latency_ms = sum(durations_ms) / len(durations_ms)
 
@@ -307,9 +324,7 @@ def main() -> None:
     metrics = compute_metrics(generated, references)
 
     # 5 örnek yan yana — manuel göz denetimi için
-    print_samples(
-        instructions, references, generated, metrics["rougeL_scores"], n=5
-    )
+    print_samples(instructions, references, generated, metrics["rougeL_scores"], n=5)
 
     # Özet
     print("\n" + "=" * 78)
@@ -329,17 +344,21 @@ def main() -> None:
     mlflow.set_tracking_uri(config["mlflow"]["tracking_uri"])
     mlflow.set_experiment(config["mlflow"]["experiment_name"])
     with mlflow.start_run(run_name=args.run_name, tags={"type": "evaluation"}) as run:
-        mlflow.log_params({
-            "adapter_path": str(adapter_dir),
-            "eval_sample_count": args.n,
-            "model": config["model"]["name"],
-        })
-        mlflow.log_metrics({
-            "evaluation_rouge1": metrics["rouge1_mean"],
-            "evaluation_rougeL": metrics["rougeL_mean"],
-            "evaluation_bertscore_f1": metrics["bertscore_f1_mean"],
-            "evaluation_avg_inference_ms": avg_latency_ms,
-        })
+        mlflow.log_params(
+            {
+                "adapter_path": str(adapter_dir),
+                "eval_sample_count": args.n,
+                "model": config["model"]["name"],
+            }
+        )
+        mlflow.log_metrics(
+            {
+                "evaluation_rouge1": metrics["rouge1_mean"],
+                "evaluation_rougeL": metrics["rougeL_mean"],
+                "evaluation_bertscore_f1": metrics["bertscore_f1_mean"],
+                "evaluation_avg_inference_ms": avg_latency_ms,
+            }
+        )
         print(f"✓ MLflow evaluation run: {run.info.run_id}")
 
 

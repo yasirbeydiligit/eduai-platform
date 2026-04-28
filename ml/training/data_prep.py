@@ -65,40 +65,139 @@ DEFAULT_MODEL = "haiku"
 # bilgisini tetikler.
 SUBJECT_TOPICS: dict[str, dict[int, list[str]]] = {
     "matematik": {
-        9: ["kümeler", "denklemler ve eşitsizlikler", "mutlak değer", "üslü ifadeler", "üçgenler"],
-        10: ["fonksiyonlar", "polinomlar", "ikinci dereceden denklemler", "dörtgenler", "olasılık"],
-        11: ["logaritma", "diziler", "limit ve süreklilik", "türev uygulamaları", "analitik geometri"],
-        12: ["integral", "trigonometri", "karmaşık sayılar", "matrisler", "istatistik ve veri analizi"],
+        9: [
+            "kümeler",
+            "denklemler ve eşitsizlikler",
+            "mutlak değer",
+            "üslü ifadeler",
+            "üçgenler",
+        ],
+        10: [
+            "fonksiyonlar",
+            "polinomlar",
+            "ikinci dereceden denklemler",
+            "dörtgenler",
+            "olasılık",
+        ],
+        11: [
+            "logaritma",
+            "diziler",
+            "limit ve süreklilik",
+            "türev uygulamaları",
+            "analitik geometri",
+        ],
+        12: [
+            "integral",
+            "trigonometri",
+            "karmaşık sayılar",
+            "matrisler",
+            "istatistik ve veri analizi",
+        ],
     },
     "fizik": {
-        9: ["fizik bilimine giriş", "madde ve özellikleri", "hareket", "kuvvet", "enerji"],
-        10: ["elektrik ve manyetizma", "basınç ve kaldırma kuvveti", "dalgalar", "optik"],
-        11: ["vektörler", "kuvvet ve hareket", "elektriksel kuvvet ve alan", "manyetizma"],
-        12: ["düzgün çembersel hareket", "basit harmonik hareket", "dalga mekaniği", "atom fiziği"],
+        9: [
+            "fizik bilimine giriş",
+            "madde ve özellikleri",
+            "hareket",
+            "kuvvet",
+            "enerji",
+        ],
+        10: [
+            "elektrik ve manyetizma",
+            "basınç ve kaldırma kuvveti",
+            "dalgalar",
+            "optik",
+        ],
+        11: [
+            "vektörler",
+            "kuvvet ve hareket",
+            "elektriksel kuvvet ve alan",
+            "manyetizma",
+        ],
+        12: [
+            "düzgün çembersel hareket",
+            "basit harmonik hareket",
+            "dalga mekaniği",
+            "atom fiziği",
+        ],
     },
     "kimya": {
-        9: ["atom modelleri", "periyodik sistem", "kimyasal türler arası etkileşimler", "maddenin halleri"],
+        9: [
+            "atom modelleri",
+            "periyodik sistem",
+            "kimyasal türler arası etkileşimler",
+            "maddenin halleri",
+        ],
         10: ["karışımlar", "asitler ve bazlar", "tuzlar", "kimya her yerde"],
-        11: ["modern atom teorisi", "gazlar", "sıvı çözeltiler", "kimyasal tepkimelerde enerji"],
-        12: ["kimya ve elektrik", "karbon kimyası", "organik bileşikler", "enerji kaynakları"],
+        11: [
+            "modern atom teorisi",
+            "gazlar",
+            "sıvı çözeltiler",
+            "kimyasal tepkimelerde enerji",
+        ],
+        12: [
+            "kimya ve elektrik",
+            "karbon kimyası",
+            "organik bileşikler",
+            "enerji kaynakları",
+        ],
     },
     "biyoloji": {
-        9: ["yaşam bilimi", "hücre", "canlıların çeşitliliği", "canlılarda enerji dönüşümleri"],
+        9: [
+            "yaşam bilimi",
+            "hücre",
+            "canlıların çeşitliliği",
+            "canlılarda enerji dönüşümleri",
+        ],
         10: ["hücre bölünmeleri", "kalıtımın genel ilkeleri", "ekosistem ekolojisi"],
-        11: ["insan fizyolojisi", "denetleyici ve düzenleyici sistemler", "duyu organları"],
-        12: ["genden proteine", "biyoteknoloji ve gen mühendisliği", "komünite ve popülasyon ekolojisi"],
+        11: [
+            "insan fizyolojisi",
+            "denetleyici ve düzenleyici sistemler",
+            "duyu organları",
+        ],
+        12: [
+            "genden proteine",
+            "biyoteknoloji ve gen mühendisliği",
+            "komünite ve popülasyon ekolojisi",
+        ],
     },
     "tarih": {
-        9: ["İslam öncesi Türk devletleri", "İlk Çağ uygarlıkları", "İlk Türk-İslam devletleri"],
+        9: [
+            "İslam öncesi Türk devletleri",
+            "İlk Çağ uygarlıkları",
+            "İlk Türk-İslam devletleri",
+        ],
         10: ["Osmanlı kuruluş dönemi", "Osmanlı yükseliş dönemi", "Avrupa'da yeni çağ"],
-        11: ["Osmanlı duraklama ve gerileme", "Tanzimat dönemi", "I. ve II. Meşrutiyet"],
-        12: ["Kurtuluş Savaşı", "Atatürk ilke ve inkılapları", "Soğuk Savaş", "Çağdaş Türkiye tarihi"],
+        11: [
+            "Osmanlı duraklama ve gerileme",
+            "Tanzimat dönemi",
+            "I. ve II. Meşrutiyet",
+        ],
+        12: [
+            "Kurtuluş Savaşı",
+            "Atatürk ilke ve inkılapları",
+            "Soğuk Savaş",
+            "Çağdaş Türkiye tarihi",
+        ],
     },
     "cografya": {
-        9: ["coğrafyaya giriş", "harita bilgisi", "iklim ve hava olayları", "yer şekilleri"],
-        10: ["nüfus ve göç", "ekonomik faaliyetler", "Türkiye'nin konumu ve özellikleri"],
+        9: [
+            "coğrafyaya giriş",
+            "harita bilgisi",
+            "iklim ve hava olayları",
+            "yer şekilleri",
+        ],
+        10: [
+            "nüfus ve göç",
+            "ekonomik faaliyetler",
+            "Türkiye'nin konumu ve özellikleri",
+        ],
         11: ["biyoçeşitlilik", "doğal afetler", "uluslararası ulaşım ağları"],
-        12: ["bölgesel kalkınma", "çevre ve toplum", "küresel sorunlar ve çözüm yolları"],
+        12: [
+            "bölgesel kalkınma",
+            "çevre ve toplum",
+            "küresel sorunlar ve çözüm yolları",
+        ],
     },
     "felsefe": {
         # MEB müfredatında felsefe 10. sınıftan itibaren. 9'da yok.
@@ -110,10 +209,20 @@ SUBJECT_TOPICS: dict[str, dict[int, list[str]]] = {
         9: ["edebiyata giriş", "hikaye türü", "şiir türü", "destan ve masal"],
         10: ["İslamiyet öncesi Türk edebiyatı", "Divan edebiyatı", "Halk edebiyatı"],
         11: ["Tanzimat edebiyatı", "Servet-i Fünun edebiyatı", "Milli Edebiyat dönemi"],
-        12: ["Cumhuriyet dönemi Türk edebiyatı", "roman", "tiyatro", "çağdaş Türk şairleri"],
+        12: [
+            "Cumhuriyet dönemi Türk edebiyatı",
+            "roman",
+            "tiyatro",
+            "çağdaş Türk şairleri",
+        ],
     },
     "ingilizce": {
-        9: ["present/past simple tenses", "describing people and places", "daily routines", "countries and nationalities"],
+        9: [
+            "present/past simple tenses",
+            "describing people and places",
+            "daily routines",
+            "countries and nationalities",
+        ],
         10: ["modals", "past continuous", "future plans", "reported speech basics"],
         11: ["perfect tenses", "passive voice", "conditionals", "phrasal verbs"],
         12: ["advanced grammar", "academic writing", "idioms", "literary analysis"],
@@ -333,7 +442,9 @@ def apply_semantic_dedup(
     print("  → Semantic dedup modeli yükleniyor...")
     model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
     instructions = [r["instruction"] for r in records]
-    embeddings = model.encode(instructions, convert_to_tensor=True, show_progress_bar=False)
+    embeddings = model.encode(
+        instructions, convert_to_tensor=True, show_progress_bar=False
+    )
     similarity = util.cos_sim(embeddings, embeddings)
 
     # Üst üçgeni tara (diagonal hariç); i < j ve similarity > threshold → j'yi ele
@@ -422,7 +533,9 @@ def print_statistics(
         dist[rec["subject"]][rec["grade"]] += 1
 
     grades_sorted = sorted({rec["grade"] for rec in records})
-    header = f"{'subject':<15}" + "".join(f"{g:>6}" for g in grades_sorted) + f"{'Total':>8}"
+    header = (
+        f"{'subject':<15}" + "".join(f"{g:>6}" for g in grades_sorted) + f"{'Total':>8}"
+    )
     print(header)
     for subject in sorted(dist):
         row = f"{subject:<15}"
@@ -449,20 +562,26 @@ def parse_args() -> argparse.Namespace:
         description="EduAI P2 — Türkçe lise Q&A veri üretici (MEB müfredat uyumlu)"
     )
     parser.add_argument(
-        "--target", type=int, default=50,
+        "--target",
+        type=int,
+        default=50,
         help="Subject başına hedef örnek sayısı (default: 50)",
     )
     parser.add_argument(
-        "--model", type=str, default=DEFAULT_MODEL,
+        "--model",
+        type=str,
+        default=DEFAULT_MODEL,
         choices=list(MODEL_ALIASES.keys()),
         help=f"Claude model alias'ı (default: {DEFAULT_MODEL})",
     )
     parser.add_argument(
-        "--semantic-dedup", action="store_true",
+        "--semantic-dedup",
+        action="store_true",
         help="sentence-transformers ile ek semantic deduplication",
     )
     parser.add_argument(
-        "--dry-run", action="store_true",
+        "--dry-run",
+        action="store_true",
         help="API call yapma; mock dataset ile pipeline doğrulama",
     )
     return parser.parse_args()
@@ -476,17 +595,19 @@ def mock_records() -> list[dict]:
             if grade not in SUBJECT_TOPICS[subject]:
                 continue
             for i in range(6):
-                out.append({
-                    "instruction": f"{subject} dersi sınıf {grade} mock sorusu {i}",
-                    "input": "",
-                    "output": (
-                        f"{subject} / {grade}. sınıf için pedagojik bir cevap örneği. "
-                        "Bu mock veri yalnızca pipeline doğrulamak içindir. "
-                        "Gerçek üretimde Claude API cevapları çok daha zengindir."
-                    ),
-                    "subject": subject,
-                    "grade": grade,
-                })
+                out.append(
+                    {
+                        "instruction": f"{subject} dersi sınıf {grade} mock sorusu {i}",
+                        "input": "",
+                        "output": (
+                            f"{subject} / {grade}. sınıf için pedagojik bir cevap örneği. "
+                            "Bu mock veri yalnızca pipeline doğrulamak içindir. "
+                            "Gerçek üretimde Claude API cevapları çok daha zengindir."
+                        ),
+                        "subject": subject,
+                        "grade": grade,
+                    }
+                )
     return out
 
 
@@ -495,7 +616,7 @@ def main() -> None:
     random.seed(SEED)
 
     print(f"EduAI P2 — Veri üretimi (seed={SEED})")
-    print(f"  Strateji: Seçenek A — Sentetik (Claude API)")
+    print("  Strateji: Seçenek A — Sentetik (Claude API)")
     print(f"  Model:    {MODEL_ALIASES[args.model]}")
     print(f"  Hedef:    {args.target} örnek/subject")
     print()

@@ -28,8 +28,17 @@ ML_ROOT = Path(__file__).resolve().parent.parent
 # Geçerli ders listesi. SPEC'teki listeye sadık — "din" ve "genel"
 # şu an SUBJECT_TOPICS'te yok ama ileride eklenirse geçerli kalsın.
 VALID_SUBJECTS = {
-    "matematik", "fizik", "kimya", "biyoloji", "tarih",
-    "cografya", "felsefe", "din", "edebiyat", "ingilizce", "genel",
+    "matematik",
+    "fizik",
+    "kimya",
+    "biyoloji",
+    "tarih",
+    "cografya",
+    "felsefe",
+    "din",
+    "edebiyat",
+    "ingilizce",
+    "genel",
 }
 
 REQUIRED_KEYS = {"instruction", "input", "output", "subject", "grade"}

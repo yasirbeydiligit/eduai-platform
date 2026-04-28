@@ -79,3 +79,48 @@ jobs:
         # workflow parser `{{ }}` template syntax'ını expression olarak değerlendirir
         # → YAML parse error. Plain `docker images` zaten SIZE sütununu içerir.
         run: docker images eduai-api:ci
+
+  # ----------------------------------------------------------------------------
+  # Job 4 — ML Quality: ml/ kod kalitesi + JSONL schema testleri (P2)
+  #
+  # Dependency graph: top-level (needs: yok) → `lint` ile paralel çalışır.
+  # P1 (services/api) ve P2 (ml/) bağımsız kod alanları olduğundan birinin
+  # kırmızı olması diğerini bloke etmemeli; ml-quality fail olsa bile
+  # API docker build hâlâ üretilir.
+  #
+  # Kapsam: ruff lint + format check + pytest schema testleri.
+  # Training/eval (torch, transformers, peft) kurulumu CI'da YAPILMAZ —
+  # GPU yok, paketler büyük (~5GB), CI dakikası verimsizliği.
+  # Schema test'i dataset dosyaları yoksa pytest.skip ile geçer (CI'da
+  # data/processed/*.jsonl yok; sadece varsa validation yapar).
+  # ----------------------------------------------------------------------------
+  ml-quality:
+    name: "ML Code Quality & Schema"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install light deps
+        # Sadece ruff + pytest — schema test'i json/pathlib stdlib kullanıyor.
+        # SPEC'te `pyyaml jsonschema` da öneriliyordu ama mevcut test'ler
+        # kullanmıyor; YAGNI ile minimal kurulum (Sapma 29).
+        run: pip install ruff pytest
+
+      - name: Ruff lint
+        # --output-format=github → PR'da inline annotation
+        run: ruff check ml/ --output-format=github
+
+      - name: Ruff format check
+        # Format diff'i varsa fail; pre-commit hook'u atlanmış değişiklikleri yakalar
+        run: ruff format ml/ --check
+
+      - name: Data schema tests
+        # `cd ml` → ML_ROOT relative path'leri test_data_schema.py'de doğru çalışır
+        working-directory: ml
+        run: pytest tests/ -v --tb=short
+

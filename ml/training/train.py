@@ -46,6 +46,7 @@ ML_ROOT = Path(__file__).resolve().parent.parent
 
 # --- Yapılandırma yükleme ----------------------------------------------
 
+
 def load_config(path: str | Path) -> dict:
     """YAML config'i dict'e oku. Path ml/ kökünden relative."""
     p = Path(path)
@@ -56,6 +57,7 @@ def load_config(path: str | Path) -> dict:
 
 
 # --- Ortam doğrulama ----------------------------------------------------
+
 
 def require_cuda() -> None:
     """QLoRA CUDA bağımlı; yoksa açık mesajla çık."""
@@ -72,13 +74,18 @@ def require_cuda() -> None:
 
 # --- Model + tokenizer kurulum -----------------------------------------
 
+
 def setup_model_and_tokenizer(config: dict) -> tuple:
     """Base model'i 4-bit quantize ile yükle, tokenizer + pad_token eşitle."""
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=config["quantization"]["load_in_4bit"],
-        bnb_4bit_compute_dtype=getattr(torch, config["quantization"]["bnb_4bit_compute_dtype"]),
+        bnb_4bit_compute_dtype=getattr(
+            torch, config["quantization"]["bnb_4bit_compute_dtype"]
+        ),
         bnb_4bit_quant_type=config["quantization"]["bnb_4bit_quant_type"],
-        bnb_4bit_use_double_quant=config["quantization"].get("bnb_4bit_use_double_quant", True),
+        bnb_4bit_use_double_quant=config["quantization"].get(
+            "bnb_4bit_use_double_quant", True
+        ),
     )
 
     model = AutoModelForCausalLM.from_pretrained(
@@ -89,7 +96,7 @@ def setup_model_and_tokenizer(config: dict) -> tuple:
         # torch_dtype="bfloat16" — override etmezsek non-quantized katmanlar
         # (embedding, layer_norm, lm_head) bf16'da kalır ve gradient scaler
         # T4'te çöker. fp16'ya zorluyoruz.
-        dtype=torch.float16,             # transformers 4.57: torch_dtype → dtype
+        dtype=torch.float16,  # transformers 4.57: torch_dtype → dtype
         trust_remote_code=config["model"].get("trust_remote_code", False),
     )
 
@@ -117,6 +124,7 @@ def setup_model_and_tokenizer(config: dict) -> tuple:
 
 # --- LoRA adaptörlerini model'e bağla ----------------------------------
 
+
 def apply_lora(model, config: dict):
     """Base model üzerine LoRA adapter ekle; orijinal ağırlıklar donuyor."""
     lora_config = LoraConfig(
@@ -132,6 +140,7 @@ def apply_lora(model, config: dict):
 
 # --- Prompt formatlama -------------------------------------------------
 
+
 def build_formatting_func(tokenizer):
     """Tokenizer'ı closure ile kapatıp formatting_func döndür.
 
@@ -139,6 +148,7 @@ def build_formatting_func(tokenizer):
     kendi chat template'ini biliyor. Bu şekilde config'te model değişirse
     format otomatik adapte olur (SPEC'te hardcoded <|user|>... yerine).
     """
+
     def format_prompt(example: dict) -> str:
         messages = [
             {"role": "user", "content": example["instruction"]},
@@ -149,10 +159,12 @@ def build_formatting_func(tokenizer):
             tokenize=False,
             add_generation_prompt=False,
         )
+
     return format_prompt
 
 
 # --- Step-bazlı metric callback ----------------------------------------
+
 
 class StepMetricsCallback(TrainerCallback):
     """Her logging_steps'te konsola Türkçe özet + MLflow metric log.
@@ -182,7 +194,9 @@ class StepMetricsCallback(TrainerCallback):
 
         # Mean token accuracy — Türkçe pedagojik token tahmin doğruluğu
         if "mean_token_accuracy" in logs:
-            mlflow.log_metric("mean_token_accuracy", logs["mean_token_accuracy"], step=step)
+            mlflow.log_metric(
+                "mean_token_accuracy", logs["mean_token_accuracy"], step=step
+            )
 
         # Evaluation step
         if "eval_loss" in logs:
@@ -190,11 +204,14 @@ class StepMetricsCallback(TrainerCallback):
             mlflow.log_metric("eval_loss", logs["eval_loss"], step=step)
             if "eval_mean_token_accuracy" in logs:
                 mlflow.log_metric(
-                    "eval_mean_token_accuracy", logs["eval_mean_token_accuracy"], step=step
+                    "eval_mean_token_accuracy",
+                    logs["eval_mean_token_accuracy"],
+                    step=step,
                 )
 
 
 # --- Trainable parametre sayısı ----------------------------------------
+
 
 def log_trainable_params(model) -> None:
     """Eğitilebilir vs toplam parametre oranı — MLflow'a metric olarak."""
@@ -202,11 +219,13 @@ def log_trainable_params(model) -> None:
     total = sum(p.numel() for p in model.parameters())
     pct = 100.0 * trainable / total
 
-    mlflow.log_metrics({
-        "trainable_params": trainable,
-        "total_params": total,
-        "trainable_pct": pct,
-    })
+    mlflow.log_metrics(
+        {
+            "trainable_params": trainable,
+            "total_params": total,
+            "trainable_pct": pct,
+        }
+    )
     print(
         f"  Trainable: {trainable:,} / {total:,} ({pct:.2f}%)  "
         f"← LoRA beklenen %0.1-1 aralığında"
@@ -215,7 +234,10 @@ def log_trainable_params(model) -> None:
 
 # --- Adapter + tokenizer kaydetme --------------------------------------
 
-def save_artifacts(trainer, tokenizer, output_dir: Path, mlflow_active: bool = True) -> None:
+
+def save_artifacts(
+    trainer, tokenizer, output_dir: Path, mlflow_active: bool = True
+) -> None:
     """LoRA adapter (base model değil) + tokenizer'ı output_dir'e yaz.
 
     mlflow_active=True ise aynı artifact'leri run'a da ekler — model registry
@@ -233,6 +255,7 @@ def save_artifacts(trainer, tokenizer, output_dir: Path, mlflow_active: bool = T
 
 # --- Ana training loop --------------------------------------------------
 
+
 def train(config: dict, smoke: bool, run_name_override: str | None = None) -> None:
     """Full training pipeline: model + LoRA + SFTTrainer + MLflow wrap."""
     require_cuda()
@@ -247,9 +270,7 @@ def train(config: dict, smoke: bool, run_name_override: str | None = None) -> No
         run_name = run_name_override
     else:
         model_short = config["model"]["name"].split("/")[-1]
-        run_name = (
-            f"{model_short}-r{config['lora']['r']}-lr{config['training']['learning_rate']}"
-        )
+        run_name = f"{model_short}-r{config['lora']['r']}-lr{config['training']['learning_rate']}"
     if smoke:
         run_name += "-SMOKE"
 
@@ -257,25 +278,27 @@ def train(config: dict, smoke: bool, run_name_override: str | None = None) -> No
 
     with mlflow.start_run(run_name=run_name, tags=config["mlflow"]["run_tags"]) as run:
         # Parametreleri MLflow'a tek seferde yaz (karşılaştırma için)
-        mlflow.log_params({
-            "model": config["model"]["name"],
-            "seed": config["seed"],
-            "lora_r": config["lora"]["r"],
-            "lora_alpha": config["lora"]["lora_alpha"],
-            "lora_dropout": config["lora"]["lora_dropout"],
-            "lora_target_modules": ",".join(config["lora"]["target_modules"]),
-            "learning_rate": config["training"]["learning_rate"],
-            "num_epochs": config["training"]["num_epochs"],
-            "warmup_ratio": config["training"]["warmup_ratio"],
-            "lr_scheduler": config["training"]["lr_scheduler_type"],
-            "max_length": config["model"]["max_length"],
-            "effective_batch_size": (
-                config["training"]["per_device_train_batch_size"]
-                * config["training"]["gradient_accumulation_steps"]
-            ),
-            "quantization": "4bit_nf4",
-            "smoke_mode": smoke,
-        })
+        mlflow.log_params(
+            {
+                "model": config["model"]["name"],
+                "seed": config["seed"],
+                "lora_r": config["lora"]["r"],
+                "lora_alpha": config["lora"]["lora_alpha"],
+                "lora_dropout": config["lora"]["lora_dropout"],
+                "lora_target_modules": ",".join(config["lora"]["target_modules"]),
+                "learning_rate": config["training"]["learning_rate"],
+                "num_epochs": config["training"]["num_epochs"],
+                "warmup_ratio": config["training"]["warmup_ratio"],
+                "lr_scheduler": config["training"]["lr_scheduler_type"],
+                "max_length": config["model"]["max_length"],
+                "effective_batch_size": (
+                    config["training"]["per_device_train_batch_size"]
+                    * config["training"]["gradient_accumulation_steps"]
+                ),
+                "quantization": "4bit_nf4",
+                "smoke_mode": smoke,
+            }
+        )
 
         print(f"\n→ Model yükleniyor: {config['model']['name']}")
         model, tokenizer = setup_model_and_tokenizer(config)
@@ -299,9 +322,13 @@ def train(config: dict, smoke: bool, run_name_override: str | None = None) -> No
         sft_config = SFTConfig(
             output_dir=str(output_dir),
             num_train_epochs=config["training"]["num_epochs"],
-            max_steps=10 if smoke else -1,   # smoke = 10 step cap
-            per_device_train_batch_size=config["training"]["per_device_train_batch_size"],
-            gradient_accumulation_steps=config["training"]["gradient_accumulation_steps"],
+            max_steps=10 if smoke else -1,  # smoke = 10 step cap
+            per_device_train_batch_size=config["training"][
+                "per_device_train_batch_size"
+            ],
+            gradient_accumulation_steps=config["training"][
+                "gradient_accumulation_steps"
+            ],
             learning_rate=config["training"]["learning_rate"],
             warmup_ratio=config["training"]["warmup_ratio"],
             lr_scheduler_type=config["training"]["lr_scheduler_type"],
@@ -313,7 +340,8 @@ def train(config: dict, smoke: bool, run_name_override: str | None = None) -> No
             save_strategy="steps",
             save_steps=config["training"]["save_steps"],
             save_total_limit=config["training"]["save_total_limit"],
-            load_best_model_at_end=(not smoke) and config["training"]["load_best_model_at_end"],
+            load_best_model_at_end=(not smoke)
+            and config["training"]["load_best_model_at_end"],
             metric_for_best_model=config["training"]["metric_for_best_model"],
             fp16=config["training"].get("fp16", True),
             bf16=config["training"].get("bf16", False),
@@ -322,14 +350,16 @@ def train(config: dict, smoke: bool, run_name_override: str | None = None) -> No
             # bypass eder (T4'te BF16 grad unscale kernel'i yok — hatanın kökü).
             # Ek yarar: optimizer state 8-bit → VRAM ~%30 tasarruf.
             optim=config["training"].get("optim", "paged_adamw_8bit"),
-            max_length=config["model"]["max_length"],   # TRL 1.0+ yeni isim (eski: max_seq_length)
+            max_length=config["model"][
+                "max_length"
+            ],  # TRL 1.0+ yeni isim (eski: max_seq_length)
             seed=config["seed"],
-            report_to="none",                # MLflow'u callback üzerinden manuel yazıyoruz
+            report_to="none",  # MLflow'u callback üzerinden manuel yazıyoruz
         )
 
         trainer = SFTTrainer(
             model=model,
-            processing_class=tokenizer,      # TRL 0.11+ API; 0.10- için tokenizer=
+            processing_class=tokenizer,  # TRL 0.11+ API; 0.10- için tokenizer=
             train_dataset=dataset["train"],
             eval_dataset=dataset["eval"],
             formatting_func=build_formatting_func(tokenizer),
@@ -339,8 +369,12 @@ def train(config: dict, smoke: bool, run_name_override: str | None = None) -> No
 
         # SIGINT/SIGTERM için graceful shutdown sinyali (KeyboardInterrupt yakalar)
         def handle_interrupt(signum, frame):
-            print("\n\n[UYARI] Interrupt sinyali alındı — graceful shutdown", file=sys.stderr)
+            print(
+                "\n\n[UYARI] Interrupt sinyali alındı — graceful shutdown",
+                file=sys.stderr,
+            )
             raise KeyboardInterrupt()
+
         signal.signal(signal.SIGTERM, handle_interrupt)
 
         print(f"\n→ Training başlıyor (run: {run_name})")
@@ -351,8 +385,11 @@ def train(config: dict, smoke: bool, run_name_override: str | None = None) -> No
             final_loss = train_result.training_loss
         except KeyboardInterrupt:
             interrupted = True
-            print("\n[UYARI] Training kullanıcı tarafından iptal edildi — "
-                  "mevcut adapter kaydediliyor...", file=sys.stderr)
+            print(
+                "\n[UYARI] Training kullanıcı tarafından iptal edildi — "
+                "mevcut adapter kaydediliyor...",
+                file=sys.stderr,
+            )
             final_loss = None
 
         duration = time.monotonic() - start
@@ -360,10 +397,12 @@ def train(config: dict, smoke: bool, run_name_override: str | None = None) -> No
         # Artifact kaydetme — interrupt durumunda da çalışır (elde ne varsa kaydet)
         save_artifacts(trainer, tokenizer, output_dir)
 
-        mlflow.log_metrics({
-            "training_duration_seconds": duration,
-            **({"train_loss_final": final_loss} if final_loss is not None else {}),
-        })
+        mlflow.log_metrics(
+            {
+                "training_duration_seconds": duration,
+                **({"train_loss_final": final_loss} if final_loss is not None else {}),
+            }
+        )
         mlflow.log_param("interrupted", interrupted)
 
         print("\n" + "=" * 60)
@@ -379,11 +418,14 @@ def parse_args() -> argparse.Namespace:
         description="EduAI P2 — QLoRA fine-tuning (config.yaml + CLI override)"
     )
     parser.add_argument(
-        "--config", type=str, default="training/config.yaml",
+        "--config",
+        type=str,
+        default="training/config.yaml",
         help="Yapılandırma YAML yolu (ml/ kökünden relative)",
     )
     parser.add_argument(
-        "--smoke", action="store_true",
+        "--smoke",
+        action="store_true",
         help="Hızlı pipeline testi: max_steps=10",
     )
 
@@ -391,19 +433,27 @@ def parse_args() -> argparse.Namespace:
     # Config dosyasını duplicate etmek yerine in-memory override:
     # ayrı varyasyonlar için aynı config + farklı CLI arg'ları.
     parser.add_argument(
-        "--lora-r", type=int, default=None,
+        "--lora-r",
+        type=int,
+        default=None,
         help="Override config.lora.r (alpha otomatik r*2'ye ayarlanır)",
     )
     parser.add_argument(
-        "--lr", type=float, default=None,
+        "--lr",
+        type=float,
+        default=None,
         help="Override config.training.learning_rate",
     )
     parser.add_argument(
-        "--num-epochs", type=int, default=None,
+        "--num-epochs",
+        type=int,
+        default=None,
         help="Override config.training.num_epochs",
     )
     parser.add_argument(
-        "--run-name-suffix", type=str, default=None,
+        "--run-name-suffix",
+        type=str,
+        default=None,
         help="MLflow run adı (None ise otomatik: model-r{R}-lr{LR})",
     )
     return parser.parse_args()

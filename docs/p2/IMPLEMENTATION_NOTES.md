@@ -739,3 +739,61 @@ Yol B: P2'yi finalize, P3'e geç ⭐ SEÇİLDİ
    test 25 dakikalık başarısız training'i önler.
 5. **Fine-tuning kapsamı sınırlıdır.** Style/format kazanır; bilgi
    doğruluğu için RAG (P3) gerekir. **Doğru aleti tanı.**
+
+---
+
+## Task 6 — CI ml-quality job (2026-04-28)
+
+### Yapılan
+`.github/workflows/ci.yml`'e **Job 4 (`ml-quality`)** eklendi:
+- `ruff check ml/ --output-format=github` (GitHub Annotations)
+- `ruff format ml/ --check` (format diff fail-fast)
+- `pytest ml/tests/ -v --tb=short` (schema testleri; data yoksa skip)
+
+### Sapma 29 · Dependency graph: ml-quality TOP-LEVEL (paralel), `needs:` yok
+- **TASKS sorusu:** "lint ile paralel mi, sonra mı?"
+- **Karar:** Top-level paralel (`needs:` yok). Bu sayede:
+  - P1 (`services/api`) ve P2 (`ml/`) iki bağımsız kod alanı
+  - ml-quality kırmızı olsa P1 docker build hâlâ üretilir (deploy'a açık)
+  - Lint paralel koşar → toplam CI süresi kısalır
+- **Final dependency graph:**
+  ```
+  [lint]    [ml-quality]    ← top-level paralel
+     ↓
+   [test]                    ← P1 lint geçince
+     ↓
+  [docker-build]             ← P1 test geçince
+  ```
+
+### Sapma 30 · `pyyaml jsonschema` install adımı kaldırıldı (YAGNI)
+- **SPEC önerdi:** `pip install ruff pytest pyyaml jsonschema`
+- **Mevcut durum:** `test_data_schema.py` sadece `json` + `pathlib` + `pytest`
+  kullanıyor — yaml ve jsonschema **kullanılmıyor**.
+- **Karar:** Minimal install: `pip install ruff pytest`. CI install süresi
+  ~3-5s daha hızlı, dependency yüzeyi temiz.
+- **İleride:** Schema test config validation eklerse (örn. `config.yaml`
+  validation), `pyyaml` o zaman eklenir. Şimdiden kurmak premature.
+
+### Sapma 31 · Lokal ruff fix'leri Task 6 commit'iyle birleştirildi
+- **Tetikleyen (2026-04-28):** Lokal `ruff check ml/` ilk koşturmada **6 hata**:
+  - `F541` × 5: f-string without placeholders (`f"=== Subject Dağılımı ==="`
+    → düz string olmalı)
+  - `E741` × 1: notebook hücre 5'te `for l in char_lens` → `l` ambiguous
+- **Auto-fix:**
+  - `ruff check --fix --unsafe-fixes` → 5 F541 otomatik düzeltildi
+  - `ruff format ml/` → 5 dosya whitespace/quote normalize
+- **Manuel:** Notebook'ta `l` → `length` (NotebookEdit, JSON-aware)
+- **Sonuç:** Lokal ruff temiz, pytest 4/4 PASSED → CI yeşil bekleniyor
+- **Çıkarım:** Mevcut development setup'ında **ruff lokal kurulu değildi**;
+  pre-commit hook olmaksızın yazılan kod CI'da yakalanırdı. Task 7 öncesi
+  `pip install ruff` lokalde tavsiye edilir; veya pre-commit hook eklenir
+  (P1'de yoktu, P2 sonunda da yok — kabul edilen risk).
+
+### Lokal CI gate doğrulaması (commit öncesi)
+```bash
+ruff check ml/                  # All checks passed!
+ruff format ml/ --check         # 5 files already formatted
+cd ml && pytest tests/ -v       # 4 passed in 0.02s
+```
+Üçü de yeşil → CI'da `ml-quality` job geçecek (data dosyaları zaten commit'li,
+schema test'leri skip değil tam koşacak: `train.jsonl` + `eval.jsonl`).
