@@ -8,6 +8,16 @@
 **Klasör:** `eduai-platform/agents/`
 **Bağımlılık:** P1 çalışıyor olmalı. P2 modeli hazır olmalı (ya da mock ile başlanabilir).
 
+> **📥 P2 bağımlılık spesifik (2026-04-28 finalize sonrası):**
+> - **Base model:** `Qwen/Qwen3-4B-Instruct-2507` (Apache 2.0)
+> - **LoRA adapter:** Drive `/content/drive/MyDrive/eduai_qwen3-4b-instruct-2507_ckpt/`
+>   veya HF Hub'a push edilmiş alternatif (P3 başlangıçta karar)
+> - **Inference profili:** T4 ~22-25 sn/cevap (geliştirme yavaş);
+>   **fallback olarak Anthropic API kullanılması TASKS.md Task 3'te öneriliyor**
+> - **Adapter yükleme kod örneği:** [`docs/p2/P3_HANDOFF.md`](../p2/P3_HANDOFF.md) § 3
+> - **Inference wrapper imzası:** P3_HANDOFF.md § 3'teki `generate_answer(instruction, context, ...)`
+>   imzası `generate_node` ile uyumlu — context parametresi RAG'dan gelecek
+
 ---
 
 ## Klasör yapısı
@@ -125,7 +135,26 @@ async def retrieve_node(state: AgentState) -> AgentState:
     return {**state, "retrieved_docs": docs, "context": retriever.get_context_string(docs)}
 
 async def generate_node(state: AgentState) -> AgentState:
-    """Fine-tuned model veya Claude ile cevap üret"""
+    """Fine-tuned model veya Claude ile cevap üret.
+
+    Üç implementasyon seçeneği (P3 development'ta seçilecek):
+
+    1) **P2 fine-tuned model (Qwen3-4B + LoRA):**
+       - PeftModel.from_pretrained ile yükle (P3_HANDOFF.md § 3)
+       - Context'i system message'a ekle: "Aşağıdaki bağlamdan yararlanarak cevap ver..."
+       - tokenizer.apply_chat_template + model.generate(use_cache=True, do_sample=False)
+       - **GPU şart** (T4'te 25-35 sn latency RAG context ile)
+
+    2) **Anthropic API (geliştirme + production fallback):**
+       - claude-haiku-4-5 hızlı + ucuz, dev döngüsünü uzatmaz
+       - System: "Sen Türkçe lise eğitim asistanısın. Bağlamdan yararlanarak..."
+       - User: question + retrieved context
+
+    3) **vLLM serving (production):**
+       - Adapter merge + 4-bit AWQ → vLLM endpoint
+       - ~3-5 sn latency, batched serving
+       - P3 sonu "production gateway" task'ında ele alınır
+    """
     # Context + question → model → answer
     # Confidence'ı da hesapla (basit heuristic: cevap uzunluğu, belirsiz kelimeler vb.)
     return {**state, "answer": answer, "confidence": confidence, "attempts": state["attempts"] + 1}
@@ -238,15 +267,42 @@ volumes:
 ## requirements.txt
 
 ```
-langchain>=0.2.0
-langchain-community>=0.2.0
-langgraph>=0.1.0
-crewai>=0.28.0
-qdrant-client>=1.9.0
-sentence-transformers>=2.7.0
+# --- LangChain / LangGraph / CrewAI ---
+langchain>=0.3.0
+langchain-community>=0.3.0
+langchain-text-splitters>=0.3.0
+langgraph>=0.2.0
+crewai>=0.80.0
+
+# --- Vector DB + embeddings ---
+qdrant-client>=1.12.0
+sentence-transformers>=3.1.0
 pypdf>=4.2.0
-langchain-text-splitters>=0.2.0
+
+# --- LLM clients ---
+# Anthropic — fallback / development LLM (Sapma 27'de Claude API zaten kullanıldı P2 için)
+anthropic>=0.40.0
+
+# --- P2 adapter inference (Qwen3-4B + LoRA) ---
+# Eğer agent'lar P1 API container'ında çalışacaksa bu paketler gerekli.
+# Geliştirme aşamasında Anthropic API ile başlanırsa skip edilebilir.
+torch==2.9.1
+transformers>=4.46
+peft>=0.13
+bitsandbytes>=0.44 ; sys_platform != 'darwin'
+accelerate>=1.0
+
+# --- Dev / CI ---
+pytest>=8.3
+ruff>=0.6
 ```
+
+> **📝 Sürüm hassasiyeti uyarısı (P2'den taşınan ders):** Bu spec yazıldığında
+> üretilen pin'ler 2024 sürümleriydi. **P2'de Sapma 5** ile relaxed pin'e (>=)
+> geçildi çünkü Python 3.13'te eski torch wheel yok. P3'te de aynı yaklaşımı
+> sürdür: floor pin (`>=`) + `requirements.lock.txt` (pip freeze) ile
+> reproducibility. Ek olarak **Colab'da torch'u reinstall etme** (Sapma 26):
+> native CUDA 12.8 build'i bozulur.
 
 ---
 

@@ -1,6 +1,11 @@
 # P3 — Görev Listesi: Akıllı Ajan
 
-> P1 ayakta olmalı. P2 modeli hazır (yoksa OpenAI API ile mock başla).
+> P1 ayakta olmalı. **P2 finalize edildi (2026-04-28):** Qwen3-4B-Instruct-2507
+> + LoRA adapter Drive'da hazır. Geliştirme döngüsünde **Anthropic API mock**
+> tavsiye edilir (P2 lokal inference T4'te 25+ sn, dev'i yavaşlatır); P2 modeli
+> Task 3 sonu veya Task 5'te entegre edilir.
+>
+> **Transfer paketi (oku):** [`docs/p2/P3_HANDOFF.md`](../p2/P3_HANDOFF.md)
 
 ---
 
@@ -96,17 +101,32 @@ Proje: eduai-platform/agents/
 
 Görev: graph/ klasörünü tamamla. SPEC.md'deki state.py, nodes.py, edges.py, pipeline.py yaz.
 
-LLM için: P2 modeli henüz servis edilmiyorsa, generate_node'da OpenAI ya da Anthropic API kullan (mock olarak).
-Model servisi için: transformers pipeline ile local model da kullanılabilir.
+LLM için (P2'den taşınan rehber):
+**Geliştirme aşaması:** Anthropic API ile başla (claude-haiku-4-5 hızlı + ucuz).
+P2 fine-tuned model T4'te 25-35 sn/cevap → dev döngüsü çok yavaş. Önce
+pipeline çalışsın, sonra LLM'i değiştir.
+
+**P2 model integration (Task 3 sonu veya 5'te):**
+- Base: Qwen/Qwen3-4B-Instruct-2507
+- Adapter: Drive yolu veya HF Hub
+- Yükleme kodu: docs/p2/P3_HANDOFF.md § 3 (PeftModel.from_pretrained tam örnek)
+- Inference wrapper imzası: P3_HANDOFF.md § 3'teki generate_answer(instruction, context, ...)
+- DİKKAT (P2 öğrenilenler):
+  * trust_remote_code=False (Qwen native)
+  * dtype=torch.float16 (transformers 4.57: torch_dtype değil dtype)
+  * bitsandbytes 4-bit + prepare_model_for_kbit_training
+  * tokenizer.apply_chat_template (hardcoded prompt değil)
 
 Ekstra:
-- Her node girişinde ve çıkışında structlog ile log at
+- Her node girişinde ve çıkışında structlog ile log at (P1 pattern)
 - pipeline.py sonuna test kodu ekle:
-  state = {"question": "Tanzimat Fermanı nedir?", "subject": "tarih", "grade_level": 9, 
+  state = {"question": "Tanzimat Fermanı nedir?", "subject": "tarih", "grade_level": 9,
            "session_id": "test-123", "attempts": 0, "needs_retry": False}
   result = await pipeline.ainvoke(state)
   print(result["answer"])
   print(result["sources"])
+- LLM seçimi config-driven olsun (ENV LLM_BACKEND=anthropic|qwen3-local|vllm)
+  → P3 sonunda backend swap kolay olur
 ```
 
 ### Bunu kendin yap:
