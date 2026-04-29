@@ -1,0 +1,52 @@
+# P3 — EduAI agent (RAG + LangGraph + CrewAI) bağımlılıkları
+# ------------------------------------------------------------------------
+# Strateji P2 ml/requirements.txt'ten devralındı: floor pin (>=) okunabilir,
+# kurulum sonrası `pip freeze > agents/requirements.lock.txt` deterministik
+# reproducibility sağlar. torch sabit pin — P2 adapter inference burada
+# yapılacaksa Qwen3-4B + bitsandbytes ABI uyumu için kritik.
+# Detay/sapmalar: docs/p3/IMPLEMENTATION_NOTES.md.
+# ------------------------------------------------------------------------
+
+# --- LangChain ekosistemi: orchestration + text splitting ---
+# 2024 sonu LangChain monorepo bölündü; community/text-splitters ayrı paket.
+langchain>=0.3.0
+langchain-community>=0.3.0
+langchain-text-splitters>=0.3.0
+
+# --- LangGraph: state machine pipeline (Task 3) ---
+langgraph>=0.2.0
+
+# --- CrewAI: multi-agent orchestration (Task 4) ---
+# Not: SPEC 2024 yazıldı (>=0.80). Task 4'te güncel sürüm + breaking change kontrolü
+# şart — IMPLEMENTATION_NOTES'a sapma yazılır.
+crewai>=0.80.0
+
+# --- Vector DB + embeddings ---
+qdrant-client>=1.12.0
+sentence-transformers>=3.1.0
+pypdf>=4.2.0                     # PDF ingest (Task 1 indexer)
+
+# --- LLM client'ları ---
+# Anthropic — Task 3 dev döngüsünde primary; production'da fallback.
+# claude-haiku-4-5 hızlı + ucuz, P2 lokal inference (T4 25+ sn) yerine.
+anthropic>=0.40.0
+
+# --- P2 adapter inference (Qwen3-4B + LoRA) ---
+# SPEC § requirements.txt: API container'ında fine-tuned modelle inference yapılacaksa
+# bu paketler gerekli. Geliştirmede Anthropic API ile başlanırsa lokal kurulum
+# atlanabilir; CI'da install denenmez (ağır).
+torch==2.9.1                     # P2 ml/ ile pin uyumlu — Python 3.13 + CUDA 12.x stable
+transformers>=4.46               # 4.57+ `dtype` argümanı (Sapma 25 P2)
+peft>=0.13                       # PeftModel.from_pretrained adapter loading
+bitsandbytes>=0.44 ; sys_platform != 'darwin'   # macOS Apple Silicon'da CUDA-only paket çalışmaz
+accelerate>=1.0
+
+# --- Yapılandırma ---
+python-dotenv>=1.0               # ANTHROPIC_API_KEY, QDRANT_URL .env yüklemesi
+pydantic-settings>=2.2           # P1 config pattern'i (services/api/app/core/config.py uyumu)
+structlog>=24.1                  # P1 logging uyumlu
+
+# --- Dev / CI ---
+pytest>=8.3
+pytest-asyncio>=0.24             # async pipeline node testleri için
+ruff>=0.6

@@ -8,6 +8,9 @@ services:
     environment:
       - DEBUG=true
       - APP_NAME=EduAI API Dev
+      # P3: agents paketinin Qdrant'a ulaşması için (Task 5'te kullanılır).
+      # api → qdrant servis adı üzerinden Docker network DNS'i çözüyor.
+      - QDRANT_URL=http://qdrant:6333
     volumes:
       # Hot reload için app/ dizinini bind mount et.
       # Container'daki /app/app → host'taki services/api/app (uvicorn --reload izler).
@@ -20,3 +23,31 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    # NOT: depends_on: qdrant Task 5'te eklenecek — şu anda P1 API qdrant
+    # kullanmıyor; bağımlılık eklenirse standalone API geliştirme için
+    # `docker-compose up qdrant` zorlaması gereksiz.
+
+  # P3 — Qdrant vektör DB. Sapma 1: SPEC `latest` tag öneriyordu;
+  # reproducibility için sabit version pin'lendi. Sürüm yükseltmesi
+  # bilinçli kararla yapılır (lock dosyası mantığı).
+  qdrant:
+    image: qdrant/qdrant:v1.12.4
+    ports:
+      # 6333 = HTTP REST API (qdrant-client default).
+      # 6334 = gRPC (yüksek performans, prod batching). Şimdi açılmıyor;
+      # ihtiyaç olursa eklenir.
+      - "6333:6333"
+    volumes:
+      # Named volume → container restart'ında collection'lar kaybolmaz.
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      # Qdrant 1.9+ /readyz endpoint'i (collection yüklenme sinyali).
+      # P1 healthcheck pattern'i: `docker-compose up` ready → API ondan sonra connect.
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:6333/readyz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  qdrant_data:
