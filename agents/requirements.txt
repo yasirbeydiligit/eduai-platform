@@ -35,7 +35,11 @@ anthropic>=0.40.0
 # SPEC § requirements.txt: API container'ında fine-tuned modelle inference yapılacaksa
 # bu paketler gerekli. Geliştirmede Anthropic API ile başlanırsa lokal kurulum
 # atlanabilir; CI'da install denenmez (ağır).
-torch==2.9.1                     # P2 ml/ ile pin uyumlu — Python 3.13 + CUDA 12.x stable
+# torch floor pin: agents/ venv'i sentence-transformers ile geldikçe 2.11+
+# çekti; macOS dev için sürüm uyumu zorunlu değil (P2 ml/ Colab CUDA 12.x
+# + bitsandbytes için sabit pin'di; agents/ Linux production'da lock dosyası
+# ile sabitlenir). Detay: docs/p3/IMPLEMENTATION_NOTES.md Sapma 8.
+torch>=2.9
 transformers>=4.46               # 4.57+ `dtype` argümanı (Sapma 25 P2)
 peft>=0.13                       # PeftModel.from_pretrained adapter loading
 bitsandbytes>=0.44 ; sys_platform != 'darwin'   # macOS Apple Silicon'da CUDA-only paket çalışmaz

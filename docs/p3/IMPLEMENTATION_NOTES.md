@@ -133,6 +133,71 @@ veya küçük korpusta kalırsa fallback hazır.
 
 ---
 
+### Sapma 9 — qdrant-client 1.17.1 vs server 1.12.4 minor version mismatch
+
+**Durum:** `pip install qdrant-client>=1.12` floor pin'i 1.17.1 çekti;
+docker-compose.yml Sapma 1'de `qdrant/qdrant:v1.12.4` sabit pin'lendi.
+Client ilk request'te uyarı atar:
+> `Qdrant client version 1.17.1 is incompatible with server version 1.12.4.
+> Major versions should match and minor version difference must not exceed 1.`
+
+**Şu an etki:** Yok — index_file + scroll + create_collection + payload_index
+işlemleri tüm çalıştı, smoke test PASSED. Qdrant minor version'ları
+genellikle wire-protocol seviyesinde geriye uyumlu.
+
+**Karar:** Şimdilik uyarı korunuyor (development sinyali olarak); susturmuyoruz.
+Üç fix path mevcut:
+1. **Server upgrade** (`qdrant/qdrant:v1.13.x` veya v1.17.x): docker-compose.yml
+   güncellenir; Qdrant 1.13+ collection schema değişikliği yok.
+2. **Client pin** (`qdrant-client>=1.12,<1.13`): pip floor'u kısıtla; sentence-transformers
+   ile transitive uyumluluk denenmemiş.
+3. **`check_compatibility=False`** indexer constructor'ında: uyarı susar
+   ama latent bug'lar gizlenir.
+
+Task 5 sırasında P1 API container'ı qdrant-client çekecek; o zaman compatibility
+yeniden değerlendirilir.
+
+### Sapma 10 — `langchain-text-splitters` Türkçe-uyumlu separator'lar
+
+**Spec:** `RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)`
+**Uygulanan:** Default separator listesi yerine `["\n\n", "\n", ". ", "? ",
+"! ", "; ", " ", ""]`.
+**Gerekçe:** LangChain default İngilizce odaklı (`["\n\n", "\n", " ", ""]`);
+Türkçe metinde cümle sonu noktalama (".", "?", "!") agresif chunk sınırı olur.
+Smoke test'te 5 chunk doğru cümle sınırlarında bölündü → metadata page_num=1
+korundu, en kısa chunk 80+ char (mantıklı).
+
+### Sapma 11 — chunk_size karakter-bazlı (token değil)
+
+**Spec:** `chunk_size=500` belirtilmiş, birim açıkça yazılmamış.
+**Uygulanan:** Karakter bazlı (`length_function=len` default).
+**Gerekçe:** Token-aware splitting embedder tokenizer'ına bağımlılık ekler
+(import zamanı +tokenizer load). Karakter bazlı 500 ≈ 120 Türkçe token,
+e5-large 512 token max sequence içinde rahatça sığar. İleride yetersiz
+gelirse `RecursiveCharacterTextSplitter.from_huggingface_tokenizer(...)`
+ile token-aware'e geçilir.
+
+### Sapma 8 — `torch==2.9.1` sabit pin → `torch>=2.9` floor pin
+
+**Spec/önceki karar:** agents/requirements.txt'te P2 ml/ pattern'inden
+`torch==2.9.1` sabit pin devralındı.
+**Uygulanan:** `torch>=2.9` floor pin.
+**Gerekçe:** agents/ venv'i kurulduğunda sentence-transformers transitive
+olarak torch 2.11.0 çekti (sürüm 5.4.1 daha güncel torch tercih ediyor).
+Sabit pin'i zorlamak için downgrade gerekirdi — gereksiz çünkü:
+1. agents/ macOS dev için sürüm uyumu kritik değil; bitsandbytes platform
+   guard ile zaten Linux-only.
+2. P2 ml/'in sabit pin gerekçesi (Colab CUDA 12.x + bitsandbytes ABI) burada
+   yok; agents/ Anthropic API üzerinden geliştirilecek (Task 3 dev path).
+3. Lokal Qwen3 inference Task 5'te entegre olursa, o zaman ml/ venv'inden
+   import etmek veya lokal Linux production lock dosyası yazmak daha
+   pragmatik.
+
+**Switch path:** Production Linux + CUDA için `agents/requirements.lock.txt`
+(pip freeze) eklendiğinde torch sürümü o lock dosyasıyla sabitlenir.
+
+---
+
 ## Açık konular (devam ediyor)
 
 (F-1 ÇÖZÜLDÜ — Sapma 7'ye taşındı.)
