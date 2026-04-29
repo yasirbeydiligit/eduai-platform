@@ -76,18 +76,66 @@ sinyali; basit `/livez` collection ready demeyebilir.
 
 ---
 
-## Task 1+ için flag'lenmiş açık konular
+## Task 1 — RAG bileşenleri (devam ediyor)
 
-(Henüz uygulanmadı; ilgili task başında karar verilecek.)
+### Sapma 7 — Embedding modeli: `intfloat/multilingual-e5-large` (SPEC: emrecan)
 
-### F-1 (Task 1) — Embedding modeli seçimi: SPEC vs CONCEPT çelişkisi
+**Spec:** `emrecan/bert-base-turkish-cased-mean-nli-stsb-tr` (2021, 768-dim)
+**Uygulanan:** `intfloat/multilingual-e5-large` (1024-dim, instruction prefix support)
 
-**SPEC.md:** `emrecan/bert-base-turkish-cased-mean-nli-stsb-tr` (2021)
-**CONCEPT.md § 2:** "2-3 modeli kıyaslamaya değer — `BAAI/bge-m3`,
-`intfloat/multilingual-e5-large`, `Alibaba-NLP/gte-multilingual-base`"
+**Süreç:** İki aşamalı empirical benchmark (`agents/scripts/embedding_benchmark*.py`).
 
-Plan: Task 1'de mini benchmark (50 soru × 3 model × cosine similarity ortalama)
-~30 dk. Sonuç IMPLEMENTATION_NOTES'a Sapma olarak kaydedilir.
+**1. tur** — 9 paragraf × 5 soru, 4 model (BAAI/bge-m3, multilingual-e5-large,
+Alibaba-NLP/gte-multilingual-base, emrecan):
+- 3 model %100 tie (test ayrım yapamadı; anahtar kelime ortaklığı yüksekti)
+- bge-m3 encode latency 65 sn (multi-vector hesabı ağır) → elendi
+- gte-multilingual-base hata: ST 5.4.1 + custom modeling.py ABI çakışması
+  (`index out of bounds 0..93`) → elendi
+- e5-large vs emrecan tie kaldı
+
+**2. tur (HARD)** — 21 paragraf × 10 paraphrase-ağır soru, distractor'larla
+(aynı konuda yakın yanlışlar: 5 Osmanlı reformu, Newton+Kepler+Galilei,
+Servet-i Fünun ↔ Tanzimat edebiyatı):
+- Her iki model %100 top-1 (10/10), %100 top-3
+- Skor margin'i belirleyici fark:
+  - **e5-large** avg score 0.859, min 0.832 (geniş margin)
+  - **emrecan** avg score 0.680, min 0.580 (Q3/Q4 distractor-yakın çiftlerde
+    skor 0.58'e iniyor → büyük korpusta cross-distractor kayıp riski)
+- Latency: emrecan 7x daha hızlı (0.014 vs 0.105 sn/metin) ama indexing
+  offline + query-time ~6 ms fark kullanıcı algılaması altında.
+
+**Gerekçe:**
+1. Confidence margin: LangGraph validator node'u "score < threshold → retry"
+   pattern'i ile çalışacak (Task 3); e5-large'da meaningful threshold (~0.7)
+   mümkün, emrecan'da tüm scoreler 0.5-0.8 arasında dar dağılmış → threshold
+   anlamsız.
+2. Generalization: emrecan 2021, küçük/Türkçe-only korpusta iyi ama
+   production'da binlerce chunk + paraphrase çeşitliliği arttıkça e5-large
+   margin avantajı önem kazanır.
+3. P2 dersi: "Spec uyarılarını küçümseme — Phi-3 'orta' diyordu, devam
+   ettik, kaybettik." Empirical kanıt margin farkını gösterdi → modern
+   model risk-yönetimli seçim.
+4. Instruction prefix (`query: ` / `passage: `) E5 ailesi native; query
+   ve döküman semantiklerini ayrı temsil ediyor → retrieval kalitesi ek
+   artırılabilir.
+
+**Risk yönetimi:** `EMBEDDING_MODEL` ENV var ile config-driven; `rag/embeddings.py`
+single line switch ile emrecan'a geçilebilir. Production'da latency kritikse
+veya küçük korpusta kalırsa fallback hazır.
+
+**Maliyet:** e5-large indirme 2.1 GB HF cache; encode CPU/M-series MPS'te
+~0.1 sn/metin (binlerce chunk indeks ~5-15 dk).
+
+**Kanıt dosyaları:**
+- `agents/scripts/embedding_benchmark.py` (4 model, kolay test)
+- `agents/scripts/embedding_benchmark_hard.py` (2 model, distractor + paraphrase)
+- `agents/data/seed_corpus.txt`, `agents/data/seed_corpus_hard.txt`
+
+---
+
+## Açık konular (devam ediyor)
+
+(F-1 ÇÖZÜLDÜ — Sapma 7'ye taşındı.)
 
 ### F-2 (Task 4) — `crewai>=0.80.0` floor pin tarihi
 

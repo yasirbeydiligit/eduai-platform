@@ -1,0 +1,31 @@
+# Seed Corpus — Embedding Model Mini Benchmark
+# 9 paragraf, 3 konu (tarih / fizik / edebiyat)
+# Format: ##P<id> başlığı + bir paragraf metni. Boş satır ayırıcı.
+# Bu dosya benchmark scripti tarafından parse edilir; ##P satırlarına dokunma.
+
+##P0
+Tanzimat Fermanı 3 Kasım 1839 tarihinde Sultan Abdülmecid döneminde Mustafa Reşit Paşa tarafından Gülhane Hatt-ı Hümâyûnu adıyla okundu. Fermanla birlikte tebaanın can ve mal güvenliği güvence altına alındı, vergilerin adil toplanması ve askerlik usulünün düzenlenmesi gibi reformlar başlatıldı. Bu belge, Osmanlı İmparatorluğu'nda modernleşme sürecinin resmi başlangıcı kabul edilir.
+
+##P1
+Islahat Fermanı 1856 yılında Tanzimat'ı tamamlayıcı nitelikte yayımlandı. Gayrimüslim tebaaya devlet memurluğu, askerlik ve mahkemelerde eşitlik tanıdı; cizye vergisi kaldırıldı, kilise ve havra inşasına izin verildi. Avrupalı devletlerin Paris Antlaşması öncesi baskısıyla hazırlandığı için iç dengeleri sarsacak unsurlar barındırıyordu.
+
+##P2
+II. Meşrutiyet 23 Temmuz 1908'de İttihat ve Terakki Cemiyeti'nin baskısıyla ilan edildi. Sultan II. Abdülhamid askıda tuttuğu Kanun-ı Esasi'yi yeniden yürürlüğe koydu, parlamento Meclis-i Mebusan tekrar açıldı. Çok partili siyasal yaşamın ilk denemesi sayılır ancak 31 Mart Vakası ile büyük bir krize girdi.
+
+##P3
+Newton'un birinci yasası eylemsizlik prensibini açıklar: bir cisme net dış kuvvet etki etmediği sürece duran cisim durur, hareket halindeki cisim sabit hızla doğrusal hareketine devam eder. Bu yasa, klasik mekaniğin temel ilkesi olup hareket halindeki cismin neden hareketini sürdürdüğünü açıklar.
+
+##P4
+Newton'un ikinci yasası ivme ile kuvvet arasındaki ilişkiyi tanımlar: bir cisme uygulanan net kuvvet, cismin kütlesi ile kazandığı ivmenin çarpımına eşittir. Matematiksel ifadesi F=m·a şeklindedir. Sabit kütleli bir cisme daha büyük kuvvet uygulandığında ivme orantılı olarak artar.
+
+##P5
+Newton'un üçüncü yasası etki-tepki prensibini ortaya koyar: her etkiye karşı eşit büyüklükte ve zıt yönde bir tepki vardır. İki cisim arasındaki kuvvetler her zaman çift olarak görülür; bir cisim diğerine kuvvet uygularken kendisi de aynı şiddette ters yönde kuvvete maruz kalır. Roket motoru bu yasanın klasik bir uygulamasıdır.
+
+##P6
+Mehmet Akif Ersoy 1873-1936 yılları arasında yaşamış İstiklal Marşı'nın yazarıdır. Safahat adlı şiir kitabında toplumsal ve dini temaları işledi, sade Türkçe ile halkın duygularına seslendi. Birinci Dünya Savaşı sonrası Mısır'a gitti, ömrünün son yıllarını orada geçirdi.
+
+##P7
+Yahya Kemal Beyatlı modern Türk şiirinin kurucularından biri olarak kabul edilir. Eski şiirin estetiğini Batı modernizmiyle birleştirdi, "Açık Deniz", "Sessiz Gemi" ve "Endülüs'te Raks" gibi şiirleriyle tanındı. Cumhuriyet dönemi diplomatlık görevleri sırasında Madrid, Varşova ve İslamabad gibi başkentlerde bulundu.
+
+##P8
+Servet-i Fünun edebiyat akımı 1896-1901 yılları arasında etkili oldu. Tevfik Fikret yönetimindeki dergi etrafında toplanan yazarlar Fransız sembolizminden ve parnasizmden etkilendiler, sanat sanat içindir anlayışını benimsediler. Halit Ziya Uşaklıgil'in romanları bu dönemin en olgun ürünlerindendir.

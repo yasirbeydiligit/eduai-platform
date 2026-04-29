@@ -1,0 +1,70 @@
+# Seed Corpus (HARD) — Embedding ayrım gücü testi.
+# 21 paragraf, 4 konu, her konu içinde semantik DISTRACTOR'lar:
+#   - Osmanlı reformları (Sened-i İttifak ↔ Tanzimat ↔ Islahat ↔ I. Meşrutiyet ↔ II. Meşrutiyet)
+#   - Newton + Kepler + Galilei (yakın klasik mekanik kavramları)
+#   - Edebiyat (Tanzimat / Servet-i Fünun / Cumhuriyet — yakın akımlar + isimler)
+#   - Matematik temel kavramları (türev ↔ integral, fonksiyon ↔ Pisagor)
+# Sorular paraphrase ağır: paragraftaki kelimelerin direkt eşi az.
+
+##P0
+Sened-i İttifak 1808 yılında Sultan II. Mahmud döneminde ayanlarla merkezi yönetim arasında imzalandı. Ayanların özerkliğini tanırken karşılığında merkezi otoriteyi destekleme yükümlülüğü getirdi. Bu belge Osmanlı tarihinde padişahın yetkilerini yazılı olarak ilk kez sınırlandıran metin sayılır ancak halka değil yerel güç odaklarına yöneliktir.
+
+##P1
+Tanzimat Fermanı 3 Kasım 1839'da Sultan Abdülmecid döneminde Mustafa Reşit Paşa tarafından Gülhane'de okundu. Tebaaya can ve mal güvenliği güvence altına alındı, vergilerin adil toplanması ve düzenli askerlik hizmeti getirildi. Modernleşme sürecinin halka açık ilk resmi adımı kabul edilir.
+
+##P2
+Islahat Fermanı 1856 yılında Sultan Abdülmecid döneminde Tanzimat'ı tamamlayıcı nitelikte yayımlandı. Gayrimüslim tebaaya devlet memurluğu, askerlik ve mahkemelerde eşitlik tanıdı; cizye vergisi kaldırıldı. Paris Antlaşması müzakereleri öncesi Avrupalı devletlerin baskısıyla hazırlanmıştır.
+
+##P3
+Kanun-ı Esasi 23 Aralık 1876'da Sultan II. Abdülhamid döneminde Mithat Paşa öncülüğünde ilan edildi. Osmanlı'nın ilk anayasası olup parlamento (Meclis-i Mebusan) ve seçim sistemi getirdi. Sened-i İttifak'tan sonra padişah yetkilerini metinsel olarak sınırlandıran ilk kapsamlı belgedir; iki yıl sonra II. Abdülhamid tarafından askıya alındı.
+
+##P4
+II. Meşrutiyet 23 Temmuz 1908'de İttihat ve Terakki Cemiyeti'nin baskısıyla ilan edildi. Sultan II. Abdülhamid askıda tuttuğu Kanun-ı Esasi'yi yeniden yürürlüğe koydu, Meclis-i Mebusan tekrar açıldı. Çok partili siyasal yaşamın ilk ciddi denemesi sayılır.
+
+##P5
+31 Mart Vakası 13 Nisan 1909'da İstanbul'da çıkan ayaklanmadır. Meşrutiyet karşıtları İttihat ve Terakki yönetimini hedef aldı; Hareket Ordusu Selanik'ten gelerek isyanı bastırdı. Sonucunda II. Abdülhamid tahttan indirildi ve V. Mehmed Reşad padişah oldu.
+
+##P6
+Newton'un birinci yasası eylemsizlik prensibini açıklar: bir cisme net dış kuvvet etki etmediği sürece duran cisim durur, hareket halindeki cisim sabit hızla doğrusal hareketine devam eder. Otomobil aniden frenlerken yolcuların öne doğru savrulması bu yasanın günlük örneğidir.
+
+##P7
+Newton'un ikinci yasası kuvvet ile ivme arasındaki ilişkiyi tanımlar: bir cisme uygulanan net kuvvet, cismin kütlesi ile kazandığı ivmenin çarpımına eşittir (F=m·a). Sabit kütleli bir cisme daha büyük kuvvet uygulandığında kazanılan hızlanma orantılı olarak artar.
+
+##P8
+Newton'un üçüncü yasası etki-tepki ilkesini ortaya koyar: her etkiye karşı eşit büyüklükte ve zıt yönde bir tepki vardır. Roket motorunun geriye doğru gaz püskürterek ileri ivmelenmesi bu yasanın klasik teknolojik uygulamasıdır.
+
+##P9
+Kepler'in gezegen hareket yasaları Newton'dan önce 17. yüzyıl başlarında formüle edildi. Birinci yasaya göre gezegenler Güneş etrafında elips yörüngede dolaşır; ikinci yasa eşit zamanlarda eşit alan tarama ilkesini, üçüncüsü yörünge periyodunun büyük yarı eksen küpüne orantısını ifade eder.
+
+##P10
+Galileo Galilei 17. yüzyıl başlarında eğik düzlemde yaptığı deneylerle eylemsizlik fikrinin temellerini attı. Aristoteles'in "hareket için sürekli kuvvet gerekir" kabulünü çürüttü ve sürtünme yokken bir cismin hızını koruyacağını savundu. Newton birinci yasasını bu gözlem üzerine kurdu.
+
+##P11
+Mehmet Akif Ersoy 1873-1936 yılları arasında yaşamış İstiklal Marşı'nın yazarıdır. Safahat adlı şiir kitabında toplumsal ve dini temaları işledi. Birinci Dünya Savaşı sonrası Mısır'a gitti ve ömrünün son yıllarını orada geçirerek 1936'da Kahire'de hayatını kaybetti.
+
+##P12
+Yahya Kemal Beyatlı 1884-1958 yılları arasında yaşamış modern Türk şiirinin kurucularından biri kabul edilir. Eski şiirin estetiğini Batı modernizmiyle birleştirdi; Açık Deniz, Sessiz Gemi ve Endülüs'te Raks gibi şiirleriyle tanındı. Cumhuriyet döneminde diplomatlık görevleriyle Madrid ve Varşova'da bulundu.
+
+##P13
+Servet-i Fünun edebiyat akımı 1896-1901 yılları arasında etkili oldu. Tevfik Fikret yönetimindeki dergi etrafında toplanan yazarlar Fransız sembolizminden ve parnasizmden etkilendiler; sanat sanat içindir anlayışını benimsediler. Halit Ziya Uşaklıgil bu dönemde roman alanında öne çıktı.
+
+##P14
+Tanzimat edebiyatı 1860 sonrasında Şinasi, Namık Kemal ve Ziya Paşa öncülüğünde gelişti. Batı kaynaklı tiyatro, gazete ve roman türleri Türk edebiyatına bu dönemde girdi. Halkı aydınlatma ve toplumsal sorunları işleme amacı belirgin olduğundan sanatın toplumsal işlevi vurgulandı.
+
+##P15
+Cumhuriyet dönemi Türk romanı 1923 sonrası özellikle Yakup Kadri Karaosmanoğlu, Halide Edip Adıvar ve Reşat Nuri Güntekin'in eserleriyle olgunlaştı. Köy ve toplumsal değişim temaları öne çıktı; Yakup Kadri'nin Yaban'ı milli mücadele dönemine eleştirel bakar.
+
+##P16
+Halit Ziya Uşaklıgil 1865-1945 yılları arasında yaşamış romancıdır. Servet-i Fünun grubunun en önemli roman yazarı kabul edilir; Mai ve Siyah ile Aşk-ı Memnu eserlerinde Batılı roman tekniğini Türk edebiyatına başarıyla uyarladı. Olay örgüsü ve psikolojik derinlik anlayışı dönemine göre yenilikçidir.
+
+##P17
+Pisagor teoremi dik üçgenin kenar uzunlukları arasındaki temel ilişkiyi ifade eder: dik kenarların karelerinin toplamı hipotenüsün karesine eşittir (a²+b²=c²). Antik Yunan matematiğinin temel buluşlarından biri olup geometride ölçüm ve doğrulama için sıkça kullanılır.
+
+##P18
+Fonksiyon matematiğin temel kavramlarından biri olup bir tanım kümesindeki her elemanı değer kümesinde tek bir elemana eşleyen kuraldır. Doğrusal, polinom ve trigonometrik gibi farklı türleri vardır; girdi-çıktı ilişkisini formel olarak betimler.
+
+##P19
+Türev bir fonksiyonun belirli bir noktadaki anlık değişim hızını verir; geometrik olarak teğet doğrunun eğimine karşılık gelir. Limit kavramı üzerine inşa edilmiştir ve fizikte hız, kimyada reaksiyon hızı gibi anlık oran problemlerinde kullanılır.
+
+##P20
+İntegral türevin tersi olarak fonksiyonun belirli aralıkta birikimsel toplamını verir; geometrik anlamı eğri altında kalan alandır. Belirli ve belirsiz integraller farklı kullanım alanlarına sahiptir; fizikte yol, hacim ve iş hesaplamalarında kullanılır.
