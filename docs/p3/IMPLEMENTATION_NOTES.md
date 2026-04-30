@@ -177,6 +177,63 @@ e5-large 512 token max sequence içinde rahatça sığar. İleride yetersiz
 gelirse `RecursiveCharacterTextSplitter.from_huggingface_tokenizer(...)`
 ile token-aware'e geçilir.
 
+## Task 2 — RAG retriever
+
+### Sapma 12 — `retrieve()` sync API (SPEC örnekte `await ... .retrieve(...)`)
+
+**Spec:** `nodes.py` örneğinde `await retriever.retrieve(...)` yazıyor.
+**Uygulanan:** `EduRetriever.retrieve()` sync.
+**Gerekçe:** `qdrant-client` blocking API kullanıyor; `AsyncQdrantClient` ayrı
+ama agents/ tek-flag stratejisinde gerek yok. LangGraph node'u (Task 3) `async def`
+olabilir ve içinde sync fonksiyon çağırabilir → API basit, type ergonomi yüksek.
+Eğer Task 3'te node throughput sorunu çıkarsa `AsyncQdrantClient`'a geçiş
+tek `__init__` değişikliği.
+
+### Sapma 13 — `Document` tipi: `langchain_core.documents.Document`
+
+**Spec:** Sadece "Document" diyor, tip spesifik değil.
+**Uygulanan:** `langchain_core.documents.Document`.
+**Gerekçe:** LangGraph retrieve_node (Task 3) ve CrewAI tool (Task 4) zaten
+LangChain ekosistemi → ortak tip integration kolaylığı; ek wrapper sınıfı
+yaratmak gereksiz abstraction olur (P2 dersi: "premature abstraction yok").
+
+### Sapma 14 — Score `metadata["score"]`'da saklanıyor
+
+**Spec:** Dönüş tipi `list[Document]`, score yok.
+**Uygulanan:** Cosine similarity skoru `metadata["score"]` altında.
+**Gerekçe:** Task 3 validator node'u "score < threshold → retry" pattern'i
+ile çalışacak (LangGraph conditional edges); skor erişimi şart. Tuple
+`(Document, float)` döndürmek SPEC imzasını bozar; metadata'da saklamak
+hem geriye uyumlu hem de tüketici tarafta `doc.metadata["score"]` ergonomik.
+
+### Sapma 15 — `get_context_string` formatı: numaralı + Türkçe header
+
+**Spec:** Sadece "chunk'ları tek string'e birleştir" diyor, format belirsiz.
+**Uygulanan:**
+```
+[1] (kaynak: tarih_tanzimat.txt, sayfa: 0)
+<chunk metni>
+
+[2] (kaynak: ...)
+...
+```
+
+**Gerekçe:**
+1. **Numaralandırma** model'in alıntı yapmasını kolaylaştırır (`[1]'de
+   söylendiği gibi...`); pedagojik tonda doğal.
+2. **Kaynak + sayfa header** validator/UI'da source listesi çıkarmak için
+   parse edilebilir (Task 3 format_node bu metadata'yı zaten state'ten
+   okuyacak ama context string'in kendisi de erişilebilir kalsın).
+3. Türkçe (kaynak, sayfa) → P1+P2 disiplini, model'in Türkçe ton'unu
+   bozmaz.
+
+**Empirical doğrulama:** Test "Tanzimat Fermanı ne zaman çıktı?" sorusunda
+top-1 score=0.9044 (E5-large benchmark avg 0.86'nın üzerinde) → tutarlı
+yüksek kalite. Subject filter (tarih) tüm 4 sonucu döndürdü, fizik filter
+0 sonuç → filter syntax doğru.
+
+---
+
 ### Sapma 8 — `torch==2.9.1` sabit pin → `torch>=2.9` floor pin
 
 **Spec/önceki karar:** agents/requirements.txt'te P2 ml/ pattern'inden
