@@ -177,6 +177,102 @@ e5-large 512 token max sequence içinde rahatça sığar. İleride yetersiz
 gelirse `RecursiveCharacterTextSplitter.from_huggingface_tokenizer(...)`
 ile token-aware'e geçilir.
 
+## Task 4 — CrewAI multi-agent
+
+### Sapma 22 — F-2 ÇÖZÜLDÜ: CrewAI `>=0.80.0` → `1.14.3` (major bump)
+
+**Spec:** `crewai>=0.80.0` (2024 yazımı).
+**Uygulanan:** `crewai==1.14.3` yüklü; floor pin koruyor (>=0.80) ama
+gerçekte 1.x major.
+**API değişiklikleri:** Çok minimal — Pydantic-driven kwargs uyumlu kaldı:
+- `Agent(role=..., goal=..., backstory=..., tools=[...], llm=..., verbose=True)`
+- `Task(description=..., expected_output=..., agent=..., context=[...])`
+- `Crew(agents=..., tasks=..., process=Process.sequential, verbose=True)`
+- `from crewai.tools import tool, BaseTool` decorator pattern aynı.
+
+**Tek değişen:** LLM provider config. CrewAI 1.x **LiteLLM wrapper'ı** içeri
+gömüldü → `from crewai import LLM` ile kullanılıyor. Model string'i provider
+prefix'li: `anthropic/claude-haiku-4-5`. ANTHROPIC_API_KEY ENV otomatik
+çekilir.
+
+**requirements.txt güncellemesi gerek mi?** Hayır — `crewai>=0.80.0` floor
+pin'i 1.14.3'ü zaten çekiyor. Ek pin gerek değil; 2.x'e major bump'a
+karşı `<2` cap eklenebilir gelecekte.
+
+### Sapma 23 — LLM provider prefix `anthropic/<model>` (LiteLLM)
+
+**Durum:** CrewAI Agent'lara LLM atanırken `LLM(model="claude-haiku-4-5")`
+denemesi LiteLLM auto-detect'i provider'ı bulamayabilir.
+**Uygulanan:** `LLM(model="anthropic/claude-haiku-4-5")` — explicit prefix.
+**Gerekçe:** LiteLLM 100+ provider destekliyor; explicit prefix ambiguity
+önler ve production'da daha güvenilir. Sapma 16 (graph/llm.py'da Anthropic
+SDK direkt kullanılıyor) ile farklı: LangGraph node'ları AsyncAnthropic ile,
+CrewAI agent'ları LiteLLM ile çağırıyor → iki ayrı çağrı yolu, aynı API
+key paylaşılıyor.
+
+### Sapma 24 — Writer "Kaynaklar" hallucination — ÇÖZÜLDÜ (prompt fix)
+
+**Gözlem (ilk smoke):** Writer cevabın sonuna **bağlamda olmayan** kitap
+referansları ekledi:
+> "- Newton, I. (1687). *Principia Mathematica* – Hareket Yasaları"
+> "- Osmanlı Arşivi. *Tanzimat Reformları ve Kurumsal Dönüşüm*"
+
+**Kök neden:** Researcher → Writer arası context **özet** olarak akıyor
+(raw chunk değil); Writer "akademik kaynak listesi" boşluğunu uydurarak
+doldurdu. Backstory "10 yıllık öğretmen" personası bu refleksi besliyordu.
+
+**Uygulanan fix (iki katmanlı):**
+1. **Writing task description** (`agents/crew/tasks.py`): "KAYNAKLAR bölümü
+   kuralları (KRİTİK)" başlığı + 3 explicit kural:
+   - Sadece Researcher çıktısında `[kaynak: <dosya>.txt]` formatındaki
+     dosya adlarını kullan.
+   - Kitap/yazar/tarih/yayınevi/ISBN/dergi/link EKLEME.
+   - Akademik referans formatı (APA/MLA) kullanma.
+2. **Writer agent backstory** (`agents/crew/agents.py`): "UYDURMA YAYIN
+   BİLGİSİ yazmazsın — sadece sana gerçekten verilen dosya adlarını
+   referans gösterirsin."
+
+**Re-test sonucu:** Yeni "Kaynaklar" çıktısı:
+```
+- fizik_newton.txt: Newton'un hareket yasaları (I., II., III. yasalar)
+- tarih_tanzimat.txt: Osmanlı'nın Tanzimat dönemi reformları ve modernleşme süreci
+```
+Sıfır uydurma yayın bilgisi; sadece dosya adı + içerik etiketi (talep
+edilen format).
+
+**Geriye kalan risk:** Bu prompt-level fix; LLM'in bambaşka bir bağlamda
+benzer halüsine yapma olasılığı tamamen sıfırlanmadı. Production'da
+**post-validator** (LangGraph validate_node benzeri, CrewAI çıktısına
+uygulanan kalite kontrol) eklenebilir — Task 5/6 sonrası eval set
+empirik olarak gösterirse.
+
+### Sapma 25 — Token cost gözlemi (8827 token / 3 LLM call)
+
+**Durum:** Smoke test 8827 toplam token (~$0.04 claude-haiku-4-5'te).
+3 LLM call: Researcher tool reasoning + Writer reasoning + final.
+
+**Etki:**
+- LangGraph pipeline (Task 3): tek LLM call, ~3000 token, ~$0.013
+- CrewAI crew (Task 4): 3 LLM call, ~8800 token, ~$0.04 — **3x maliyet**
+
+**Karar:** CrewAI sadece **karmaşık (multi-disciplinary) sorular** için
+kullanılmalı (Task 5'te endpoint routing); basit sorularda LangGraph yeter.
+Bu zaten CONCEPT.md'nin önerdiği mimari ("LangGraph ana, CrewAI karmaşık
+sorular"). Maliyet bilinci eklendi.
+
+### Smoke test sonucu
+
+`PYTHONPATH=. python -m agents.crew.test_crew`:
+- Soru: "Newton'un hareket yasaları ve Osmanlı'nın modernleşme süreci
+  arasında benzer bir dinamik var mı? Açıkla."
+- Researcher iki ayrı RAG çağrısı yaptı (fizik + tarih subject filter)
+- Writer F=m·a → Tanzimat dış kuvvet/kütle/ivme analojisi kurdu
+- Eylemsizlik prensibi → toplumsal direniş bağlantısı
+- Markdown formatı, başlıklar, listeler tam
+- Token: 8827 total (3 successful_requests)
+
+---
+
 ## Task 3 — LangGraph pipeline
 
 ### Sapma 16 — Ek `agents/graph/llm.py` modülü (SPEC'te yok)
