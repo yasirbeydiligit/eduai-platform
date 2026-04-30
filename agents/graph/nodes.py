@@ -90,16 +90,30 @@ def _log_node(name: str):
 # --- Node'lar ---
 
 
+# Module-level retriever singleton — Sapma 21 fix.
+# İlk `retrieve_node` çağrısında oluşturulur, sonraki tüm çağrılarda paylaşılır.
+# Lifespan'de `_get_retriever()` çağrısı yapılırsa (FastAPI Task 5) ilk
+# request'in cold-start cezasını da elimine eder.
+# Test reset: `agents.graph.nodes._retriever_singleton = None`.
+_retriever_singleton: EduRetriever | None = None
+
+
+def _get_retriever() -> EduRetriever:
+    """Module-level retriever — lifespan/startup'ta pre-warm için public-ish."""
+    global _retriever_singleton
+    if _retriever_singleton is None:
+        _retriever_singleton = EduRetriever()
+    return _retriever_singleton
+
+
 @_log_node("retrieve")
 async def retrieve_node(state: AgentState) -> dict:
     """Kullanıcı sorusunu Qdrant retriever'la 4 chunk'a indir.
 
     Retriever sync (Sapma 12) → direkt çağrılır; LangGraph node async olsa da
-    içinde sync IO kabul.
+    içinde sync IO kabul. Singleton retriever Sapma 21 fix.
     """
-    # Singleton-ish: her node call'da retriever oluştur — embedder lazy-load
-    # cache'li, tekrar maliyeti minimal. İleride global instance taşıyabiliriz.
-    retriever = EduRetriever()
+    retriever = _get_retriever()
     docs = retriever.retrieve(
         query=state["question"],
         subject=state.get("subject"),

@@ -177,6 +177,117 @@ e5-large 512 token max sequence içinde rahatça sığar. İleride yetersiz
 gelirse `RecursiveCharacterTextSplitter.from_huggingface_tokenizer(...)`
 ile token-aware'e geçilir.
 
+## Task 5 — P1 API entegrasyonu
+
+### Sapma 26 — Monorepo PYTHONPATH cascade
+
+**Spec:** TASKS.md "Monorepo yapısı için PYTHONPATH'e dikkat et" — strateji
+belirsiz.
+**Uygulanan:** Lokal dev başlangıcı:
+```bash
+cd services/api
+PYTHONPATH=$(pwd):$(pwd)/../.. uvicorn app.main:app --port 8000
+```
+Yani PYTHONPATH'a iki yol: `services/api` (P1 `app.X` import'ları için)
++ repo root (`agents.X` import'ları için).
+**Gerekçe:** P1 mevcut `from app.routers import documents` pattern'ini
+kırmadan agents/ entegrasyonunu sağlamak. Production Docker'da Dockerfile
+WORKDIR=/app/services/api + COPY agents/ /app/agents ile aynı etki.
+
+### Sapma 27 — Shared `.venv-agents` venv (services/api ayrı kurulum yok)
+
+**Durum:** services/api/requirements.txt sadece fastapi/uvicorn/pydantic-
+settings/structlog/python-multipart. agents/requirements.txt LangChain +
+LangGraph + CrewAI + sentence-transformers + torch + ...
+**Uygulanan:** Tek venv `.venv-agents`'a her ikisi yüklendi:
+```bash
+pip install -r agents/requirements.txt
+pip install -r services/api/requirements.txt
+```
+**Gerekçe:** Lokal dev için iki ayrı venv yönetmek pragmatik değil; aynı
+Python süreci her ikisini kullanıyor. Production Docker'da services/api
+container'ı her iki requirements'ı yükler.
+
+### Sapma 28 — `DocumentUploadResponse.chunks_indexed` field
+
+**Spec:** SPEC.md DocumentUploadResponse şemasında bu alan yoktu.
+**Uygulanan:** `chunks_indexed: int = Field(default=0, ge=0)`.
+**Gerekçe:** TASKS.md ekstra gereksinimi: "Response'a 'chunks_indexed'
+sayısını ekle". Default=0: P1 endpoint'lerini geriye uyumlu kılar
+(eski response model'leri 0 alır), duplicate-skip senaryosunda da 0
+döner ve "yeni chunk yüklenmedi" anlamı net.
+
+### Sapma 29 — Tempfile pattern (UploadFile → indexer.index_file)
+
+**Durum:** `DocumentIndexer.index_file()` `Path` bekliyor; FastAPI
+`UploadFile` stream/bytes API'si.
+**Uygulanan:** `tempfile.NamedTemporaryFile(suffix=ext, delete=False)`
+ile içeriği geçici diske yaz, indexer'a path geçir, `try/finally`'de
+sil.
+**Gerekçe:** indexer'ı UploadFile-aware yapmak abstraction sızıntısı
+(indexer FastAPI'den bağımsız kalmalı); tempfile pattern kütüphane
+seamlerini koruyor.
+
+### Sapma 30 — Lifespan eager initialization (Sapma 21 ÇÖZÜLDÜ)
+
+**Durum:** Sapma 21'de "her node call'da yeni EduRetriever() → ilk request
+~30 sn cold start" flag'lenmişti.
+**Uygulanan:**
+1. `agents/graph/nodes.py`: module-level `_retriever_singleton` + `_get_retriever()`
+   helper. Birinci çağrıda yaratılır, sonrakiler paylaşır.
+2. `services/api/app/main.py` lifespan: startup'ta DocumentIndexer +
+   pipeline + `_get_retriever()` eager init. Vector_size erişimi embedder'ı
+   tetikler → e5-large model startup'ta yüklenir.
+**Etki:** İlk `/ask/v2` request artık cold start cezası yaşamaz (modeller
+zaten warm). Smoke test'te ilk request ~40 sn ama bu Anthropic API call
+(~10 sn) + LangGraph overhead, embedder load değil.
+
+### Sapma 31 — `.env` cascade (services/api/main.py)
+
+**Durum:** pydantic-settings `.env` dosyasını sadece cwd'den okur. cwd
+`services/api` → ANTHROPIC_API_KEY orada yok (ml/.env'de).
+**Uygulanan:** `_load_env_cascade()` Settings init'inden ÖNCE çalışır;
+agents/.env → repo_root/.env → ml/.env sırasıyla `load_dotenv` çağırır
+(noqa: E402 import order).
+**Gerekçe:** agents/graph/pipeline.py ile aynı pattern → tek bir .env
+dosyasında ANTHROPIC_API_KEY tutmak yeterli; her modül otomatik bulur.
+
+### Sapma 32 — `index_file(source_name=...)` parametresi
+
+**Durum:** API tempfile path'i (`/tmp/tmp9j8k2l.txt`) `_compute_doc_id`'e
+verildiğinde `tmp9j8k2l_<hash>` doc_id üretiyor → her upload yeni doc_id
+→ duplicate-skip çalışmaz.
+**Uygulanan:** `DocumentIndexer.index_file(file_path, metadata, source_name=None)`
+ek parametre. `source_name` verildiğinde doc_id stem'i bundan hesaplanır
+(örn. "tarih_tanzimat.txt"). Default=None lokal script senaryosunda
+geriye uyumlu (file_path.name fallback).
+**Empirical doğrulama:** Aynı dosya upload edildi → `chunks_indexed: 0`
+(duplicate-skip OK). İlk upload `chunks_indexed: 5` (yeni indeks).
+
+---
+
+## Task 5 Smoke Test Sonuçları
+
+`POST /v1/documents/upload` (tarih_tanzimat.txt, ikinci yükleme):
+```json
+{"chunks_indexed": 0, "status": "ready", ...}  // duplicate-skip ✓
+```
+
+`POST /v1/questions/ask/v2` (Tanzimat ne zaman + neler getirdi?):
+```json
+{
+  "answer": "# Tanzimat Fermanı: İlan Tarihi ve Getirdikleri\n\n## ...",
+  "confidence": 0.8962,
+  "sources": ["tarih_tanzimat.txt"],
+  "processing_time_ms": 40869
+}
+```
+- Markdown başlıklı, [1]-[4] kaynak referanslı
+- 40.8 sn (~10 sn Anthropic + LangGraph overhead; embedder zaten warm)
+- needs_retry tetiklenmedi (validator OK)
+
+---
+
 ## Task 4 — CrewAI multi-agent
 
 ### Sapma 22 — F-2 ÇÖZÜLDÜ: CrewAI `>=0.80.0` → `1.14.3` (major bump)

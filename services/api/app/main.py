@@ -6,18 +6,49 @@ Sorumluluklar:
   - Router'ları mount etme
   - /health monitoring endpoint'i
   - Global exception handler (unhandled error'lar için structured log + 500)
+
+P3 Task 5 entegrasyonu (Sapma 26-31):
+  - Lifespan startup'ta DocumentIndexer + LangGraph pipeline + retriever
+    pre-warm → ilk request cold-start cezası yok (Sapma 21 fix).
+  - .env cascade: agents/.env → repo_root/.env → ml/.env (pipeline.py
+    pattern'iyle uyumlu) → ANTHROPIC_API_KEY otomatik bulunur.
 """
 
+import os
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
+from pathlib import Path
 
 import structlog
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.core.config import get_settings
-from app.routers import documents, questions, sessions
+
+def _load_env_cascade() -> None:
+    """agents/pipeline ile aynı cascade — repo root + agents + ml.
+
+    Settings init'inden ÖNCE çağrılmalı; aksi halde pydantic-settings
+    sadece services/api/.env'i okur (ki yoktur), QDRANT_URL/ANTHROPIC_API_KEY
+    boş kalır.
+    """
+    # services/api/app/main.py → parent[3] = repo root.
+    repo_root = Path(__file__).resolve().parents[3]
+    for path in [
+        repo_root / "agents" / ".env",
+        repo_root / ".env",
+        repo_root / "ml" / ".env",
+    ]:
+        if path.exists():
+            load_dotenv(path)
+
+
+_load_env_cascade()
+
+# Settings .env yüklendikten sonra import + init edilmeli.
+from app.core.config import get_settings  # noqa: E402
+from app.routers import documents, questions, sessions  # noqa: E402
 
 # Settings app başlatılmadan önce tek kez okunur (lru_cache'li).
 settings = get_settings()
@@ -30,12 +61,56 @@ logger = structlog.get_logger(__name__)
 async def lifespan(app: FastAPI):
     """App yaşam döngüsü — startup ve shutdown hook'ları.
 
-    P2+P3'te: DB connection pool, Qdrant client, MLflow tracking vs. burada init edilecek.
+    Startup: P3 RAG/agent altyapısını eager initialize eder → ilk request
+    cold-start cezası yaşamaz (e5-large model load 30+ sn olabiliyor).
+    Hata durumunda app yine başlar; ilgili endpoint runtime'da hata verir
+    (graceful degradation).
     """
-    # --- startup ---
     logger.info("eduai_api_starting", version=settings.VERSION, debug=settings.DEBUG)
+
+    # --- P3 startup: DocumentIndexer + pipeline + retriever pre-warm ---
+    # Import lazy: P1-only çalıştırmalar (örn. unit test) bu satırlara
+    # dokunmadan geçebilsin. Hata yakalama: agents/ kütüphaneleri yoksa
+    # health endpoint'i yine ayakta kalır.
+    try:
+        from agents.graph.nodes import _get_retriever
+        from agents.graph.pipeline import build_pipeline
+        from agents.rag.indexer import DocumentIndexer
+
+        # Indexer — embedder + Qdrant client; collection yoksa create eder.
+        # Vector_size erişimi embedder'ı eagerly load eder (~30 sn cold).
+        app.state.indexer = DocumentIndexer()
+        _ = app.state.indexer.embedder.vector_size  # pre-warm trigger
+
+        # LangGraph pipeline — compiled graph, request başına yeniden
+        # build edilmesin (build cost ~ms ama state machine pure).
+        app.state.pipeline = build_pipeline()
+
+        # Retriever singleton'ını da pre-warm — nodes.py module-level
+        # global'i set olur, ilk /ask/v2 request'i hızlı.
+        _get_retriever()
+
+        logger.info(
+            "p3_runtime_ready",
+            collection=app.state.indexer.collection_name,
+            vector_size=app.state.indexer.embedder.vector_size,
+            llm_backend=os.getenv("LLM_BACKEND", "anthropic"),
+            anthropic_key_present=bool(os.getenv("ANTHROPIC_API_KEY")),
+        )
+    except Exception as exc:
+        # Eager init başarısız (Qdrant down, deps eksik vs) — uyar ama app'i
+        # düşürme. /v1/documents ve /v1/questions/ask/v2 endpoint'leri
+        # runtime'da hata verir; /health ve mock /ask çalışır.
+        logger.error(
+            "p3_runtime_init_failed",
+            exc_type=type(exc).__name__,
+            exc_msg=str(exc),
+        )
+        app.state.indexer = None
+        app.state.pipeline = None
+
     yield
-    # --- shutdown ---
+
     logger.info("eduai_api_shutting_down")
 
 

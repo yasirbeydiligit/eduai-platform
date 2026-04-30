@@ -159,15 +159,21 @@ class DocumentIndexer:
     # ----- Doc ID + duplicate kontrol -----
 
     @staticmethod
-    def _compute_doc_id(file_path: Path, content: str) -> str:
+    def _compute_doc_id(stem: str, content: str) -> str:
         """İçerik hash'inden deterministic doc_id üret.
 
-        Aynı dosya iki kez yüklenirse aynı ID çıkar → duplicate skip.
-        İçerik değiştirilirse hash farklı → re-index olarak değerlendirilir
-        (eski chunk'lar cleanup edilmez, kullanıcının kararı; bu MVP).
+        Args:
+            stem: Doküman tanımlayıcı stem (uzantısız ad). API tempfile
+                  ile çağrıldığında orijinal filename'in stem'i geçilir
+                  → tempfile rastgele isimleri doc_id'yi etkilemez.
+            content: Tam dosya içeriği (hash için).
+
+        Aynı stem + aynı içerik → aynı doc_id → duplicate skip.
+        İçerik değiştirilirse hash farklı → re-index (eski chunk'lar
+        cleanup edilmez, kullanıcının kararı; bu MVP).
         """
         digest = hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
-        return f"{file_path.stem}_{digest}"
+        return f"{stem}_{digest}"
 
     def _document_exists(self, doc_id: str) -> bool:
         """Doc_id ile en az 1 nokta var mı? scroll(limit=1) hızlı yoklama."""
@@ -215,13 +221,24 @@ class DocumentIndexer:
 
     # ----- Ana indeks akışı -----
 
-    def index_file(self, file_path: str | Path, metadata: dict | None = None) -> int:
+    def index_file(
+        self,
+        file_path: str | Path,
+        metadata: dict | None = None,
+        source_name: str | None = None,
+    ) -> int:
         """Tek bir dosyayı indeks pipeline'ından geçir.
 
         Args:
-            file_path: TXT veya PDF dosya yolu.
+            file_path: TXT veya PDF dosya yolu (gerçek disk konumu).
             metadata: subject (zorunlu — filtre için), grade_level vs. opsiyonel.
                       Otomatik metadata: source, page_num, chunk_index, doc_id.
+            source_name: Orijinal dosya adı (örn. "tarih_tanzimat.txt"). API
+                         tempfile pattern'inde kritik (Sapma 32) — file_path
+                         tempfile rastgele yolu olur ama doc_id orijinal
+                         filename'den hesaplanmalı, aksi halde duplicate-skip
+                         çalışmaz. None ise file_path.name kullanılır
+                         (lokal script senaryosu).
 
         Returns:
             Yüklenen chunk sayısı (duplicate skip durumunda 0).
@@ -242,17 +259,24 @@ class DocumentIndexer:
         if not full_content.strip():
             raise ValueError(f"Boş dosya içeriği: {file_path}")
 
-        doc_id = self._compute_doc_id(file_path, full_content)
+        # Stem ve display name — source_name varsa orijinal, yoksa fallback.
+        # source_name "tarih_tanzimat.txt" gibi tam isim; .stem = "tarih_tanzimat".
+        display_name = source_name or file_path.name
+        stem_for_id = Path(display_name).stem
+        doc_id = self._compute_doc_id(stem_for_id, full_content)
 
         # Duplicate kontrolü — aynı dosya tekrar yüklenirse early return.
         if self._document_exists(doc_id):
-            print(
-                f"  ⏭  Atlanıyor — '{file_path.name}' zaten indeksli (doc_id={doc_id})"
+            print(f"  ⏭  Atlanıyor — '{display_name}' zaten indeksli (doc_id={doc_id})")
+            logger.info(
+                "document_already_indexed",
+                file=str(file_path),
+                source=display_name,
+                doc_id=doc_id,
             )
-            logger.info("document_already_indexed", file=str(file_path), doc_id=doc_id)
             return 0
 
-        print(f"  📄 İndeksleniyor: {file_path.name} (doc_id={doc_id})")
+        print(f"  📄 İndeksleniyor: {display_name} (doc_id={doc_id})")
 
         # Sayfa bazlı chunking → her chunk page_num metadata'sını korur.
         # PDF'te chunk sınırı sayfa içinde kalır (sayfa-arası bağlam kaybı kabul).
@@ -291,7 +315,7 @@ class DocumentIndexer:
         ):
             payload = {
                 **metadata,  # subject, grade_level vb. kullanıcı metadata
-                "source": file_path.name,
+                "source": display_name,  # orijinal filename (Sapma 32)
                 "page_num": page_num,
                 "chunk_index": chunk_index,
                 "doc_id": doc_id,

@@ -50,6 +50,15 @@ class DocumentUploadResponse(BaseModel):
         ...,
         description="Dökümanın işlenme aşaması.",
     )
+    # P3 Task 5 ek alan — Qdrant'a yüklenen chunk sayısı.
+    # 0 → henüz indekslenmedi veya zaten indeksli (duplicate-skip).
+    # Sapma 28: SPEC'in DocumentUploadResponse'unda yoktu; TASKS.md ekstra
+    # gereksinimi.
+    chunks_indexed: int = Field(
+        default=0,
+        ge=0,
+        description="Qdrant'a yüklenen chunk sayısı (0 = duplicate-skip veya henüz indekslenmedi).",
+    )
     # datetime.UTC (Python 3.11+) timezone-aware UTC sabiti — utcnow() deprecated yerine.
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(UTC),
