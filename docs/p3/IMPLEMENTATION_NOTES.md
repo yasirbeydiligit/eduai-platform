@@ -177,6 +177,80 @@ e5-large 512 token max sequence içinde rahatça sığar. İleride yetersiz
 gelirse `RecursiveCharacterTextSplitter.from_huggingface_tokenizer(...)`
 ile token-aware'e geçilir.
 
+## Task 3 — LangGraph pipeline
+
+### Sapma 16 — Ek `agents/graph/llm.py` modülü (SPEC'te yok)
+
+**Spec:** `graph/` klasörü 4 dosya öneriyor: state, nodes, edges, pipeline.
+**Uygulanan:** 5 dosya — yeni `llm.py` eklendi.
+**Gerekçe:** TASKS.md `LLM_BACKEND` ENV-driven backend swap istiyor
+(anthropic/qwen3-local/vllm). Bunu nodes.py içine inline koymak iki sorun:
+1. nodes.py uzun olur, SRP ihlali (her node hem prompt hem provider seçer).
+2. Task 4 CrewAI tool'u aynı LLM'i çağıracak — ortak factory gerek.
+`get_llm()` factory + `LLMBackend` Protocol pattern → temiz seam.
+
+### Sapma 17 — Qwen3LocalBackend + VLLMBackend stub'ları
+
+**Spec:** TASKS.md "P2 model integration Task 3 sonu veya 5'te" diyor.
+**Uygulanan:** `Qwen3LocalBackend.__init__` ve `VLLMBackend.__init__` →
+`NotImplementedError` (mesajlı stub).
+**Gerekçe:** Task 3 hedefi pipeline'ı ayağa kaldırmak; P2 modeli **macOS'ta
+çalışamaz** (bitsandbytes Linux/CUDA-only). Stub'lar API yüzeyini
+kilitliyor (Protocol uyumlu) ama implementasyon Task 5+'da Linux/Colab
+path'inde yapılacak. Hata mesajı kullanıcıya açık talimat veriyor.
+
+### Sapma 18 — Validator MVP heuristic (length + weak indicators)
+
+**Spec:** `len(state["answer"]) < 50 and state["attempts"] < 3` örneği.
+**Uygulanan:** Length kontrolü + Türkçe belirsizlik kalıpları
+(`"bilmiyorum"`, `"yeterli bilgi yok"`, `"emin değil"`, `"bağlamda yer
+almıyor"`).
+**Gerekçe:** SPEC örneği sadece length'e bakıyordu — model uzun ama
+"bilmiyorum" diyebilir; bu retry tetiklemesi gerek. P2 dersi: "kalite
+metrikleri sample inspection'la birlikte." Bu MVP; Task 4/5'te
+NLI/LLM-as-judge ile değiştirilecek (Sapma 22 plan).
+
+### Sapma 19 — SPEC `await retriever.retrieve(...)` sync çağrı
+
+**Spec:** `nodes.py` örneğinde `await retriever.retrieve(...)`.
+**Uygulanan:** `retriever.retrieve(...)` (sync; Sapma 12 ile tutarlı).
+**Gerekçe:** retriever sync (qdrant-client blocking); LangGraph node
+async olsa da içinde sync IO çağırmak meşru. SPEC örneği yanıltıcı.
+
+### Sapma 20 — Confidence = top retrieved doc score
+
+**Spec:** "Basit heuristic: cevap uzunluğu, belirsiz kelimeler vb."
+**Uygulanan:** `confidence = float(docs[0].metadata["score"])` —
+retriever'ın cosine sim'i.
+**Gerekçe:** Cevap uzunluğu yanıltıcı (uzun cevap zayıf olabilir).
+Top retrieved doc skoru retrieval kalitesini ölçer; düşükse model
+zaten az bağlamla cevap üretiyor demektir → güven düşük. E5-large
+benchmark avg 0.86; bu metrik anlamlı dağılım veriyor (smoke test'te
+0.89). LLM-as-judge ile değiştirilebilir.
+
+### Sapma 21 — Her node call'da yeni `EduRetriever()` (TODO Task 5)
+
+**Durum:** `retrieve_node` her çağrıda `EduRetriever()` oluşturuyor →
+embedder lazy-load ilk request'te 33 sn cold start.
+**Etki:** Smoke test toplam 49 sn (33 sn embedder + 16 sn diğer).
+Production'da kabul edilemez.
+**Plan:** Task 5'te FastAPI lifespan'inde global embedder + retriever
+singleton oluştur, dependency injection ile node'lara geçir. MVP'de
+şimdilik kabul.
+
+### Smoke test sonucu
+
+`python -m agents.graph.pipeline` (Tanzimat sorusu, subject=tarih):
+- retrieve: 39.857 sn (cold embedder)
+- generate: 9.024 sn (claude-haiku-4-5)
+- validate: 0.003 sn
+- format: 0.000 sn
+- **Cevap kalitesi:** markdown, 4 kaynak atıfı `[1]-[4]`, Türkçe pedagojik
+- **Confidence:** 0.8914 (top retrieved doc), needs_retry=False, attempts=1
+- **Sources:** `['tarih_tanzimat.txt']`
+
+---
+
 ## Task 2 — RAG retriever
 
 ### Sapma 12 — `retrieve()` sync API (SPEC örnekte `await ... .retrieve(...)`)
