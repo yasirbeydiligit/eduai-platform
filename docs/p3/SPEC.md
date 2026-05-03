@@ -1,5 +1,14 @@
 # P3 — Akıllı Ajan: Proje Spesifikasyonu
 
+> **📌 Status:** P3 implementation **FINALIZED** (Task 0 → 6, 35 bilinçli sapma).
+> Bu dosya inline **📝 Implementation note** callout'larıyla güncellendi —
+> her bölümde uygulanan kararlar gerekçeleriyle belirtilmiş.
+>
+> **Tam karar tarihçesi:** [`IMPLEMENTATION_NOTES_ARCHIVED.md`](IMPLEMENTATION_NOTES_ARCHIVED.md)
+> (35 sapma, Task 0-6 sırasıyla).
+>
+> **As-of:** 2026-05-03
+
 ---
 
 ## Proje özeti
@@ -47,6 +56,19 @@ eduai-platform/
     └── README.md
 ```
 
+> **📝 Implementation note (Sapma 3, 16 — gerçek yapı):**
+> - **Sapma 3:** Task 0'da boş feature `.py` dosyaları yerine sadece
+>   `__init__.py`'ler — boş dosyalar "yazılmış sanılır" gürültüsünü önler.
+> - **Sapma 16:** `graph/` klasörüne **`llm.py`** eklendi (LLM backend
+>   abstraction).
+> - **Ek dosyalar (SPEC'te yoktu, eklendi):**
+>   - `data/` — test korpusu (`tarih_tanzimat.txt`, `fizik_newton.txt`,
+>     `seed_corpus*.txt`)
+>   - `scripts/` — tek seferlik araştırma scriptleri (`embedding_benchmark*.py`,
+>     `index_seed.py`)
+>   - `test_connection.py`, `test_retrieval.py` — top-level smoke runner'lar
+>   - `pytest.ini`, `.env.example`
+
 ---
 
 ## Bileşen spesifikasyonları
@@ -63,6 +85,21 @@ class TurkishEmbedder:
     def embed_documents(self, texts: list[str]) -> list[list[float]]
     def embed_query(self, query: str) -> list[float]
 ```
+
+> **📝 Implementation note (Sapma 7 — F-1 ÇÖZÜLDÜ):** SPEC `emrecan/bert-base-
+> turkish-cased-mean-nli-stsb-tr` (2021, 768-dim) öneriyordu. İki aşamalı
+> empirical benchmark sonucu (`agents/scripts/embedding_benchmark*.py`)
+> **`intfloat/multilingual-e5-large` (1024-dim)** seçildi. Hard test'te her
+> ikisi %100 top-1 ama confidence margin farkı belirleyici: e5-large avg
+> 0.86 / min 0.83, emrecan avg 0.68 / min 0.58 (yakın distractor pair'lerde
+> kayıp riski). Validator threshold-based retry (Task 3) için margin kritik.
+> `EMBEDDING_MODEL` ENV var ile config-driven swap kolay; bge-m3 latency
+> 65sn'den, gte-multilingual ABI hatasından elendi.
+
+> **📝 Implementation note (ek özellikler):** TurkishEmbedder ek olarak:
+> (a) lazy load — `__init__` ucuz, model ilk encode'da yüklenir; (b)
+> instruction prefix auto-detect — E5 ailesi için `query: ` / `passage: `
+> otomatik (retrieval kalitesini ek artırır); (c) device auto — MPS > CUDA > CPU.
 
 ### rag/indexer.py
 
@@ -85,6 +122,31 @@ class DocumentIndexer:
         """Yüklenen dökümanların listesi + metadata"""
 ```
 
+> **📝 Implementation note (Sapma 10-11):** Splitter Türkçe-uyumlu
+> separator'larla (`["\n\n", "\n", ". ", "? ", "! ", "; "]`) — LangChain
+> default İngilizce odaklıydı. `chunk_size=500` **karakter-bazlı**
+> (~120 Türkçe token); token-aware splitting tokenizer bağımlılığı ekler,
+> MVP'de yeterli.
+
+> **📝 Implementation note (Sapma 32 — source_name parametresi):**
+> Imza genişletildi: `index_file(file_path, metadata, source_name=None)`.
+> Doc_id `{stem}_{sha256[:16]}` formatında üretiliyor; **stem** orijinal
+> filename'den hesaplanmalı (FastAPI tempfile path'inin rastgele
+> stem'i `tmpXYZ` doc_id'yi farklılaştırırdı → duplicate-skip çalışmazdı).
+> API tarafı `source_name=file.filename` geçiriyor; lokal script'te None
+> default → file_path.name fallback.
+
+> **📝 Implementation note (Sapma 33 — client DI):** `__init__`'e
+> `client: QdrantClient | None = None` parametresi eklendi. Default None
+> → URL'den yaratılır (geriye uyumlu); test'te `QdrantClient(":memory:")`
+> geçirilir → ağ/disk yok.
+
+> **📝 Implementation note (ek özellikler):** Doc-level dedup
+> (`{stem}_{content_sha256[:16]}`), point ID = `uuid5(NAMESPACE, "{doc_id}:{chunk_index}")`
+> — idempotent upsert. Payload metadata: `source`, `page_num`, `subject`,
+> `chunk_index`, `doc_id`, `text` (chunk içeriği validator/UI için).
+> `payload_index` `doc_id` üzerine — scroll filter O(log n).
+
 ### rag/retriever.py
 
 ```python
@@ -99,6 +161,24 @@ class EduRetriever:
     def get_context_string(self, docs: list[Document]) -> str:
         """Chunk'ları tek string'e birleştir (prompt için)"""
 ```
+
+> **📝 Implementation note (Sapma 12-15):**
+> - **Sync API** — SPEC örneklerde `await retriever.retrieve(...)` yazsa da
+>   qdrant-client blocking → retrieve sync. LangGraph node async içinde
+>   sync IO meşru.
+> - **Document tipi** = `langchain_core.documents.Document` — LangGraph +
+>   CrewAI ortak tüketici, ek wrapper sınıfı premature abstraction olur.
+> - **Score** `metadata["score"]`'da saklanıyor (SPEC dönüş tipi
+>   `list[Document]`'i bozmadan). Validator threshold için zorunlu.
+> - **`get_context_string` formatı:** numaralı + Türkçe kaynak/sayfa header:
+>   ```
+>   [1] (kaynak: tarih_tanzimat.txt, sayfa: 0)
+>   <chunk metni>
+>   ```
+>   Model alıntı yapması ("[1]'de söylendiği gibi...") + parse-friendly.
+
+> **📝 Implementation note (Sapma 33):** `client` DI parametresi (indexer ile
+> aynı pattern) — test'te in-memory.
 
 ### graph/state.py
 
@@ -124,6 +204,14 @@ class AgentState(TypedDict):
     
     messages: Annotated[list, add_messages]  # konuşma geçmişi
 ```
+
+> **📝 Implementation note (Sapma 16-17 — ek `graph/llm.py` modülü):**
+> SPEC graph/ klasörü 4 dosya öneriyor (state, nodes, edges, pipeline);
+> **5. dosya `llm.py` eklendi**. `LLMBackend` Protocol + 3 concrete sınıf
+> (Anthropic / Qwen3Local / VLLM) + `get_llm()` factory. ENV `LLM_BACKEND`
+> ile config-driven swap. Qwen3LocalBackend ve VLLMBackend `__init__`'te
+> `NotImplementedError` (stub) — Task 5+'da Linux/CUDA path'inde implement.
+> macOS dev'de Anthropic kullanılır.
 
 ### graph/nodes.py — 4 düğüm
 
@@ -173,6 +261,26 @@ async def format_node(state: AgentState) -> AgentState:
     sources = [doc.metadata["source"] for doc in state["retrieved_docs"]]
     return {**state, "sources": list(set(sources))}
 ```
+
+> **📝 Implementation note (Sapma 18-20, 30 — node davranışları):**
+> - **Validator (Sapma 18):** length kontrolü + Türkçe belirsizlik kalıpları
+>   (`"bilmiyorum"`, `"yeterli bilgi yok"`, `"emin değil"`, `"bağlamda yer
+>   almıyor"`). MVP — Task 4/5 sonrası NLI/LLM-as-judge ile değiştirilebilir.
+> - **Confidence (Sapma 20):** `top_retrieved_doc.metadata["score"]`. Cevap
+>   uzunluğu yanıltıcı (uzun zayıf olabilir); retrieval skoru retrieval
+>   kalitesini ölçer. Smoke test'te 0.89-0.91 değerleri.
+> - **Sync retriever (Sapma 19):** SPEC örnekte `await retriever.retrieve(...)`
+>   yazıyor ama retriever sync (Sapma 12 ile tutarlı); node async, içinde
+>   sync IO çağrısı meşru.
+> - **Sapma 21 ÇÖZÜLDÜ → Sapma 30:** İlk implementation'da `retrieve_node`
+>   her çağrıda yeni `EduRetriever()` yaratıyordu → her request 30+ sn cold
+>   start. Çözüm: `_retriever_singleton` module-level + `_get_retriever()`
+>   helper. FastAPI lifespan'inde pre-warm yapılınca ilk request'te de
+>   model warm. Test izolasyonu için autouse `reset_retriever_singleton`
+>   fixture (Sapma 35).
+>
+> Ek olarak: her node'a `@_log_node(name)` decorator (structlog event'ler;
+> giriş + çıkış elapsed_ms + updated_keys).
 
 ### graph/pipeline.py
 
@@ -226,6 +334,30 @@ def create_writer_agent() -> Agent:
     )
 ```
 
+> **📝 Implementation note (Sapma 22 — F-2 ÇÖZÜLDÜ):** SPEC `crewai>=0.80.0`
+> 2024 yazımı; 2026'da kurulan **CrewAI 1.14.3** (major bump 0→1). API
+> uyumluluğu yüksek kaldı (kwargs Pydantic v2 driven), tek değişen
+> **LLM provider config**: `from crewai import LLM` + LiteLLM wrapper.
+
+> **📝 Implementation note (Sapma 23 — LiteLLM provider prefix):**
+> `LLM(model="anthropic/claude-haiku-4-5")` — explicit provider prefix.
+> LiteLLM auto-detect ambiguity önler. ANTHROPIC_API_KEY ENV otomatik
+> çekilir.
+
+> **📝 Implementation note (Sapma 24 — Writer hallucination ÇÖZÜLDÜ):**
+> İlk smoke test'te Writer "Kaynaklar" bölümüne bağlamda olmayan kitap
+> referansları (Newton 1687 *Principia Mathematica*, Osmanlı Arşivi)
+> uydurmuştu. Fix prompt-level: writing task description'da explicit
+> kurallar (kitap/yazar/tarih ekleme, sadece dosya adı), backstory'de
+> "uydurma yayın bilgisi yazmazsın" eklendi. Re-test'te sıfır uydurma.
+> Production'da post-validator (LangGraph validate pattern) eklenebilir.
+
+> **📝 Implementation note (Sapma 25 — token cost):** CrewAI 3 LLM call
+> (~8800 token / soru, ~$0.04 claude-haiku-4-5'te); LangGraph 1 call
+> (~3000 token, ~$0.013). Maliyet 3x → CrewAI sadece **multi-disciplinary
+> sorular** için route edilmeli; basit sorularda LangGraph yeter (Task 5
+> endpoint routing planı).
+
 ### P1 API güncellemesi — yeni endpoint
 
 ```python
@@ -241,6 +373,41 @@ async def ask_question_v2(
     AgentState'i başlat, pipeline çalıştır, QuestionResponse döndür.
     """
 ```
+
+> **📝 Implementation note (Sapma 26-31 — P1 entegrasyon detayları):**
+>
+> - **Sapma 26 — PYTHONPATH cascade:** Lokal dev başlangıcı:
+>   ```bash
+>   cd services/api
+>   PYTHONPATH=$(pwd):$(pwd)/../.. uvicorn app.main:app --port 8000
+>   ```
+>   P1 `from app.X` (cwd) + agents `from agents.X` (repo root) iki yol.
+>
+> - **Sapma 27 — shared venv:** Lokal dev'de `.venv-agents`'a hem
+>   `agents/requirements.txt` hem `services/api/requirements.txt` yüklenir
+>   (production Docker'da services/api container'ı her ikisini handle eder).
+>
+> - **Sapma 28 — `chunks_indexed` field:** `DocumentUploadResponse.chunks_indexed:
+>   int = 0` eklendi (TASKS.md ekstra gereksinimi). Default=0 geriye uyumlu;
+>   duplicate-skip senaryosunda da 0.
+>
+> - **Sapma 29 — tempfile pattern:** `UploadFile` → `tempfile.NamedTemporaryFile`
+>   → `indexer.index_file(tmp_path, source_name=file.filename)`. Indexer
+>   FastAPI'den bağımsız kalır; tempfile try/finally'de silinir.
+>
+> - **Sapma 30 — lifespan eager init:** `main.py` lifespan startup'ta
+>   `DocumentIndexer + build_pipeline + _get_retriever()` initialize edilir.
+>   Embedder model (e5-large) startup'ta yüklenir → ilk request cold start
+>   cezası yok (Sapma 21 ÇÖZÜLDÜ). Hata durumunda `app.state.indexer = None`
+>   → endpoint'ler 503 verir, app yine ayakta (graceful degradation).
+>
+> - **Sapma 31 — `.env` cascade:** `_load_env_cascade()` Settings init'inden
+>   ÖNCE çalışır; `agents/.env` → `<repo_root>/.env` → `ml/.env` sırasıyla
+>   `load_dotenv` → ANTHROPIC_API_KEY tek dosyada tutmak yeter.
+>
+> - **`get_document_indexer` + `get_agent_pipeline`** dependencies — `Request`
+>   injection ile `app.state`'ten döndürülür (`@lru_cache` ağır objelere
+>   uygun değil); None ise 503 fırlatılır.
 
 ---
 
@@ -261,6 +428,23 @@ services:
 volumes:
   qdrant_data:
 ```
+
+> **📝 Implementation note (Sapma 1, 2, 5):**
+> - **Qdrant `latest` → `v1.12.4` sabit pin (Sapma 1):** reproducibility;
+>   `latest` minor schema değişikliklerinde compose'u kırar.
+> - **Healthcheck eklendi (Sapma 5):** `wget --spider /readyz` + `start_period:
+>   10s`. Task 5'te `api → depends_on: qdrant: condition: service_healthy`
+>   eklenmesi için zemin (şu an depends_on yok — Sapma 2: standalone API
+>   dev'i zorlamasın).
+> - **api'a `QDRANT_URL=http://qdrant:6333` ENV** — Docker network DNS
+>   üzerinden bağlanır (lokal dev'de `localhost:6333`).
+
+> **📝 Implementation note (Sapma 9 — qdrant-client minor mismatch):**
+> Floor pin `qdrant-client>=1.12` kurulduğunda 1.17.x çekiyor; server
+> v1.12.4 ile minor diff ≥ 1 → ilk request uyarı atar
+> (`Major versions should match...`). Pratikte uyumsuzluk gözlenmedi
+> (smoke + tests passed). Fix path: server upgrade (`v1.13.x`) veya
+> client pin (`<1.13`). Şimdilik uyarı sinyal olarak korunuyor.
 
 ---
 
@@ -304,14 +488,46 @@ ruff>=0.6
 > reproducibility. Ek olarak **Colab'da torch'u reinstall etme** (Sapma 26):
 > native CUDA 12.8 build'i bozulur.
 
+> **📝 Implementation note (Sapma 6, 8 — P3 requirements detayları):**
+> - **+4 paket eklendi (Sapma 6):** `pytest-asyncio` (async node testleri),
+>   `python-dotenv` (.env cascade), `pydantic-settings` (P1 config uyumu),
+>   `structlog` (P1 logging stack uyumu).
+> - **`torch==2.9.1` → `torch>=2.9` (Sapma 8):** sentence-transformers
+>   2.11.0 çekti; macOS dev için sürüm uyumu kritik değil (bitsandbytes
+>   `sys_platform != 'darwin'` guard). P2 ml/ pin'i Colab CUDA 12.x +
+>   bitsandbytes ABI içindi; agents/ Anthropic API ile dev → torch sürümü
+>   önemsiz. Production Linux + CUDA için `agents/requirements.lock.txt`
+>   (pip freeze) eklendiğinde sabitlenir.
+
 ---
 
 ## Teslim kriterleri
 
-- [ ] `docker-compose up` → API + Qdrant birlikte çalışıyor
-- [ ] `POST /v1/documents/upload` → gerçekten Qdrant'a yüklüyor
-- [ ] `POST /v1/questions/ask/v2` → RAG cevabı + sources döndürüyor
-- [ ] LangGraph: validate başarısız olunca retry döngüsü çalışıyor
-- [ ] CrewAI: karmaşık sorular için 2 agent işbirliği yapıyor
-- [ ] Test: `pytest agents/tests/` geçiyor
-- [ ] README: sistemi nasıl çalıştırırsın, döküman nasıl yüklersin
+- [x] `docker-compose up` → API + Qdrant birlikte çalışıyor
+- [x] `POST /v1/documents/upload` → gerçekten Qdrant'a yüklüyor
+- [x] `POST /v1/questions/ask/v2` → RAG cevabı + sources döndürüyor
+- [x] LangGraph: validate başarısız olunca retry döngüsü çalışıyor
+- [x] CrewAI: karmaşık sorular için 2 agent işbirliği yapıyor
+- [x] Test: `pytest agents/tests/` geçiyor (11/11, 0.18 sn)
+- [x] README: sistemi nasıl çalıştırırsın, döküman nasıl yüklersin
+
+> **📝 Implementation note (Sapma 34-35 — test mimarisi):**
+> Testler **in-memory Qdrant + FakeEmbedder + MockLLM** ile çalışır
+> (gerçek e5-large 2 GB + Anthropic call CI'da uygunsuz):
+> - **FakeEmbedder (Sapma 34a):** keyword-bazlı 16-dim L2-normalize vektör.
+>   `TurkishEmbedder` protokolüne uyar (`embed_documents`, `embed_query`,
+>   `vector_size`).
+> - **MockLLM (Sapma 34b):** `LLMBackend` protocol; sıralı response stub
+>   (retry + max_attempts test'leri için).
+> - **`reset_retriever_singleton` autouse (Sapma 35):** `nodes.py`
+>   module-level singleton'ı her test başında/sonunda None'a sıfırlar
+>   → fixture izolasyonu.
+> - **Indexer/Retriever `client` DI (Sapma 33):** Test'te
+>   `QdrantClient(":memory:")` geçirilir; production None default.
+>
+> Sonuç: 11 test, 0.18 sn. Network/disk yok, deterministik.
+
+> **📝 Implementation note (test_connection.py vector_size — Sapma 4):**
+> Task 0 smoke test'inde `VECTOR_SIZE = 384` dummy. Embedding modeli
+> Task 1'de seçileceği için (F-1 brainstorm) sembolik değer; gerçek
+> collection (e5-large 1024-dim) Task 1'de yeniden oluşturuldu.
