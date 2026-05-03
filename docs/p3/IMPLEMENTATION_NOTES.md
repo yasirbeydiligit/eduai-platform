@@ -177,6 +177,78 @@ e5-large 512 token max sequence içinde rahatça sığar. İleride yetersiz
 gelirse `RecursiveCharacterTextSplitter.from_huggingface_tokenizer(...)`
 ile token-aware'e geçilir.
 
+## Task 6 — Testler
+
+### Sapma 33 — Indexer/Retriever `client` DI parametresi
+
+**Spec:** `DocumentIndexer(qdrant_url, collection_name, embedder)` ve
+`EduRetriever(qdrant_url, collection_name, embedder)` — client her __init__'te
+URL'den yaratılıyordu.
+**Uygulanan:** Her ikisine `client: QdrantClient | None = None` opsiyonel
+parametre eklendi. Default None → URL'den yaratılır (geriye uyumlu);
+test'te `QdrantClient(":memory:")` geçirilir.
+**Gerekçe:** Test'te in-memory client kullanmak için DI şart. monkey-patch
+veya `__new__` + manuel attr set gibi kırılgan workaround'lardan kaçınmak
+için temiz seam (DI > monkey-patching). Production kodu davranışı aynı
+(None default).
+
+### Sapma 34 — FakeEmbedder + MockLLM (gerçek model yok)
+
+**Durum:** Test'lerde gerçek e5-large (2 GB) yüklemek + Anthropic API
+çağırmak:
+- CI'da süre + token cost
+- HF cache yan etki test izolasyonu kırar
+- Network bağımlılığı flake risk
+
+**Uygulanan:**
+- `FakeEmbedder`: keyword-bazlı 16-dim L2-normalize vektör.
+  TurkishEmbedder protokolüne uyar (`embed_documents`, `embed_query`,
+  `vector_size`, `model_id`).
+- `MockLLM`: `LLMBackend` Protocol uygulaması; `responses` listesinden
+  sırayla döndürür; tükenince son cevabı tekrar (sonsuz retry test'i için).
+
+**Test felsefesi:** Bu testler **akış doğruluğu**na odaklı (DI bağlanıyor mu,
+filter çalışıyor mu, retry logic doğru mu). **Semantik kalite** ayrı:
+gerçek e5-large smoke test'lerinde empirical doğrulandı (Task 2 retriever
+score 0.90, Task 5 confidence 0.89).
+
+### Sapma 35 — Test arası retriever singleton reset (autouse fixture)
+
+**Durum:** `agents.graph.nodes._retriever_singleton` module-level cache
+(Sapma 30 fix); bir test'te set edilirse sonraki testlere sızar.
+**Uygulanan:** `conftest.py`'da `reset_retriever_singleton` autouse
+fixture — her test başında ve sonunda None'a sıfırlar.
+**Gerekçe:** Fixture isolation kuralı. Pipeline testleri singleton'ı
+populated retriever'a set ederken RAG testlerinin singleton'a dokunması
+gerekmiyor → test arası temiz state şart.
+
+### pytest.ini (yeni)
+
+`agents/pytest.ini` eklendi:
+- `asyncio_mode = strict` → async testler `@pytest.mark.asyncio` mark
+  gerektirir (intent açık).
+- `testpaths = tests` → discovery scope.
+- `addopts = -ra --strict-markers` → unknown marker fail-fast.
+
+### Test sonuçları (0.18 sn / 11 test)
+
+| Test | Açıklama |
+|------|----------|
+| test_index_and_retrieve | TASKS Task 6.1 — küçük metin yükle → retrieve sonuç var |
+| test_retrieve_with_subject_filter | TASKS Task 6.2 — subject filtresi |
+| test_empty_retrieve | TASKS Task 6.3 — boş collection → boş liste |
+| test_duplicate_skip (ek) | Sapma 32 fix testi — aynı dosya → 0 chunk |
+| test_source_name_override (ek) | Sapma 32 — source_name doc_id'yi etkiler |
+| test_retrieve_k_parameter[1/2/4] (ek, parametrize) | k=N sınırı |
+| test_full_pipeline | TASKS Task 6.4 — soru → cevap + sources |
+| test_retry_logic | TASKS Task 6.5 — kısa cevap → retry tetikleniyor |
+| test_pipeline_max_attempts | TASKS Task 6.6 — 3 deneme zorla bitiyor |
+
+Warning (in-memory Qdrant): "Payload indexes have no effect in the local
+Qdrant" — production server'da etkili, test'te no-op. Etki yok.
+
+---
+
 ## Task 5 — P1 API entegrasyonu
 
 ### Sapma 26 — Monorepo PYTHONPATH cascade

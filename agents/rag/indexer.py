@@ -74,6 +74,7 @@ class DocumentIndexer:
         embedder: TurkishEmbedder | None = None,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         chunk_overlap: int = DEFAULT_CHUNK_OVERLAP,
+        client: QdrantClient | None = None,
     ) -> None:
         """Indexer kur. Qdrant connection aç, collection yoksa oluştur.
 
@@ -83,6 +84,8 @@ class DocumentIndexer:
             embedder: DI — yoksa default TurkishEmbedder() (e5-large).
             chunk_size: Karakter cinsinden hedef chunk büyüklüğü.
             chunk_overlap: Komşu chunk'lar arası örtüşme (bağlam kaybı önler).
+            client: Qdrant client DI (Sapma 33). None ise URL'den yaratılır;
+                    test'te `QdrantClient(":memory:")` geçirilir → ağ/disk yok.
         """
         self.qdrant_url = qdrant_url or os.getenv("QDRANT_URL", "http://localhost:6333")
         self.collection_name = collection_name or os.getenv(
@@ -90,7 +93,12 @@ class DocumentIndexer:
         )
         self.embedder = embedder or TurkishEmbedder()
         # timeout=30: büyük dosya upsert'lerde Qdrant ack uzayabilir.
-        self.client = QdrantClient(url=self.qdrant_url, timeout=30.0)
+        # client DI: testlerde in-memory client geçirilir (Sapma 33).
+        self.client = (
+            client
+            if client is not None
+            else QdrantClient(url=self.qdrant_url, timeout=30.0)
+        )
 
         self.splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,

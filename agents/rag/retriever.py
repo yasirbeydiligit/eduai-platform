@@ -44,6 +44,7 @@ class EduRetriever:
         qdrant_url: str | None = None,
         collection_name: str | None = None,
         embedder: TurkishEmbedder | None = None,
+        client: QdrantClient | None = None,
     ) -> None:
         """Retriever kur. Qdrant connection aç, embedder DI veya default.
 
@@ -51,6 +52,7 @@ class EduRetriever:
             qdrant_url: Override; None ise ENV `QDRANT_URL` veya localhost.
             collection_name: Override; None ise ENV `QDRANT_COLLECTION` veya default.
             embedder: DI — yoksa TurkishEmbedder() (e5-large default).
+            client: Qdrant client DI (Sapma 33). Test'te in-memory.
         """
         self.qdrant_url = qdrant_url or os.getenv("QDRANT_URL", "http://localhost:6333")
         self.collection_name = collection_name or os.getenv(
@@ -59,7 +61,11 @@ class EduRetriever:
         self.embedder = embedder or TurkishEmbedder()
         # timeout=10: query_points yanıtı kısa olmalı; uzun sürerse Qdrant
         # arızası sinyali, hızlı düşelim.
-        self.client = QdrantClient(url=self.qdrant_url, timeout=10.0)
+        self.client = (
+            client
+            if client is not None
+            else QdrantClient(url=self.qdrant_url, timeout=10.0)
+        )
 
         logger.debug(
             "retriever_ready",
