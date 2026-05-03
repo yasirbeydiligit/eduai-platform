@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import os
 import time
+from collections import OrderedDict
 from typing import TYPE_CHECKING
 
 import structlog
@@ -96,12 +97,16 @@ class TurkishEmbedder:
         self,
         model_id: str | None = None,
         device: str | None = None,
+        query_cache_size: int = 128,
     ) -> None:
         """Embedder oluştur. Model lazy yüklenir; __init__ ucuz.
 
         Args:
             model_id: Override; None ise ENV `EMBEDDING_MODEL` veya default.
             device: Override; None ise auto-detect.
+            query_cache_size: LRU cache boyutu (Sapma 36 — Task 4 perf).
+                              0 → cache devre dışı. Default 128 → ~512 KB cap
+                              (1024-dim float, 4 KB/vector).
         """
         # Çözüm sırası: arg > ENV > default. ENV var ile production swap kolay.
         self.model_id: str = model_id or os.getenv("EMBEDDING_MODEL", DEFAULT_MODEL_ID)
@@ -111,13 +116,34 @@ class TurkishEmbedder:
         self._model: SentenceTransformer | None = None
         self._vector_size: int | None = None
 
+        # LRU cache (Sapma 36) — embed_query tekrarlayan sorgularda re-encode
+        # etmesin. Key = prefixed query string; value = embedding list.
+        # OrderedDict.move_to_end + popitem(last=False) ile manual LRU
+        # (cachetools eklemek istemedik, stdlib yeter).
+        self._query_cache_size: int = max(0, query_cache_size)
+        self._query_cache: OrderedDict[str, list[float]] = OrderedDict()
+        # Telemetry — production'da hit oranı gözlemek için.
+        self._cache_hits: int = 0
+        self._cache_misses: int = 0
+
         logger.debug(
             "embedder_initialized",
             model_id=self.model_id,
             device=self.device,
             query_prefix=self.query_prefix,
             passage_prefix=self.passage_prefix,
+            query_cache_size=self._query_cache_size,
         )
+
+    @property
+    def cache_stats(self) -> dict[str, int]:
+        """Cache telemetry — hit/miss/size gözlem (Sapma 36)."""
+        return {
+            "hits": self._cache_hits,
+            "misses": self._cache_misses,
+            "size": len(self._query_cache),
+            "capacity": self._query_cache_size,
+        }
 
     def _ensure_loaded(self) -> SentenceTransformer:
         """Model henüz yüklenmediyse yükle. Idempotent."""
@@ -209,14 +235,28 @@ class TurkishEmbedder:
         E5'te 'query: ' prefix'i passage encoding'inden farklı bir embedding
         uzayına götürür; bu retrieval doğruluğunu artırır.
 
+        LRU cache (Sapma 36): aynı sorgu tekrar gelirse encode atlanır.
+        Cache key prefixed text (E5 prefix dahil) — model değişimi cache'i
+        de geçersiz kılar (model_id ENV swap'inde embedder yeniden yaratılır).
+
         Args:
             query: Kullanıcı sorgusu (Türkçe).
 
         Returns:
             L2-normalize edilmiş float listesi.
         """
-        model = self._ensure_loaded()
         prefixed = self.query_prefix + query
+
+        # Cache lookup — hit ise re-encode etme.
+        if self._query_cache_size > 0 and prefixed in self._query_cache:
+            self._cache_hits += 1
+            # LRU: erişim → en sona taşı (en yeni kullanım).
+            self._query_cache.move_to_end(prefixed)
+            return self._query_cache[prefixed]
+
+        # Cache miss — gerçekten encode et.
+        self._cache_misses += 1
+        model = self._ensure_loaded()
 
         t0 = time.perf_counter()
         embedding = model.encode(
@@ -227,12 +267,22 @@ class TurkishEmbedder:
         )
         encode_time = time.perf_counter() - t0
 
+        result = embedding.tolist()
+
+        # Cache'e ekle + boyut sınırı (LRU eviction: en eski → çıkar).
+        if self._query_cache_size > 0:
+            self._query_cache[prefixed] = result
+            if len(self._query_cache) > self._query_cache_size:
+                self._query_cache.popitem(last=False)
+
         logger.debug(
             "query_embedded",
             query_length=len(query),
             seconds=round(encode_time, 3),
+            cache_hits=self._cache_hits,
+            cache_misses=self._cache_misses,
         )
-        return embedding.tolist()
+        return result
 
 
 if __name__ == "__main__":

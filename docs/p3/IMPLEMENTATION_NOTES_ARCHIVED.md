@@ -5,7 +5,156 @@
 > Faz sonu inline callout'larla SPEC.md'ye taşınır + bu dosya
 > `IMPLEMENTATION_NOTES_ARCHIVED.md` olur.
 >
-> **As-of:** 2026-04-29 (P3 Task 0 başlangıcı)
+> **As-of:** 2026-05-03 (P3 FINALIZED — 39 sapma)
+
+---
+
+## Task 4 perf optimizasyonları (post-finalize iyileştirmeler)
+
+### Sapma 36 — TurkishEmbedder LRU query cache + Qdrant compat suppression
+
+**Durum (perf):** Task 5 P1 entegrasyonu sonrası `/ask/v2` 40 sn ölçüldü;
+embedder cold start lifespan ile çözüldü ama her query için 30-100 ms
+encode kaldı. Tekrarlayan sorularda cache faydalı.
+
+**Uygulanan (cache):** `TurkishEmbedder.__init__` `query_cache_size=128`
+parametresi + `OrderedDict`-bazlı manual LRU. Cache key prefixed text
+(E5 prefix dahil); `embed_query` lookup → hit'te encode skip + LRU
+move-to-end; miss'te encode + en eskisi evict. Telemetry: `cache_stats`
+property (hits/misses/size/capacity). 0 → cache devre dışı.
+
+**Uygulanan (Qdrant compat):** `Sapma 9 fix` — `QdrantClient(...,
+check_compatibility=False)` Indexer + Retriever'da. Client 1.17 vs server
+v1.12.4 minor mismatch uyarısını sustur. Smoke + 22 testte uyumsuzluk
+gözlenmedi; server upgrade bilinçli karar olur (Sapma 1 sabit pin
+felsefesi).
+
+**Empirical:** 5 cache test (test_embed_cache.py) — hit skip, miss encode,
+LRU eviction, move-to-end ordering, disabled mode. Tümü PASSED.
+
+### Sapma 37 — CrewAI post-validator (Sapma 24 follow-up, defense in depth)
+
+**Durum:** Sapma 24'te Writer hallucination prompt-level fix ile çözüldü
+ama production güvencesi için ek katman değerli.
+
+**Uygulanan:** `agents/crew/validators.py` — `validate_writer_output(answer,
+allowed_sources) -> ValidationResult`. İki seviye:
+1. **Akademik referans regex:** `r"\b[A-ZÇĞ...]+(?:,\s+[A-Z]\.)?\s+\(\d{4}\)"`
+   — "Newton, I. (1687)" pattern'i flag'ler.
+2. **Source whitelist:** "Kaynaklar" başlığı altındaki dosya adları
+   `allowed_sources` set'inde değilse → `unknown_sources`.
+Hard fail değil; `is_clean: bool` + warnings listesi. test_crew.py'da
+crew kickoff sonrası çağrılır.
+
+**Empirical:** 6 unit test (test_validators.py) — clean/academic/unknown/
+no-section/bold/empty case'leri. Tümü PASSED.
+
+### Sapma 38 — `/ask/v2/stream` SSE endpoint (node-level streaming)
+
+**Durum:** `/ask/v2` 40 sn → kullanıcı ekran boş bekler. Streaming ile
+"ilk node sonu 1-2 sn'de" deneyimi.
+
+**Uygulanan:** `services/api/app/routers/questions.py`'a `/ask/v2/stream`
+endpoint. `pipeline.astream()` ile node-level event yayını; her event
+SSE format'ta (`event: node_completed\ndata: {...}\n\n`). Final event
+cevap + sources + confidence + processing_time_ms.
+
+**Document serialization:** LangChain `Document` JSON-native değil →
+`_serialize_event_value` `page_content + metadata` dict'e çevirir.
+`retrieved_docs` payload'ı çok büyük → frontend'a sadece özet
+(`{count, preview}`).
+
+**Token-level streaming (Anthropic SDK stream):** P3 sonrası iş paketi
+— LangGraph state'iyle iç içe daha kompleks; MVP node-level yeter.
+
+---
+
+## Task 5+ Eval A/B Test (post-finalize empirical bulgular)
+
+### Sapma 39 — RAG-with vs baseline A/B sonucu: **B kötü, mimari sağlam**
+
+**Setup:**
+- Eval set: P2'nin `ml/data/processed/eval.jsonl` (30 random sample, seed=42)
+- Train corpus: P2 `train.jsonl` (348 Q&A) → Qdrant `eduai_eval_corpus`
+  collection'ı (her Q&A tek chunk, "Soru: X. Cevap: Y." formatında)
+- A (baseline): claude-haiku-4-5 doğrudan, RAG yok
+- B (RAG): LangGraph pipeline (retrieve → generate → validate → format)
+- Metrikler: ROUGE-1, ROUGE-L, BERTScore F1 (P2 ile aynı)
+
+**Sonuç (30 sample):**
+
+| Metric | A (baseline) | B (RAG) | Δ (B−A) |
+|---|---:|---:|---:|
+| ROUGE-1 F | 0.3753 | 0.3342 | **−0.041** |
+| ROUGE-L F | 0.2257 | 0.1922 | **−0.033** |
+| BERTScore F1 | 0.5285 | 0.5178 | **−0.011** |
+| Latency (sn) | 6.1 | 10.2 | +4.1 |
+
+- B win-rate ROUGE-1: **8/30 (%27)** — yani %73 baseline daha iyi
+- B win-rate BERTScore: **11/30 (%37)**
+- B avg confidence: 0.85 (yüksek!) — yanlış cevap için yüksek skor
+
+**Yorum (P2 disiplininin tezahürü):**
+
+P2'de "loss düşüşü ≠ kalite iyileşmesi" dersi: top-1 retrieval skoru ≠
+cevap doğruluğu. B avg confidence 0.85 ama B win-rate %27.
+
+Pattern (CSV `agents/data/eval_ab_results.csv` analizinden):
+- B'nin **en kötü** olduğu örneklerde (Δ_BERT −0.15 → −0.04): retriever
+  **yanlış** chunk getiriyor (eval konusu train'de farklı paragraf'a
+  yakın). LLM "Maalesef sağlanan bağlam içerisinde X hakkında bilgi
+  bulunmamaktadır" konservatif cevap veriyor; A doğal bilgisinden güzel
+  cevap üretiyor.
+- B'nin **en iyi** olduğu örneklerde (Δ +0.05): A ve B yarışıyor; gerçek
+  RAG faydası küçük.
+
+**4 tanı:**
+
+1. **Yanlış corpus stratejisi:** train.jsonl Q&A pair'leri eval konularını
+   tam coverage etmiyor. Retriever **yakın ama yanlış** chunk getiriyor →
+   LLM yanlış paragrafa fixate olup kendi doğru bilgisinden uzaklaşıyor.
+
+2. **Validator weak indicator listesi yetersiz:**
+   `_WEAK_INDICATORS` listesi `"yeterli bilgi yok"`, `"bağlamda yer almıyor"`
+   içeriyor ama eval'da gözlemlenen kalıp **"Maalesef bağlamda... bilgi
+   bulunmamaktadır"**, **"kaynaklar yetersiz"** — bu cevaplar weak
+   yakalanmıyor → retry tetiklenmiyor (avg attempts 1.23). Liste
+   genişletilmeli.
+
+3. **Baseline güçlü:** claude-haiku-4-5 Türkçe lise sorularında zaten
+   yetkin (Wikipedia + general training). RAG context ek bilgi sağlamak
+   yerine **noise** ekliyor — model kendi bilgisinden uzaklaşıyor.
+
+4. **Recall@k metriği yok:** "Doğru chunk top-4'te var mı?" ölçmedik.
+   P3'ün gerçek faydası **retrieved context cevapla alakalı** olduğunda
+   kanıtlanır. CONCEPT.md örneği ("tarih_9_unite3.pdf") gibi gerçek
+   ders kitabı PDF'leri ile retest gerek.
+
+**Mimariden çıkan ders:**
+
+> **RAG mimarisi sağlam, sorun corpus + validator kalibrasyonu.**
+
+Smoke test'te (Task 1-5) RAG mükemmel çalıştı (top score 0.90, doğru
+cevap). Bu A/B test sonucu **mimariyi geçersizleştirmez**, **corpus
+stratejisini sorgular**:
+- Q&A pair'leri RAG corpus için zayıf (chunk = full Q&A → retrieval
+  benzer ama yanlış sorulara fixate)
+- Düz ders kitabı paragrafları (CONCEPT örneği) → retrieval konuya bağlı
+  bilgi getirir, LLM context'ten cite eder
+
+**Production önerileri (P3 sonrası iş paketleri):**
+
+1. **Validator weak indicator listesini genişlet** — "Maalesef", "bilgi
+   bulunmamaktadır", "yetersiz", "veri yok" eklensin (Sapma 39 follow-up).
+2. **Real ders kitabı corpus'u** ile retest — MEB müfredat PDF'leri vs.
+3. **Recall@k retrieval metriği** — `agents/scripts/eval_retrieval.py`
+   yeni script (her eval Q için doğru chunk top-k'de mi).
+4. **CrewAI route** — basit sorularda LangGraph yetersizse (B avg %27
+   win), karmaşık çok-disiplinli sorularda CrewAI'a yönlendir; basit
+   sorularda **baseline doğrudan** kullan (corpus iyi değilse yarar yok).
+
+**Empirical kanıt:** `agents/data/eval_ab_results.csv` 30 satır + manuel
+rating slot'ları (kullanıcı 1-5 puanlamak için).
 
 ---
 

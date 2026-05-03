@@ -1,0 +1,1616 @@
+idx,subject,grade,question,gold,a_answer,a_latency,a_input_tokens,a_output_tokens,a_rouge1,a_rougeL,a_error,b_answer,b_latency,b_confidence,b_attempts,b_rouge1,b_rougeL,b_error,a_rating_manual,b_rating_manual,a_bertscore,b_bertscore
+1,biyoloji,10,Mitoz bölünmenin dönemleri sırasıyla nelerdir? Her dönemde neler olur?,"Mitoz dört ana dönemden oluşur: Profaz döneminde kromozomlar kondense olur ve nükleer zar yok olur; metafaz döneminde kromozomlar hücrenin ekvatorunda sıralanır; anafaz döneminde kardeş kromatidler ayrılarak kutuplara doğru hareket eder; telofaz döneminde ise nükleer zarlar yeniden oluşur ve hücre fiziksel olarak ikiye bölünür (sitokinezis). Bu dönemlerin sırasıyla ve doğru şekilde gerçekleşmesi, hücre bölünmesinin başarılı olması için çok önemlidir.","# Mitoz Bölünmenin Dönemleri
+
+Mitoz bölünme **dört ana döneme** ayrılır. İşte sırasıyla:
+
+## 1. **Profaz (Hazırlık Dönemi)**
+- **Kromozonlar** görünür hale gelir ve kısa, kalın yapılar oluştururlar
+- Her kromozon **iki khromatidten** oluşur (S döneminden sonra)
+- **Nükleer zar** yok olmaya başlar
+- **Sentriyollar** hücrenin zıt kutuplarına hareket eder
+- **İğ lifler** oluşmaya başlar
+
+## 2. **Metafaz (Sıralama Dönemi)**
+- Kromozonlar hücrenin **orta kısmında (ekvator düzleminde)** sıralanır
+- **İğ lifler** her kromozonun sentromeri tutmuştur
+- Nükleer zar tamamen kaybolmuştur
+- Bu dönem bölünmenin **kontrol edilebilir** anıdır
+
+## 3. **Anafaz (Ayrılma Dönemi)**
+- **Khromatidler** kendi aralarında ayrılır
+- Her khromatid birer **kromozom** haline gelir
+- İğ lifler kasılarak kromozomları **hücrenin iki kutbuna** çeker
+- Hücrenin ortası **açılmaya** başlar
+
+## 4. **Telofaz (Son Dönemi)**
+- İğ lifler kaybolur
+- Nükleer zarlar **yeniden** oluşur
+- Kromozomlar **gevşeyerek** ve **görünmez** hale gelir
+- **Sitokinez** (sitoplazma bölünmesi) gerçekleşir
+- **İki yeni hücre** oluşur
+
+---
+
+**",10.64,228,512,0.4014,0.2676,,"# Mitoz Bölünmenin Dönemleri
+
+Maalesef verilen bağlamda mitoz bölünmenin detaylı dönemleri ve her dönemde neler olduğuna dair spesifik bilgi bulunmamaktadır.
+
+## Bağlamda Bulunan Bilgiler
+
+Bağlamdaki kaynaklarda [1] ve [2] mitoz hakkında genel bilgiler vardır:
+
+- Mitoz, ana hücrenin **iki özdeş kız hücreye bölünmesi** işlemidir
+- Bu bölünme **interfaz döneminde DNA replikasyonunun ardından** gerçekleşir [1]
+- **Vücut hücrelerinde (soma hücrelerinde)** meydana gelir [2]
+- Sonuçta oluşan kız hücreler ana hücreyle **aynı sayıda kromozoma (diploid)** sahip olur
+
+## Sonuç
+
+Mitoz bölünmenin dönemleri (profaz, metafaz, anafaz, telofaz gibi) ve her dönemde meydana gelen olaylar hakkında **bağlamda yeterli bilgi bulunmamaktadır**. Bu konuda detaylı bilgi için ders kitabınızı veya biyoloji öğretmeninizi kontrol etmeniz önerilir.",76.18,0.909,3,0.3051,0.1695,,,,0.5258,0.5004
+2,edebiyat,11,Servet-i Fünun Edebiyatı nasıl bir edebiyat hareketidir? Tanzimat'tan farkını belirtiniz.,"Servet-i Fünun (1896-1901), Tanzimat'tan sonra gelen ve Batı edebiyatını daha derinden benimseyen bir dönemdir. Tanzimat'ın didaktik, toplumcu yaklaşımından farklı olarak, Servet-i Fünun yazarları sanat için sanat ilkesine (l'art pour l'art) ağırlık vermiştir. Bu dönem yazarları eserlerinde psikolojik incelikler, ruh hallerinin tasviri ve biçeme daha fazla önem vermişlerdir. Ayrıca bu dönemde 'aile dergileri' yayınlanmış ve edebiyat daha geniş bir okuyucu kitlesine ulaşmıştır.","# Servet-i Fünun Edebiyatı
+
+## Genel Tanımı
+
+**Servet-i Fünun** (1896-1901), Tanzimat döneminden sonra ortaya çıkan ve **batılılaşma yolunda daha ileri adımlar atan** önemli bir edebiyat hareketidir. Dönemin aydın ve yazarlarını bir dergi etrafında toplayan bu hareket, **sanat ve edebiyat için sanat ilkesiyle** bilinir.
+
+## Temel Özellikleri
+
+- **Biçime önem verme**: Dil kullanımında incelik ve güzellik
+- **Bireysel duygular**: Şahsi hisler ve münfail bakış açısı
+- **Estetizm**: Sanatı, faydadan ziyade güzellik için yapma anlayışı
+- **Yeni teknikler**: Psikolojik derinlik ve karakter çözümlemesi
+- **Türkçeyi zenginleştirme**: Dil konusunda titiz davranış
+
+## Tanzimat'tan Farkları
+
+| **Tanzimat** | **Servet-i Fünun** |
+|---|---|
+| Toplumsal-siyasi mesajlar ön planda | Estetik ve sanatsal kaygılar ön planda |
+| Eğitici ve aydınlatıcı amaç | Sanat için sanat ilkesi |
+| Daha sade ve anlaşılır dil | Süslü, incelikli ve zor dil |
+| Ahlaki-sosyal sorunlara odaklanma | Bireysel duyguş ve ruh hallerine odaklanma |
+| Konu merkezli | Biçim merkezli |
+
+## Önemli Yazarları
+
+- Nabizade Nazım
+- Halit Ziya Uşaklıgil
+- Mehmet Rauf",6.7,240,512,0.3446,0.2022,,"# Servet-i Fünun Edebiyatı ve Tanzimat'tan Farkları
+
+## Servet-i Fünun Edebiyatı Nedir?
+
+Servet-i Fünun döneminde edebiyat hareketiyle ilgili olarak [1] ve [2] kaynaklarından yararlanarak şu özellikleri belirtebiliriz:
+
+**Sanat ve Biçeme Odaklanması:**
+- Servet-i Fünun, **sanat ve biçeme öncelik veren** bir edebiyat hareketidir [1]
+- Estetik başarıyı birinci plana koyan bir tavır sergiler [2]
+
+**Psikolojik Derinlik:**
+- Eserler, **psikolojik derinlik ve duygusal titizlikle** yazılmıştır [2]
+- İç dünya tasvirlerine önem verilmektedir
+
+**Batılı Teknikler:**
+- Batı'dan gelen modern yazın tekniklerini kullanan bir harekettir [2]
+
+---
+
+## Tanzimat'tan Temel Farklar
+
+| Özellik | **Tanzimat** | **Servet-i Fünun** |
+|---------|-------------|-------------------|
+| **Amaç** | Toplumcu ve didaktik (eğitici) [1] | Sanat ve biçeme odaklanma [1] |
+| **İşlev** | Sosyal sorunları ele alarak halkı bilinçlendirme [4] | Estetik başarıyı ön planda tutma [2] |
+| **Konular** | Evlilik, eğitim, cihad gibi sosyal konular [4] | Aile trajedileri, psikolojik derinlik [2] |
+
+**Kısaca:** Tanzimat **toplumu aydınlatmaya** çalışırken, Servet-i Fünun **",6.89,0.8717,1,0.3175,0.1667,,,,0.538,0.5187
+3,felsefe,11,"Evrensel ahlak normlari varsa, bu normlar nasıl belirlenmelidir?","Evrensel ahlak normları belirlenirken, farklı kültür ve değerleri dikkate alarak ortak insani değerleri bulmak gerekmektedir. Örneğin, hemen hemen tüm toplumlarda haksız öldürme, hırsızlık ve aldatma olumsuz görülür; ebeveyn saygısı, dürüstlük ve yardımseverlik ise olumlu karşılanır. Bu evrensel eğilimlerin temelinde, insanın temel ihtiyaçları (güvenlik, yaşam, saygı), sosyal işbirliğinin gerekleri ve akılcı düşünme yer almaktadır. Ancak bu normaların uygulanması bağlamsal olarak değişebilir; çünkü kültürel farklılıklar, tarihi koşullar ve medeniyetlerin özgün gelişimleri saygı görmesi gerekir.","# Evrensel Ahlak Normlarının Belirlenmesi
+
+Bu, felsefi bir sorundur. Bağlamda bu konuya ilişkin spesifik bir kaynak sunulmadığı için, yeterli bilgi çerçevesinde genel yaklaşımları paylaşıyorum:
+
+## Temel Tartışma Noktaları
+
+**Evrensel normlar varsa nasıl belirlenmelidir sorusu:**
+
+- **Rasyonalist yaklaşım**: Aklın kullanılması ve mantıksal çıkarımlarla
+- **Empirik yaklaşım**: İnsanların ortak yaşam deneyimleri ve gözlemlerle
+- **İnsan haklari yaklaşımı**: Tüm insanların ortak çıkarları ve temel ihtiyaçları temel alınarak
+- **Diyalojik yaklaşım**: Farklı kültür ve medeniyetlerin karşılıklı diyalogu yoluyla
+
+## Dikkat Edilmesi Gereken Noktalar
+
+⚠️ **Zorluk**: Evrensel normlara ulaşmak zordur çünkü:
+- Kültürler ve dinler farklılıklar gösterir
+- Çıkar çatışmaları olabilir
+- Relativizm vs. evrenselcilik arasında gerginlik vardır
+
+---
+
+**Daha spesifik bir kaynak veya metin varsa, lütfen paylaş ki daha doğru cevap verebilsin.**",5.13,224,409,0.3194,0.1521,,"# Evrensel Ahlak Normlarının Belirlenmesi
+
+Sağlanan bağlamda doğrudan bu soruya cevap verilmemiştir. Ancak ilgili felsefik yaklaşımlardan yararlanarak açıklama yapabilirim:
+
+## Bağlamdan Çıkarılabilecek İlkeler
+
+### 1. **Kant'ın Akıl Temelli Yaklaşım** [2]
+Kant'a göre, **insanın akıl yeteneği** ona ahlaki değer verir. Bu perspektiften evrensel ahlak normları:
+- İnsanın saygı, onur ve özerkliğini temel alan ilkeler üzerine kurulmalı
+- Tüm insanları araç değil amaç olarak gören prensipler içermeli
+
+### 2. **Erdem Ahlakının Katkısı** [1]
+Evrensel normlar belirlenirken:
+- **Cesaret, adalet, bilgelik** gibi evrensel erdemlerin önemi dikkate alınabilir
+- Eğitim yoluyla bu normların geliştirilmesi ve yaygınlaştırılması sağlanabilir
+
+### 3. **Bağlamsal Yaklaşımın Dengesi** [3]
+Mutlak ve nispi etik arasında:
+- **Temel ilkeleri mutlak tutmak** (hukuki zemin)
+- **Bağlamın karmaşıklığını dikkate almak** (pratik uygulama)
+
+## Sonuç
+
+Evrensel ahlak normları, **insanın temel haklığı ve özerkliği** temel alınarak, **akıl ve ortak insan değerleri** üzerinde inşa edilmelidir.
+
+**Yeterli bilgi**: Bu konu hakkında daha kapsamlı bir cevap için bağlamda ek kaynaklar bul",12.23,0.8168,2,0.2765,0.1222,,,,0.4616,0.4705
+4,edebiyat,11,Tanzimat Edebiyatı döneminin temel amacı nedir ve bu dönem Osmanlı edebiyatında hangi değişiklikleri getirmiştir?,"Tanzimat Edebiyatı (1839-1876), Osmanlı Devleti'nin modernleşme çabalarıyla paralel olarak gelişen bir dönemdir. Bu dönemde yazarlar, Batı edebiyatının teknik ve formlarından etkilenerek yeni yazın türlerini Türkçeye kazandırmışlardır. Özellikle roman ve tiyatro türleri bu dönemde yaygınlaşmış, sosyal sorunlara dikkati çekerek didaktik (öğretici) bir işlev üstlenmiştir. Tanzimat yazarları, dili sadeleştirme ve halkçılık ilkesiyle eserler vermişlerdir.","# Tanzimat Edebiyatı: Temel Amaç ve Değişiklikler
+
+## Temel Amaç
+
+Tanzimat Edebiyatı döneminin (1839-1876) temel amacı, **Osmanlı Devleti'nin modernleştirilmesi ve Batılılaşması ideolojisini edebiyat aracılığıyla yaymaktır**. Bu dönemin yazarları, edebi eserler üstünden reformist fikirlerini halka anlatmayı hedeflemiştir.
+
+## Osmanlı Edebiyatında Getirilen Değişiklikler
+
+### 1. **Biçim ve Dil Bakımından**
+- **Türkçenin sadeleştirilmesi**: Arapça ve Farsça kelimeler azaltılarak anlaşılır bir dil amaçlanmıştır
+- **Yeni edebi türlerin ortaya çıkması**: Roman, öykü ve tiyatro gibi Batı kökenli türler yaygınlaşmıştır
+- **Gazete ve dergilerin gelişimi**: Tanzimat gazeteciliği edebiyatın yayılma aracı olmuştur
+
+### 2. **İçerik Bakımından**
+- **Sosyal eleştiri**: Toplumsal aksaklıklar ve yolsuzluklar edebi eserler içinde işlenmeye başlanmıştır
+- **Konu çeşitliliği**: Aşk ve tasavvufi konuların yanında sosyal meseleler işlenmiştir
+- **Batılı estetik değerler**: Klasik Osmanlı edebiyatının kurallarından uzaklaşılmıştır
+
+### 3. **Amacsal Değişim**
+- Edebiyat, **eğitim ve aydınlanma aracı** haline gelmiştir
+- Siyasi",6.54,244,512,0.3139,0.2117,,"# Tanzimat Edebiyatı Döneminin Temel Amacı ve Getirdiği Değişiklikler
+
+## Temel Amaç
+
+Tanzimat edebiyatının birincil amacı **toplumcu ve didaktik (eğitici)** bir nitelik taşımaktır [1]. Bu dönemin yazarları, edebiyatı yalnızca estetik bir araç olarak değil, **halkı bilinçlendirme ve toplumsal dönüşümü hızlandırma aracı** olarak kullanmışlardır [2].
+
+## Osmanlı Edebiyatına Getirilen Değişiklikler
+
+### 1. **Yeni Türlerin Tanıtılması**
+- **Sosyal roman türü** Batı'dan edebiyata taşınmış [2]
+- Romanlar, evlilik, eğitim, cihad gibi **sosyal konuları** ele almaya başlamıştır
+
+### 2. **İçerik ve Konularda Değişim**
+- Edebiyat **toplumun sorunlarını** doğrudan okuyucuya sunmaya başladı [2]
+- Halkçılık ilkesi, dönemin özel bir şekilde uygulandı [1]
+
+### 3. **Amacın Dönüşümü**
+- Edebiyat **""eğitici ve aydınlatıcı işlev""** göstermeye başladı [2]
+- Yazarlar, modernleşme çabalarının paralel olarak eserler verdi
+
+### 4. **Örnek Katkı**
+**Namık Kemal**, bu dönemin öncü ismi olarak ""Vatan Yahut Silistre"" gibi eserlerle millî duyguları uyandırarak, sonraki dönemlere geçiş sağlamıştır [4].",6.36,0.8764,1,0.3123,0.1487,,,,0.544,0.5308
+5,tarih,10,16. yüzyıl Avrupa'sında coğrafi keşiflerin başlıca nedenleri nelerdir? Bunların sonuçları nedir?,"Coğrafi keşifler, Avrupa'nın Asya mallarına olan talep artışı, Osmanlı Devleti'nin ticaret yollarını kontrol etmesi sonucu alternatif yollar arama isteği, ve teknolojik gelişmeler (pusula, harita yapımı) gibi nedenlerle gerçekleşti. Keşifler sonucunda, Avrupa-Amerika ve Avrupa-Asya arasında yeni ticaret ağları kurulmuş, batı merkezci dünya ticaret sistemi oluşmaya başlamış ve ilerleyen dönemlerde Avrupa'nın küresel gücü artmıştır.","# 16. Yüzyıl Avrupa'sında Coğrafi Keşifler
+
+## Başlıca Nedenleri
+
+### Ekonomik Nedenler
+- **Ticari çıkarlar**: Doğu'daki (Hindistan, Çin) baharat, ipek ve değerli ürünlere ulaşma isteği
+- **Ticaret yollarını kontrol**: Osmanlı İmparatorluğu'nun Doğu-Batı ticaret yollarını kontrolü nedeniyle yeni deniz yolları arama
+- **Altın ve gümüş arayışı**: Zenginlik ve servet elde etme
+
+### Teknolojik Nedenler
+- Gemi inşaat teknolojisinde ilerleme
+- Navigasyon aletlerinin (pusula, astrolap) geliştirilmesi
+- Harita ve coğrafya bilgisinin iyileşmesi
+
+### Dini ve Politik Nedenler
+- **Hristiyanlığı yayma** arzusu
+- Avrupa devletlerinin güç ve prestij kazanma rekabeti
+- Kraliyet desteği ve finansmanı
+
+## Sonuçları
+
+### Coğrafi Sonuçlar
+- Dünya haritasının tamamlanması
+- Yeni kıtaların (Amerika) keşfi
+- Okyanus yollarının açılması
+
+### Ekonomik Sonuçlar
+- **Ticaret ağlarının değişmesi**: Deniz ticaret ağlarının Atlantik'e kayması
+- Kolonyalizmin başlaması
+- Avrupai merkantilizmin gelişmesi
+
+### Sosyal ve Kültürel Sonuçlar
+- Avrupalı milletlerin dünya üzerinde egemenlik kurması
+- Yeni topraklardaki halklara karşı sömürü ve asimilasyon
+- Kültür ve din",6.94,243,512,0.3245,0.2113,,"# 16. Yüzyıl Avrupa'sında Coğrafi Keşifleri Anlama
+
+## Başlıca Nedenleri
+
+Maalesef bağlamdaki kaynaklarda coğrafi keşiflerin **başlıca nedenleri hakkında ayrıntılı bilgi yok**. [1] kaynağında sadece şu kısaca belirtiliyor:
+
+- Avrupa'da **Rönesans ve coğrafi keşifler** yaşanmakta olduğu
+- Aynı dönemde **merkantilist ekonomiye geçiş** gerçekleştiği
+
+Bu bilgilerden anlaşılsa da, keşiflerin ekonomik ve kültürel temellerine dair detaylı açıklama bağlamda yer almamaktadır.
+
+## Sonuçları
+
+Bağlamda coğrafi keşiflerin sonuçlarından bahsedilen kısım:
+
+- **Teknolojik ve ticari gelişme** [1]
+- **İnovasyon kültürü** [1]
+- 17. yüzyıldan itibaren **küresel denge lehine Avrupa'nın güçlenmesi** [1]
+
+---
+
+**Not:** Bu sorunun kapsamlı cevabı için ders kitabınızda veya başka kaynaklarda coğrafi keşiflerin (ticaret, altın, baharat gibi) ekonomik ve siyasi motivasyonları hakkında daha detaylı bilgi araştırmanız faydalı olacaktır.",6.07,0.8272,1,0.272,0.16,,,,0.5167,0.4676
+6,cografya,10,Yapısal işsizlik ve nüfus artışı arasındaki ilişkiyi açıklayınız ve Türkiye'de bu durum nasıl görülmektedir?,"Yapısal işsizlik, ekonominin talep ettiği becerilerle işçilerin sahip olduğu beceriler arasındaki uyumsuzluk nedeniyle ortaya çıkar. Nüfus artışı ise işgücü piyasasına her yıl milyonlarca yeni işçi eklenmesini gerektirmektedir. Türkiye'de, nüfus artışı hızlı olmasına rağmen ekonomi, gerekli sayıda nitelikli iş yaratmakta güçlük çekmektedir. Özellikle eğitim sisteminin endüstrinin taleplerini karşılaması yeterli değilse yapısal işsizlik artmakta, bu da gençlerin işsizlik oranını yükselten önemli bir sorun haline gelmektedir.","# Yapısal İşsizlik ve Nüfus Artışı Arasındaki İlişki
+
+## Kavramların Tanımı
+
+**Yapısal İşsizlik:** İş piyasasındaki yapısal dengesizliklerden kaynaklanan işsizliktir. İşler ile işçilerin niteliklerinin uyuşmaması, bölgesel farklılıklar ve teknolojik değişimler bu işsizliğin temel nedenleridir.
+
+**Nüfus Artışı:** Bir ülkenin toplam nüfusunun zaman içinde artması anlamına gelir.
+
+## Aralarındaki İlişki
+
+### İlişki Mekanizması
+
+1. **İşgücü Arzında Artış**
+   - Nüfus arttıkça potansiyel işçi sayısı artar
+   - Eğitim ve beceri düzeyleri değişken olabilir
+
+2. **İş Talebinde Yetersizlik**
+   - Ekonomi yeterli sayıda iş yaratamayabilir
+   - Teknolojik gelişmeler iş sayısını azaltabilir
+
+3. **Nitelik Uyumsuzluğu**
+   - Artan nüfusun eğitim seviyesi, piyasanın talep ettiği nitelikle uyuşmayabilir
+   - Bu durum yapısal işsizliği derinleştirir
+
+## Türkiye'deki Durum
+
+⚠️ **Not:** Bağlamda Türkiye'ye özgü detaylı veri sunulmamıştır. Genel açıdan:
+
+- Türkiye **genç nüfusa** sahip bir ülkedir
+- Nüfus artışı hızlı olmasına rağmen, **istihdam yaratma hızı** buna yetişememektedir
+- **Eğ",5.91,248,512,0.3737,0.1938,,"# Yapısal İşsizlik ve Nüfus Artışı Arasındaki İlişki
+
+## İlişkinin Genel Açıklaması
+
+Bağlamda sağlanan bilgilere göre, yapısal işsizlik ve nüfus artışı arasında dolaylı bir bağlantı bulunmaktadır:
+
+- **Nüfus artışı** → istihdam talebinin artması
+- **Yapısal işsizlik** → ekonomik fırsatların yetersiz olması ve istihdam yaratılamayışı
+
+Bu durum, özellikle **bölgesel dengesizliklerle** ilişkilidir [1]. Gelişmemiş bölgelerdeki nüfus artışına rağmen, o bölgelerdeki istihdam imkanlarının sınırlı olması işsizliği arttırır.
+
+## Türkiye'de Bu Durumun Görünümü
+
+Bağlamda sağlanan bilgilere göre, Türkiye'de:
+
+- **Bölgesel göç sorunu**: Gelişmemiş bölgelerden kalkınmış bölgelere (özellikle Marmara/İstanbul) göç yaşanmaktadır [1][2]
+- **Temel çözümler**: 
+  - Göç verilen bölgelerde ekonomik faaliyetlerin artırılması
+  - İstihdam imkanlarının çoğaltılması
+  - Yaşam koşullarının iyileştirilmesi [1]
+
+**Not:** Bağlamda yapısal işsizliğin Türkiye'deki spesifik durumu hakkında detaylı bilgi bulunmamaktadır.",5.64,0.8419,1,0.2705,0.1637,,,,0.5119,0.4725
+7,ingilizce,9,"Bir yeri (şehir, okul, park) İngilizce'de tanımlarken ""There is / There are"" yapısını nasıl kullanırız? Örnek cümleler sun.","""There is / There are"" yapısı bir yerdeki nesneleri ve öğeleri tanımlamak için kullanılır. Tekil isimler için ""There is"" (There's), çoğul isimler için ""There are"" tercih ederiz. Örneğin: ""There is a large library in our school"" (okul tanımı), ""There are many trees in the park"" (park tanımı), ""There is a beautiful mosque in Istanbul"" (şehir tanımı). Olumsuz cümleler için ""There isn't / There aren't"" kullanırız: ""There aren't any beaches in our city."" Sorular için ""Is there...?"" ve ""Are there...?"" yapılarını uygularız: ""Is there a swimming pool in the school?"" Bu yapı, bir yerdeki varlıkları sistematik şekilde tanıtmayı kolaylaştırır.","# ""There is / There are"" Yapısı ile Yer Tanımlamak
+
+## Temel Kullanım
+
+**""There is / There are""** yapısı bir yerde **ne olduğunu** anlatmak için kullanılır.
+
+| Kullanım | Yapı | Örnek |
+|----------|------|----
+| **Tekil** (sayılabilen isimler) | There **is** a/an + isim | There is a library in our school. |
+| **Çoğul** (çoğul isimler) | There **are** + isim | There are many parks in the city. |
+| **Sayılamayan** | There **is** + isim | There is water in the fountain. |
+
+---
+
+## Pratik Örnekler
+
+### **Okul Tanıtımı**
+- ✅ **There is a big playground in our school.**
+  *(Okulumuzda geniş bir oyun alanı vardır.)*
+- ✅ **There are 20 classrooms in the building.**
+  *(Binada 20 sınıf vardır.)*
+
+### **Şehir Tanıtımı**
+- ✅ **There is a beautiful museum in the city.**
+  *(Şehirde güzel bir müze vardır.)*
+- ✅ **There are many restaurants near the park.**
+  *(Parkın yakınında birçok restoran vardır.)*
+
+### **Park Tanıtımı**
+- ✅ **There is a fountain in the middle of the park.**
+  *(Parkın ortasında bir çeşme vardır.)*
+- ✅ **There are benches and trees everywhere.**
+  *(Her yerde banklar ve ağaçlar vardır.)*
+
+---
+
+## Olumsuz ve Soru Cümleleri
+
+- **Olumsuz:** There **isn't** a cinema / There **aren't** any cinemas
+- **Soru:** Is there a library? / Are there any shops?",5.31,250,512,0.5417,0.3393,,"# ""There is / There are"" Yapısı ile Yer Tanımlaması
+
+## Kullanım Kuralı
+
+**""There is / There are""** yapısı bir yerde **ne tür nesneler, kişiler veya özellikler bulunduğunu** anlatmak için kullanılır.
+
+- **There is** → Tekil isimler için
+- **There are** → Çoğul isimler için
+
+---
+
+## Pratik Örnekler
+
+### Okul Tanımlaması
+- *There are three large classrooms on the ground floor.*
+- *There is a modern library in the school.*
+- *There are friendly teachers and helpful staff.*
+
+### Park Tanımlaması
+- *There are beautiful trees and green grass in the park.*
+- *There is a playground for children.*
+- *There are benches where people can rest.*
+
+### Şehir Tanımlaması
+- *There are historic monuments and museums in Istanbul.*
+- *There is delicious street food everywhere.*
+- *There are many tourists visiting the city.*
+
+---
+
+## İpuçları
+
+✓ **Yapı**: There + (is/are) + isim + yer belirteci
+- *There **is** a mosque **in the city**.*
+- *There **are** shops **near the station**.*
+
+✓ **Olumsuz form**: 
+- *There **isn't** a swimming pool.* (There is not)
+- *There **aren't** any cinemas.* (There are not)
+
+Bu yapı, bir yeri tanımlarken bulunduğu özellikleri organize ve net bir şekilde sunmanızı sağlar! [1][2]",7.08,0.8561,1,0.5696,0.3734,,,,0.5712,0.6221
+8,matematik,10,P(x) = x³ + 2x² - 5x + 3 polinomunun x = 1 için değerini hesapla.,"Polinom fonksiyonunun belirli bir noktadaki değerini bulmak için x yerine verilen sayıyı doğrudan yazarız. P(1) = 1³ + 2(1)² - 5(1) + 3 şeklinde hesaplanır. Adım adım: 1 + 2 - 5 + 3 = 1 olarak bulunur. Bu sonuç, x = 1 noktasında polinomun grafiğinin y = 1 koordinatından geçtiğini gösterir. Böyle hesaplamalar polinom fonksiyonlarının grafiksel temsilini anlamamızda ve köklerini bulundurmamızda yardımcı olur.","# P(1) Değerinin Hesaplanması
+
+## Verilen Polinom
+**P(x) = x³ + 2x² - 5x + 3**
+
+## Çözüm
+
+x = 1 değerini polinomda yerine yazıyoruz:
+
+**P(1) = (1)³ + 2(1)² - 5(1) + 3**
+
+Adım adım hesaplayalım:
+- (1)³ = **1**
+- 2(1)² = 2 · 1 = **2**
+- -5(1) = **-5**
+- Sabit terim = **3**
+
+## Sonuç
+
+P(1) = 1 + 2 - 5 + 3 = **1**
+
+---
+
+💡 **Hatırlatma:** Bir polinomun belirli bir x değerine karşılık gelen değerini bulurken, x yerine o sayıyı yazıp tüm işlemleri yapmanız yeterlidir.",3.04,236,268,0.4217,0.2892,,"# P(x) = x³ + 2x² - 5x + 3 Polinomunun x = 1 için Değeri
+
+## Çözüm
+
+Polinomun x = 1 için değerini bulmak için, **x yerine 1 yazarız**:
+
+**P(1) = (1)³ + 2(1)² - 5(1) + 3**
+
+Adım adım hesaplayalım:
+- (1)³ = **1**
+- 2(1)² = 2 × 1 = **2**
+- -5(1) = **-5**
+- Sabit terim = **3**
+
+## Sonuç
+
+P(1) = 1 + 2 - 5 + 3 = **1**
+
+---
+
+### Açıklama
+Bir polinomun belirli bir x değerindeki değerini bulmak, o değişkeni polinoma yerine yazıp işlemi gerçekleştirmek demektir. Bu yöntem, polinomun [1]'de anlatılan derecesi ve başkatsayısı gibi temel özellikleriyle birlikte fonksiyon analizi için temeldir.",4.54,0.8614,1,0.377,0.3246,,,,0.6322,0.6361
+9,matematik,12,z₁ = 3 + 4i ve z₂ = 1 - 2i karmaşık sayılarının çarpımını bulunuz.,"Karmaşık sayıların çarpımını gerçekleştirmek için dağılma özelliğini (FOIL) uygularız: z₁·z₂ = (3 + 4i)(1 - 2i) = 3·1 + 3·(-2i) + 4i·1 + 4i·(-2i) = 3 - 6i + 4i - 8i². i² = -1 olduğundan, -8i² = -8·(-1) = 8 olur. Gerçek ve sanal kısımları gruplandırırsak: z₁·z₂ = (3 + 8) + (-6 + 4)i = 11 - 2i elde ederiz. Kontrol: Modül ve argüman kullanılarak da doğrulanabilir.","# Karmaşık Sayıların Çarpımı
+
+Verilen sayılar:
+- z₁ = 3 + 4i
+- z₂ = 1 - 2i
+
+## Çözüm
+
+Karmaşık sayıları çarparken **dağılma özelliğini** (FOIL yöntemi) kullanırız:
+
+**z₁ · z₂ = (3 + 4i)(1 - 2i)**
+
+### Adım Adım:
+
+```
+= 3·1 + 3·(-2i) + 4i·1 + 4i·(-2i)
+= 3 - 6i + 4i - 8i²
+```
+
+**Önemli:** i² = -1 olduğunu hatırlayalım
+
+```
+= 3 - 6i + 4i - 8(-1)
+= 3 - 6i + 4i + 8
+```
+
+### Gerçek ve Sanal Kısımları Grupla:
+
+```
+= (3 + 8) + (-6i + 4i)
+= 11 - 2i
+```
+
+## Sonuç
+
+**z₁ · z₂ = 11 - 2i**",3.04,239,326,0.6118,0.5647,,"# Karmaşık Sayıların Çarpımı
+
+Maalesef bağlamda karmaşık sayıların çarpımına ilişkin doğrudan bir örnek bulunmamaktadır. Ancak karmaşık sayı işlemlerinin temel kurallarını kullanarak soruyu çözebilirim:
+
+## Çözüm
+
+z₁ = 3 + 4i ve z₂ = 1 - 2i için çarpımı hesaplayalım:
+
+**z₁ · z₂ = (3 + 4i)(1 - 2i)**
+
+Dağılma (distributif) özelliğini uygulayarak:
+
+z₁ · z₂ = 3·1 + 3·(-2i) + 4i·1 + 4i·(-2i)
+
+z₁ · z₂ = 3 - 6i + 4i - 8i²
+
+**i² = -1 olduğundan:**
+
+z₁ · z₂ = 3 - 6i + 4i - 8(-1)
+
+z₁ · z₂ = 3 - 6i + 4i + 8
+
+z₁ · z₂ = **11 - 2i**
+
+## Sonuç
+
+z₁ · z₂ = **11 - 2i**
+
+Karmaşık sayıların çarpımında, i² = -1 kuralının doğru uygulanması ve reel ile sanal kısımların ayrı ayrı toplanması önemlidir.",10.42,0.8462,1,0.5047,0.3832,,,,0.7462,0.7319
+10,biyoloji,12,Bir popülasyonun genetik çeşitliliği ne açıdan önemlidir? Çevre değişikliği bağlamında açıklayınız.,"Popülasyondaki genetik çeşitlilik, bireylerin farklı allellere sahip olması anlamına gelir ve bu durum türün adaptasyon potansiyelini artırır. Çevre koşulları değiştiğinde (sıcaklık artışı, hastalık, besin azalması gibi), genetik çeşitliliği yüksek olan popülasyonlarda bu değişikliklere dirençli bireyler bulunma olasılığı artık. Örneğin, sıcaklığa dayanıklı alleli olan bireylerin iklim değişikliğinde hayatta kalma şansı daha yüksektir. Genetik çeşitliliği düşük popülasyonlar ise çevre değişikliklerine karşı daha kırılgan olup, soyu tükenme riskiyle karşı karşıya kalabilir.","# Popülasyonun Genetik Çeşitliliğinin Önemi
+
+## Tanım
+Genetik çeşitlilik, bir popülasyondaki bireylerin **farklı allellere ve genetik kombinasyonlara sahip olması**dır.
+
+---
+
+## Çevre Değişikliği Bağlamında Önemi
+
+### 1. **Adaptasyon ve Yaşam Kalabilirliği**
+- Genetik çeşitlilik **farklı çevre koşullarına uyum sağlayabilen bireyler** üretir
+- Örneğin: Bir popülasyon içinde sıcağa, soğuğa veya kuraklığa dayanıklı bireyler bulunmasını sağlar
+- Çevre değiştiğinde, uyumlu genler taşıyan bireyler **yaşama şansı artar**
+
+### 2. **Doğal Seleksiyonun Etkili Olması**
+- Çevre stresine karşı **dirençli bireyler seçilir** ve ürerler
+- Genetik çeşitlilik yoksa, popülasyonun tamamı aynı zayıflığa sahip olur
+- Bu durumda hastalık, açlık veya iklim değişimine karşı **tüm popülasyon risk altında** kalır
+
+### 3. **Popülasyonun Devamlılığı**
+- Çevre değişikliklerinde genetik çeşitlilik, **türün tüm değişim olasılıklarına karşı hazırlık** sağlar
+- Sonuç olarak: **Popülasyon, bir kuşak sonra yok olma riskinin azalır**
+
+---
+
+## Kısaca
+Genetik çeşitlilik, değişen çevre koşullarına karşı popülasyonun **sigorta poliçesi** gi",6.12,243,512,0.4409,0.2364,,"# Popülasyonun Genetik Çeşitliliğinin Önemi ve Çevre Değişikliği
+
+## Genetik Çeşitliliğin Temel Önemi
+
+Genetik çeşitlilik, bir popülasyonda farklı allel ve gen kombinasyonlarının bulunmasıdır. Bu çeşitlilik, popülasyonun **çevresel değişikliklere karşı adaptasyon yeteneğini** doğrudan belirler.
+
+## Çevre Değişikliği Bağlamında Açıklama
+
+### 1. **Doğal Seçilim ve Survival (Hayatta Kalma)**
+
+[1]'de açıklandığı gibi, çevre kirliliği gibi olumsuz koşullar ortaya çıktığında:
+- Genetik çeşitliliğe sahip popülasyonda **farklı dayanıklılık düzeylerine sahip bireyler** bulunur
+- Ağır metal kirliliğine dayanıklı genleri taşıyan bireyler hayatta kalıp üreme şansını bulurken, hassas bireyler ölür
+- Böylece popülasyon **adaptif evrim** geçirerek yeni koşullara uyum sağlar
+
+### 2. **Genetik Çeşitliliğin Azlığının Riski**
+
+Genetik çeşitlilik düşük bir popülasyonda:
+- Tüm bireyler benzer genleri taşır
+- Ani çevre değişikliklerine karşı **savunmasız kalabilir**
+- Popülasyon tamamen yok olma riski artar
+
+## Sonuç
+
+**Yüksek genetik çeşitlilik = Popülasyonun çevre değişikliklerine uyum kabiliyeti ↑**
+
+Bu nedenle çeşitlilik, popülasyonların",7.55,0.8676,1,0.3896,0.2273,,,,0.5469,0.5548
+11,kimya,9,Sodyum (Na) elementi periyodik sistemde neden 1. grup altında yer almaktadır? Açıklayınız.,"Sodyum, periyodik sistemin 1. grubu altında yer alması, dış elektron kabuğunda (son kabuğunda) tek bir elektron bulundurması nedeniyledir. 1. grup elementlerinin tamamı, son kabuklarında 1 elektron barındırır ve bu nedenle kimyasal özellikleri benzerdir. Sodyum da lityum ve potasyum gibi, kolayca bu dış elektronunu verme eğiliminde olduğundan, aynı gruba ait diğer elementlerle benzer kimyasal davranış gösterir.","# Sodyum (Na) Neden 1. Grup Altında Yer Almaktadır?
+
+## Temel Neden: Valans Elektronları
+
+Sodyum (Na), **periyodik sistemin 1. grubunda** yer alır çünkü **dış kabuğunda (valans kabuğunda) tam olarak 1 elektron** bulunmaktadır.
+
+## Sodyumun Elektron Yapısı
+
+- **Atom numarası:** 11
+- **Elektron konfigürasyonu:** 1s² 2s² 2p⁶ 3s¹
+- **Valans elektronu:** 3. kabuğunda 1 elektron (3s¹)
+
+## 1. Grup Elementlerinin Ortak Özelliği
+
+**1. grup (Alkali metaller)** daki tüm elementler:
+- Son kabuğunda **1 valans elektronu** bulunur
+- Kimyasal özellikleri benzerdir
+- Kolay bir şekilde **1 elektron kaybederek +1 yüklü iyon** oluştururlar
+
+**Örnek:**
+```
+Na → Na⁺ + e⁻
+```
+
+## Periyodik Sistemin Kuralı
+
+Periyodik sistemde elementlerin grupları (sütunları) **valans elektron sayısı** ile belirlenir. Sodyumun 1 valans elektronuna sahip olması, onu **1. grup alkali metaller** ailesine yerleştirir.
+
+**Sodyumun grup arkadaşları:** Li, K, Rb, Cs, Fr",5.15,234,426,0.2772,0.198,,"# Sodyum (Na) Elementinin 1. Grup Altında Yer Alması
+
+## Valans Elektronlarının Sayısı
+
+Sodyum, periyodik sistemde **1. grup altında** yer almaktadır çünkü **en dış kabuğunda sadece 1 valans elektronuna sahiptir**. 
+
+Bağlamda verilen [2] numaralı kaynağa benzer şekilde açıklarsak:
+- Sodyumun atom numarası: 11
+- Elektron konfigürasyonu: 1s² 2s² 2p⁶ 3s¹
+- **Valans elektronları: 3s¹ (sadece 1 elektron)**
+
+## Periyotta ve Grupta Konumlanması
+
+[1] numaralı kaynağa göre periyodik sistemde:
+- **Yatay satır (periyod)** = elektron kabuğu sayısını gösterir → Sodyum 3. periyotta yer alır (3 elektron kabuğu)
+- **Dikey sütun (grup)** = valans elektron sayısını gösterir → Sodyum 1. grupta yer alır (1 valans elektronu)
+
+## Kimyasal Davranışı
+
+Sodyumun tek valans elektronunu **kolayca kaybetmesi** nedeniyle:
+- **+1 oksidasyonu** gösterir
+- **Potasyumla (K)** benzer kimyasal özellikler taşır (potasyum da atom numarası 19 olup [2] kaynakta belirtildiği gibi 1 valans elektronuna sahiptir)
+- **Alkalimetaller** grubunun özelliklerini sergiler
+
+**Sonuç:** Sodyum 1. grupta yer almaktadır çünkü en dış kabuğunda tam olarak **bir tane valans elektronuna** sahiptir.",10.46,0.8467,1,0.3071,0.1577,,,,0.5233,0.5129
+12,fizik,9,"Kuvvet: Bir cisim yatay düzlemde hareket ederken, neden net kuvvet (toplam kuvvet) önemlidir? Örnek senaryoyla açıklayınız.","Bir cismin hareketi, üzerine etki eden toplam kuvvet (net kuvvet) tarafından belirlenir, tek bir kuvvet değil. Örneğin, zemin üzerinde yatay kaydırılan bir sandalyeyi düşünelim: sağa 100 N kuvvet uygulanırken, sürtünme kuvveti sola 60 N etkiyor. Net kuvvet = 100 - 60 = 40 N sağa doğru. Newton'un ikinci yasasına göre, sandalye bu 40 N'luk net kuvvetle hızlanır. Eğer işçiler sandalyeyi sağa 100 N, sola ise 100 N kuvvet uygulasaydı, net kuvvet sıfır olur ve sandalye hareket etmezdi veya sabit hızda giderdi. Sonuç olarak, hareketi anlamak için tüm kuvvetlerin vektörel toplamını (net kuvveti) dikkate almak gerekir.","# Net Kuvvet Neden Önemlidir?
+
+## Tanım
+**Net kuvvet (toplam kuvvet)**, bir cisme etki eden tüm kuvvetlerin vektörel toplamıdır. Cismin hareket durumunu belirleyen **net kuvvettir**, değil bireysel kuvvetler.
+
+---
+
+## Neden Önemli?
+
+### 1. **Hareketin Yönünü Belirler**
+Net kuvvet, cismin ivme (hızlanma) yönünü gösterir. Yönü hangi tarafsa, cisim o tarafa doğru hareket eder.
+
+### 2. **Newton'un 2. Yasası**
+```
+F_net = m × a
+```
+- Cismin hareket durumu **sadece** net kuvvete bağlıdır
+- Çok sayıda kuvvet bile net kuvvet sıfırsa, cisim hareket etmez
+
+### 3. **Denge Durumunu Gösterir**
+Net kuvvet = 0 ise → Cisim sabit kalır veya düzgün hareket eder
+
+---
+
+## Örnek Senaryo: Zemin Üstünde Kutu Çekme
+
+### **Durum:**
+Yatay düzlemde 10 kg'lık bir kutu var.
+
+| Kuvvet | Büyüklüğü | Yönü |
+|--------|-----------|------|
+| Çekme kuvveti (F₁) | 50 N | Sağa → |
+| Sürtünme kuvveti (F₂) | 30 N | Sola ← |
+
+### **Hesaplama:**
+```
+F_net = 50 N - 30 N = 20 N (sağa doğru)
+
+İvme: a = F_net / m = 20 N / 10 kg = 2 m/s²
+```
+
+### **Sonuç:**",5.59,252,512,0.4348,0.194,,"# Yatay Düzlemde Net Kuvvetin Önemi
+
+## Net Kuvvet Nedir?
+
+Net kuvvet (toplam kuvvet), bir cisme uygulanan **tüm kuvvetlerin vektörel toplamı**dır. Cismin hareketi ve hızlanması bu net kuvvet tarafından belirlenır.
+
+## Neden Net Kuvvet Önemlidir?
+
+Newton'un ikinci yasasına (F = m·a) göre [2][3]:
+- **Cismin hızlanması net kuvvet tarafından belirlenir**
+- Sadece uygulanan kuvvet değil, tüm kuvvetlerin toplamı önemlidir
+- Net kuvvet sıfırsa cisim sabit hızla hareket eder veya durur
+
+---
+
+## Örnek Senaryo
+
+Bir masanın üstünde **10 kg kütleli bir kutu** düşünelim:
+
+| Durum | Kuvvetler | Net Kuvvet | Sonuç |
+|-------|-----------|-----------|-------|
+| **Durum 1** | Sağa 50 N itilir, hiçbir direnç yok | **50 N sağa** | a = F/m = 50/10 = **5 m/s² hızlanma** |
+| **Durum 2** | Sağa 50 N itilir, ama sol yöne 20 N sürtünme | **30 N sağa** | a = 30/10 = **3 m/s² hızlanma** |
+| **Durum 3** | Sağa 50 N, sola 50 N (dengelenmiş) | **0 N** | a = 0, kutu **sabit hızda** hareket eder |
+
+## Sonuç
+
+Kutu üzerine aynı kuvvet uygulanırsa bile, diğer kuvvetler (sürtünme,",6.69,0.8401,1,0.4645,0.2194,,,,0.5383,0.5607
+13,kimya,9,Rutherford'un atom modeli ile Bohr'un atom modeli arasındaki temel fark nedir?,"Rutherford'un atom modeline göre elektronlar çekirdeğin etrafında belirsiz şekilde dönmektedir ve bu model, elektronların enerji kaybederek çekirdeğe düşmesi problemini açıklayamamaktadır. Bohr ise elektronların çekirdeğin etrafında belirli enerji seviyelerinde (kabuklarda) bulunduğunu ve sadece bu seviyelerde dönebildiğini öne sürmüştür. Bohr modeli, elektronların belirli enerji seviyelerine sahip olması nedeniyle atom içinde düzenli bir yapı olduğunu göstermiş ve atomun stabilitesini açıklamıştır.","# Rutherford ve Bohr Atom Modellerinin Temel Farkları
+
+## **Rutherford Modeli**
+- **Elektronların hareketi**: Elektronlar çekirdeğin etrafında **herhangi bir yörüngede** dolaşabilir
+- **Enerji**: Elektronlar **sürekli enerji** yayabilir
+- **Problem**: Sürekli enerji kaybederse elektronlar çekirdeğe düşmelidir (açıklanmayan bir çelişki)
+
+## **Bohr Modeli**
+- **Elektronların hareketi**: Elektronlar **sabitlenmiş, belirli yörüngeler** (kuantumlu) üzerinde döner
+- **Enerji seviyeleri**: Her yörüngenin belirli bir enerjisi vardır ve enerji **yalnızca atlamalarla** değişir
+- **Çözüm**: Elektron enerji almadığı sürece yörüngesini değiştiremez, dolayısıyla atomlar **kararlı** kalır
+
+## **Pratik Sonuç**
+Bohr modeli, Rutherford'un açıklamadığı bir soruya yanıt verir:
+- **Atom neden çökmez?** ✓ Çünkü elektronlar sabitlenmiş yörüngelerde hareket eder ve sürekli enerji kaybetmez.
+
+---
+
+**Özet**: Rutherford **çekirdeğin varlığını** gösterdi; Bohr **elektronların sabitlenmiş yörüngelerde hareket ettiğini** ve atomun neden kararlı olduğunu açıkladı.",6.57,227,442,0.3866,0.2437,,"# Rutherford ve Bohr Atom Modelleri Arasındaki Temel Farklar
+
+## Söylenebilecek Bilgi
+
+Maalesef sağlanan bağlam metinleri içinde Rutherford'un atom modeli hakkında açıklayıcı bilgi bulunmamaktadır. Bağlamda yer alan metinler [1] ve [2]'de **Bohr modeli** ve **modern atom teorisi (kuantum mekaniksel model)** arasındaki karşılaştırmaya yer verilmiştir, ancak Rutherford modeli ile Rutherford-Bohr karşılaştırması yapılmamıştır.
+
+## Bohr Modeli Hakkında Bilinen Bilgiler
+
+Bağlamdan [1] yararlanarak Bohr modelinin temel özellikleri:
+
+- Elektronlar **belirli enerji seviyelerinde** (n=1, 2, 3, ...) bulunur
+- Elektronlar bu seviyeler arasında **enerji absorpsiyonu** ile yüksek seviyelere çıkar
+- Düşük seviyelere indiğinde **enerji emisyonu** ile ışık salınır
+
+---
+
+## Önerilen Çözüm
+
+Bu soru için tam ve doğru bir cevap vermek amacıyla **ders kitabınıza veya öğretmeninize** başvurmanız önerilir. Rutherford modeli ile Bohr modelinin karşılaştırması, atom fiziğinin önemli bir konusudur ve detaylı açıklanması gerekir.",17.0,0.8503,3,0.312,0.16,,,,0.5349,0.5063
+14,tarih,9,İlk Çağ uygarlıklarından Mısır uygarlığının tarım ve nüfus büyümesiyle ilişkisini anlatınız.,"Mısır uygarlığı, Nil Nehri'nin düzenli taşkınları sayesinde bereketli topraklara sahip olmuş, bu da tarımda verimli ürün alınmasını sağlamıştır. Tarımsal üretkenliğin artması, nüfusun hızlı bir şekilde büyümesine ve yerleşik hayata geçişe yardımcı olmuştur. Daha çok insanı besleyebilmek için ihtiyaç duyulan yönetim sistemi, Mısır'da güçlü bir merkezi devlet yapısının kurulmasına zemin hazırlamıştır. Sonuç olarak, doğal koşullar ve tarımsal başarı, Mısır uygarlığının yükselişi ve gelişiminin temel taşlarıdır.","# Mısır Uygarlığında Tarım ve Nüfus Büyümesi
+
+## Tarımın Önemi
+
+Mısır uygarlığının gelişmesi **Nil Nehri**'nin sunduğu doğal koşullara bağlıydı:
+
+- **Verimli topraklar**: Nil'in her yıl taşkınları sonrası bıraktığı silt (verimli çamur) sayesinde toprağın verimliliği arttı
+- **Düzenli su kaynağı**: Tarım için gerekli suyu sağladı
+- **Sürekli ürün elde etme**: Bu koşullar yılda birden fazla hasat yapılmasını mümkün kıldı
+
+## Tarımın Nüfus Büyümesiyle İlişkisi
+
+### Neden Nüfus Arttı?
+
+1. **Gıda Güvenliği**: Tarımsal üretimin artması, toplumu aç kalma riskinden kurtardı
+2. **Beslenme Düzelmesi**: Tutarlı ürün elde etme, insanları daha iyi beslenmeye olanak tanıdı
+3. **Yerleşik Yaşam**: Tarımla bağlantılı olarak nehir boyunca kalıcı yerleşimler kuruldu
+4. **Sosyal Tabakalaşma**: Tarım fazlası oluşunca, yönetici, asker, zanaat usta gibi çeşitli sosyal sınıflar ortaya çıktı
+
+### Sonuç
+
+Tarımın başarısı → Nüfusun artması → Mısır devletinin güçlenmesi → Kültürel ve mimari gelişmeler (piramitler, yazı sistemi vb.)
+
+**Not**: Bağlamda tam kaynak verilmediği için, detaylı kaynak referansı yapamamaktay",6.58,242,512,0.4119,0.203,,"# Yanıt
+
+Maalesef, sorunuza doğrudan cevap verecek yeterli bilgi bağlamda bulunmamaktadır.
+
+## Mevcut Bağlamda Neler Var?
+
+Bağlamda yer alan kaynaklar aşağıdaki konuları içermektedir:
+
+- **[1]** Sümerlerin icatları ve katkıları
+- **[2]** Büyük İskender'in Doğu seferlerinin Hellenistik medeniyete etkisi
+- **[3]** Hammurabi Kanunları ve Mezopotamya hukuk sistemi
+- **[4]** Osmanlı duraklama döneminin ekonomik ve askerî sorunları
+
+## Önerim
+
+Mısır uygarlığının tarım ve nüfus büyümesi arasındaki ilişkiyi anlatabilmek için:
+
+- **Nil Nehri**'nin taşkınlarının tarıma etkileri
+- **Tarımsal verimlilik**in nüfus artışındaki rolü
+- **Nüfus yoğunluğu**nun sosyal ve kurumsal gelişime etkisi
+
+gibi konuları ele alan kaynaklar gerekir. Mevcut bağlamda bu bilgiler yoktur.
+
+**Lütfen** bu soruyla ilgili ek kaynaklarla desteklenmiş bir bağlam sağlanırsa, daha detaylı ve doğru bir cevap hazırlayabilirim.",6.16,0.801,1,0.3704,0.1556,,,,0.49,0.449
+15,biyoloji,11,Sıcak ortamda vücudun ısısını düşürmek için hangi fizyolojik mekanizmalar devreye girer?,Sıcak ortamda vücudun merkezi ısı kontrolü merkezi olan hipotalamus aktivitesi artar ve soğutma mekanizmaları başlatılır. İlk olarak deriye kan akışı artar (vazodilatasyonla) ve bu sayede vücut ısısı cilt yüzeyinden ortama yayılır. Terleme başlar ve ter buharlaşırken vücut yüzeyinden ısı kaybı hızlanır (buharlaşmalı soğutma). Ayrıca metabolik aktivite azaltılır ve vücuttaki ısı üretimi düşürülür. Tüm bu mekanizmalar aracılığıyla vücut sıcaklığı normal seviyeye (37°C) geri getirilir.,"# Sıcak Ortamda Vücut Isısını Düşürme Mekanizmaları
+
+Vücudumuz sıcak ortamlarda ısısını sabit tutmak için birkaç önemli fizyolojik mekanizmayı devreye sokar:
+
+## 1. **Terleme (Perspiratio)**
+- Derinin ter bezleri tarafından su ve tuz içeren ter salgılanır
+- Terin cilde buharlaşması vücudun ısısını önemli ölçüde düşürür
+- En etkili soğutma mekanizmasıdır
+
+## 2. **Vasodilatasyon (Damar Genişlemesi)**
+- Deri damarları genişler
+- Kan akışı deride artar
+- Çekirdek ısı deriyek aktarılıp ortama verilir
+
+## 3. **Solunum Hızının Artması**
+- Soluk alma-verme hızlandırılır
+- Hava yollarından ısı ve nem kaybı artar
+
+## 4. **Metabolik Aktivitenin Azalması**
+- Vücudun enerji kullanımı az miktarda azalır
+- İç ısı üretimi gerekçesince azalır
+
+## 5. **Davranışsal Tepkiler**
+- Az hareket etme
+- Gölgeli yerlere gitme
+- Hafif giysiler giyinme
+
+---
+
+**Not:** Eğer bağlamda belirli bir kaynak veya ders kitabınız varsa, oradaki bilgileri kontrol etmeniz en doğru sonucu verecektir.",6.81,237,446,0.3472,0.1887,,"# Sıcak Ortamda Vücudun Isı Düşürme Mekanizmaları
+
+Maalesef bağlamda sıcak ortamda vücudun ısısını düşürme mekanizmalarıyla doğrudan ilgili bilgi bulunmamaktadır.
+
+## Mevcut Bağlam İçeriği
+Sağlanan kaynaklar [1], [2], [3] ve [4] aşağıdaki konuları kapsamaktadır:
+- Enerji akışı ve eko sistem
+- Fotosentez ve solunum ilişkisi
+- Sinir sistemi ve kan basıncı kontrolü
+- Kalp kas kasılma mekanizması
+
+## Öneriler
+Bu soruya tam cevap vermek için aşağıdaki konulara ait kaynaklar gereklidir:
+- **Termoregülasyon (ısı düzenlenmesi)**
+- **Hipotalamus işlevleri**
+- **Terleme mekanizması**
+- **Vasodilatasyon (damar genişlemesi)**
+- **Homeostasis ve ısı kontrolü**
+
+**Daha detaylı bir cevap almak için lütfen bu konulara ait ek kaynaklar sağlanmasını isteyiniz.**",5.19,0.8006,1,0.2922,0.1735,,,,0.5063,0.4735
+16,felsefe,12,Din felsefesinde 'din ve bilim' arasında bir çatışma var mıdır? Neden veya neden olmadığını açıklayınız.,"Din ve bilim arasındaki ilişki tarihsel bağlama göre değişmiştir. Çatışmacı görüş, dinin doğaüstü açıklamalarının bilimin doğal açıklamalarıyla uyumsuz olduğunu savunur; örneğin, evrim teorisi bazı dini metinlerle görünüşte çelişir. Ancak uyumcu görüş, din ve bilimin farklı alan ve amaç taşıdığını; birinin manevi, diğerinin fiziksel sorulara cevap verdiğini iddia eder. Günümüzde birçok bilim insanı ve dindar insan bu iki alan arasında bir uyum mümkün olduğunu göstermektedir.","# Din ve Bilim Arasında Çatışma: Din Felsefesi Perspektifi
+
+## Kısa Cevap
+Din felsefesi alanında bu soruya **tek bir cevap yoktur**. Farklı görüşler vardır ve her birinin gerekçeleri bulunmaktadır.
+
+---
+
+## Çatışma Olduğunu Savunanlar
+
+### Temel Argümanlar:
+- **Epistemolojik Fark**: Din imanla, bilim ise ampirik kanıtlarla hareket eder
+- **Yöntem Farklılığı**: Bilim test edilebilir hipotezler kurarken, din önceden belirlenmiş inançları temel alır
+- **Tarihsel Örnekler**: Heliyosentrizm (Kopernik), evrim (Darwin) gibi teoriler dinî inançlarla çatışmıştır
+
+---
+
+## Çatışma Olmadığını Savunanlar
+
+### Temel Argümanlar:
+- **Farklı Alanlar**: Din metafizik sorularla (neden?, anlam?), bilim fiziksel sorularla (nasıl?) ilgilenir
+- **Tamamlayıcı Rol**: İkisi farklı sorulara cevap verdiği için çatışması gerekmez
+- **Birçok Bilim İnsanı Dindar**: Albert Einstein, Johannes Kepler gibi büyük bilim insanları dindar olmuştur
+
+---
+
+## Din Felsefesinin Konusu
+
+Bu tartışma, din felsefesinin temel sorularından biridir:
+- **Akılcılık vs. Açıklamacılık**
+- Din ve bilim nasıl ilişkilendirilebilir?
+- Dinî inanç rasyonal olabilir mi?
+
+---
+
+## Sonuç
+
+**Çatışmanın varlığı, nasıl tanım",6.35,243,512,0.2877,0.1614,,"# Din ve Bilim Arasında Çatışma: Din Felsefesi Perspektifi
+
+## Çatışma Var mıdır?
+
+**Evet ve hayır** — her iki cevap da felsefi açıdan geçerlidir. Bunun nedeni, din ve bilimin **farklı alanlar** için geçerli olabilmesidir [1].
+
+## Çatışmanın Olabileceği Durumlar
+
+### 1. **Tarihsel Çatışmalar**
+- Bazı dini inançlarla bilimsel bulgular arasında gerçekten çatışmalar yaşanmıştır [1]
+- Bu durumlarda, dini inançlar bilimsel bulgulara uyum sağlamaya çalışmıştır [1]
+
+### 2. **Metodolojik Farklılık**
+- **Bilim**: Doğa dünyasının **nasıl** işlediğini açıklar (gözlem ve deneylerle) [1]
+- **Din**: Yaşamın **anlamı** ve **ahlak** gibi sorulara cevap arar [1]
+
+## Çatışmanın Olmayabileceği Durumlar
+
+### **Tamamlayıcı Rol**
+- Bilim ""biyoloji nasıl yaşamın ortaya çıktığını açıklar"" derken
+- Din ""yaşam neden var, ne amaçla var"" sorularına cevap verebilir [1]
+
+## Sonuç
+
+Modern açıdan **tolerans ve diyalog** her iki taraf için de değerlidir [1]. Çatışma, din ve bilimi aynı soruyu yanıtlayan rakipler olarak görüldüğünde ortaya çıkar; ancak bunları **farklı soruları** cevaplayan alanlar olarak kabul etmek çatışmayı azaltabilir.",5.8,0.8951,1,0.3113,0.1523,,,,0.4593,0.4683
+17,tarih,12,1923 Lozan Antlaşması Kurtuluş Savaşı açısından ne gibi sonuçlar doğurmuştur?,"Lozan Antlaşması, Türkiye'nin uluslararası arenada egemenliğinin tanınmasını sağlayan önemli bir belgedir. Antlaşma ile Türkiye'nin sınırları belirlenmiş, azınlıklar meselesi çözülmüş ve İtilaf Devletleri tarafından dayatılan ağır şartlar hafifletilmiştir. Böylelikle Kurtuluş Savaşı'nın siyasî başarısı pekiştirilmiş ve genç Türk Cumhuriyeti, uluslararası hukuk çerçevesinde tanınmış bir devlet olmuştur.","# 1923 Lozan Antlaşması'nın Kurtuluş Savaşı Açısından Sonuçları
+
+## Olumlu Sonuçlar (Türkiye'nin Kazanımları)
+
+**Toprak Bütünlüğü:**
+- Anadolu'nun tam bağımsızlığı ve toprak egemenliğinin tanınması
+- Türk Millî Devleti'nin sınırlarının uluslararası düzeyde kabulü
+
+**Siyasi Kazanımlar:**
+- Türkiye'nin bağımsız bir devlet olarak tanınması
+- Kapitülasyonların (ayrıcalıklı yabancı haklar) kaldırılması
+- Türk hukuk sisteminin tam bağımsızlığı
+
+**Askerî Kazanımlar:**
+- Boğazların (Çanakkale ve İstanbul) kontrol hakkı
+- Donanma ve ordu gücü konusunda sınırlamalar olmaksızın silahlanma
+
+## Sınırlı Kalan Yönler
+
+- Bazı sınır bölgelerinin tartışmalı kalması
+- Kültürel mirasla ilgili bazı maddelerin varlığı
+
+## Genel Değerlendirme
+
+Lozan Antlaşması, **Kurtuluş Savaşı'nın askeri zaferiyle kazanılan kazanımları uluslararası düzeyde güvence altına alan** bir anlaşmadır. Türk milletinin verdiği mücadelenin diplomatik yoldan kesinleştirilmesini sağlamıştır.",8.06,237,441,0.3534,0.2088,,"# 1923 Lozan Antlaşması ve Kurtuluş Savaşı'nın Sonuçları
+
+Maalesef sağlanan bağlamda **Lozan Antlaşması hakkında doğrudan bilgi bulunmamaktadır**. 
+
+Ancak bağlamda yer alan bilgilerden hareketle şu sonuçları çıkarabiliriz:
+
+## Kurtuluş Savaşı'nın Genel Başarısı [1]
+
+Kurtuluş Savaşı, **Anadolu ve Trakya'nın korunmasını** sağlayarak:
+- Milli direniş sonucunda **sınırları belirlenmiş** bir devlet meydana getirmiştir
+- **Uluslararası hukuk tarafından tanınan** modern bir ulus-devlet kurulmasıyla sonuçlanmıştır
+- Kayıplar büyük olsa da, tam egemenliğe sahip bir devlet ortaya çıkmıştır
+
+## Kurulan Devletin Mirasları [2]
+
+Bu başarı sayesinde:
+- **Milli egemenlik** ilkesi tesisi
+- **Laik, ulus-devlet yapısı** oluşturulması
+
+---
+
+**Lozan Antlaşması'nın spesifik maddeleri, imzalanış koşulları ve detaylı sonuçları hakkında daha kesin bilgi için ders kitabınıza veya öğretmeninize başvurmanızı öneririm.**",10.65,0.7971,2,0.3097,0.177,,,,0.5317,0.4907
+18,matematik,9,Küme kavramını tanımla ve günlük hayattan bir örnek ver.,"Küme, belirli ve kesin özelliklere sahip nesnelerin oluşturduğu gruplandırmadır. Kümenin elemanları iyi tanımlanmış ve birbirinden farklı olmalıdır. Örneğin, 'İstanbul'da bulunan üniversiteler' bir kümedir çünkü hangi üniversitelerin bu kümede olacağı açıkça bellidir. Oysa 'güzel müzikler' bir küme değildir; çünkü güzellik kişiye göre değişir ve kesin bir sınır yoktur.","# Küme Kavramı
+
+## Tanım
+
+**Küme**, iyi tanımlanmış, birbirinden farklı nesnelerin oluşturduğu topluluğudur. Kümede bulunan her nesneye **eleman** denir.
+
+### Kümenin Özellikleri:
+- Elemanları **net ve kesin** olarak belirlenmiş olmalıdır
+- Aynı eleman **bir kez** yazılır
+- Elemanların sırası **önemli değildir**
+- Küme **A, B, C, ...** gibi büyük harflerle gösterilir
+
+---
+
+## Günlük Hayattan Örnek
+
+### Bir Sınıftaki Öğrenciler
+
+```
+S = {Ali, Ayşe, Mehmet, Fatma, Kadir}
+```
+
+**Burada:**
+- **Küme:** Sınıftaki öğrenciler (S)
+- **Elemanlar:** Ali, Ayşe, Mehmet, Fatma, Kadir (5 eleman)
+- **Gösterim:** Küme parantezi { } içinde yazılır
+
+### Başka Örnekler:
+- 🏠 Bir evdeki odalar
+- 📚 Bir kütüphanedeki kitaplar
+- ⚽ Futbol takımındaki oyuncular
+- 🍎 Meyveler sepeti
+
+Bu örneklerin hepsinde elemanlar **belirli ve ayırt edilebilir** olduğu için gerçek kümeler oluştururlar.",5.12,218,420,0.422,0.2202,,"# Küme Kavramı
+
+## Tanım
+
+**Küme**, iyi tanımlanmış, birbirinden farklı nesnelerin (elemanlarının) oluşturduğu topluluktur. Bir nesnenin kümeye ait olup olmadığı kesin olarak belirlenebilir olmalıdır.
+
+## Önemli Özellikler
+
+- Kümenin elemanları **net ve kesin** olarak tanımlanmalıdır
+- Her eleman **bir kez** yazılır
+- Elemanların **sırası** önemli değildir
+- Küme sembolü: **{ }** (küme parantezi)
+
+## Günlük Hayattan Örnek
+
+**Bir sınıftaki kız öğrenciler kümesi** düşünelim:
+
+Sınıfta Ayşe, Fatma, Zeynep ve Merve kız öğrenci varsa, bu kümeyi şöyle yazabiliriz:
+
+**K = {Ayşe, Fatma, Zeynep, Merve}**
+
+### Neden Küme Tanımını Sağlar?
+- ✓ İyi tanımlanmıştır (kim kız öğrenci olduğu bellidir)
+- ✓ Elemanlar kesin ve birbirinden farklıdır
+- ✓ Bir kız öğrenci iki kez yazılmaz
+
+---
+
+**Not:** Bağlamda verilen örneklerde de küme kullanımını görebilirsiniz. Örneğin [2]'de A = {1, 2, 3, 4, 5} kümesi ve [3]'te A = {-1, 0, 1, 2} kümesi verilen şartları sağlayan elemanların iyi tanımlanmış bir topluluğudur.",7.05,0.8245,1,0.3574,0.1977,,,,0.4727,0.5073
+19,felsefe,11,Demokrasi nasıl meşrulaştırılır? Felsefik açıdan açıklayınız.,"Demokrasi, halkın yönetimde söz sahibi olması ilkesine dayanarak, bireylerin eşit siyasi haklarına ve katılımına dayalı meşruluk kazanır. Felsefik olarak, her bireyin aklı ve yargılama yeteneği olduğu için, toplumsal kararların tüm katılımcılardan gelen görüşle alınması daha adil kabul edilir. Ayrıca, demokrasi muhalefete izin vererek ve iktidarı sınırlandırarak, yönetimin halkın çıkarını gözetme sorumluluğunu oluşturur. Bu açıdan demokrasi, hem bireysel özgürlüğü hem de toplumsal adaleti amaçlayan bir sistemdir.","# Demokrasinin Felsefik Meşrulaştırması
+
+Demokrasi, felsefik açıdan çeşitli temel argümanlarla meşrulaştırılır:
+
+## 1. **İnsan Özerkliği Argümanı**
+- Demokratik sistem, bireylerin kendi yaşamlarını ilgilendiren kararları almaya katılmasını sağlar
+- Bu, insanın özerk bir varlık olarak tanınmasının gereğidir
+- Kişinin tercihlerine saygı gösterilmesi, demokrasinin temel dayanağıdır
+
+## 2. **Eşitlik İlkesi**
+- Tüm vatandaşların siyasi açıdan eşit değeri vardır
+- Bir kişinin diğerinden daha çok söz hakkına sahip olması filozofik olarak haklı gösterilemez
+- ""Bir kişi, bir oy"" ilkesi bu eşitliği yansıtır
+
+## 3. **Meşruiyetin Kaynağı Olarak Halk Egemenliği**
+- Yönetim yetkisinin meşrulığı, halkın rızasından kaynaklanır
+- Hiçbir otorite, halkın onayı olmadan kendini meşru sayamaz
+- Kolektif karar alma süreci, yönetimin haklılığını sağlar
+
+## 4. **Yaygın İyi (Common Good) Argümanı**
+- Katılımcı karar alma, toplumun çoğunluğunun çıkarlarını gözetme eğilimindedir
+- Yönetimin halk tarafından denetimi, keyfi yönetim önler
+
+**Not:** Bu konuda daha derinlemesine bilgi için felsefe kaynaklarına başvurmanız önerilir.",6.8,230,498,0.3032,0.1355,,"# Demokrasinin Felsefik Meşrulaştırılması
+
+Bağlamda doğrudan bu konuyla ilgili detaylı bilgi olmamakla birlikte, sağlanan kaynaklar temelinde şunu söyleyebilirim:
+
+## Meşruluğun Temel Kaynakları
+
+Demokrasinin meşrulaştırılması, **siyaset felsefesinin merkezi sorusu** olan ""hükümetin meşruluğu nereden gelir?"" sorusuyla bağlantılıdır [1].
+
+Bağlamda sunulan ilkelere göre, demokrasinin meşruluğu şu temeller üzerine kurulabilir:
+
+### 1. **Siyasal Katılım ve Söz Hakkı**
+- Bireylerin devlet yönetiminde söz hakkına sahip olması demokrasi için temeldir [4]
+- Karar alma süreçlerine katılabilme, yönetimin meşruiyetini artırır
+
+### 2. **Temel Hakların Korunması**
+- Demokrasi, siyasal özgürlüğü bireysel özgürlüklerin koruyucusu olarak görmeli [4]
+- İnsan haklarına dayalı bir sistem, meşruiyetinin felsefik temelini sağlar [2]
+
+### 3. **Adalet İlkesi**
+- Rawls'un ""bilgisizlik içinde toplum kurma"" yaklaşımı, meşru bir sistemin hiç kimseyi avantajlı konumda bırakmaması gerektiğini gösterir [3]
+
+**Not:** Demokrasinin meşrulaştırılması hakkında daha kapsamlı felsefik açıklamalar için ek kaynaklar gerekli olabilir.",6.41,0.8363,1,0.2917,0.1111,,,,0.5024,0.4698
+20,felsefe,10,Çağdaş bilim felsefesinde 'paradigma' kavramı nedir?,"Paradigma, bir dönem boyunca bilim insanlarının kabul ettiği temel teori, yöntem ve varsayımlar bütünüdür. Bir paradigma, o dönemde sorulan soruların, kabul edilen cevapların ve problem çözme yöntemlerinin çerçevesini belirler. Örneğin, antik çağda Aristoteles'in fizik paradigması, orta çağda din merkezli paradigma, Newton'un mekanik paradigması ve Einstein'ın görecelik paradigması tarihsel olarak değişmiştir. Paradigma değişimi, bazen kademeli olur bazen de devrimci bir şekilde gerçekleşir.","# Paradigma Kavramı
+
+Maalesef, sağlanan **BAĞLAM bölümünde** 'paradigma' kavramı veya çağdaş bilim felsefesi hakkında bilgi bulunmamaktadır.
+
+## Genel Bilgiye Dayalı Açıklama
+
+Yine de temel bir açıklama yapabilirim:
+
+**Paradigma**, bilim felsefesinde **Thomas Kuhn** tarafından geliştirilmiş bir kavramdır ve şu anlamları taşır:
+
+- **Bilimsel çerçeve**: Belirli bir dönemde bilim insanlarının kabul ettiği temel varsayımlar, yöntemler ve teoriler bütünü
+- **Örnek çalışmalar**: Alandaki araştırmacıların örnek aldığı başarılı problemler ve çözümleri
+- **Ortak anlayış**: Bilim topluluğunun paylaştığı bakış açısı
+
+### Paradigma Değişimi
+Bilim ilerledikçe eski paradigmalar yenileriyle değişir (Kuhn'un ""paradigma kayması"" ya da ""devrim"" kavramı).
+
+---
+
+**⚠️ Daha kapsamlı ve akademik bir yanıt için lütfen dersinizin bağlam materyalini (ders kitabı, notlar) paylaşabilir misiniz?**",5.0,222,376,0.3559,0.2119,,"# Paradigma Kavramı
+
+Maalesef, sağlanan **BAĞLAM içinde paradigma kavramının doğrudan tanımı bulunmamaktadır**. 
+
+## Bağlamda Mevcut Bilgi
+
+Ancak [1] numaralı kaynakta ""bilimsel devrim"" tanımlanırken paradigma kavramı kısaca geçmektedir:
+
+> ""Bilimsel devrim, mevcut bilimsel **paradigmanın yıkılarak** tamamen yeni bir paradigmanın ortaya çıkması olayıdır."" [1]
+
+Bu açıklamadan, paradigmanın bir bilimsel sistem veya düşünce çerçevesi olduğu anlaşılmaktadır.
+
+## Örnekler Bağlamda
+
+- **Jeosentrizmden heliosentrizme geçiş** (Kopernik): Eski paradigma → Yeni paradigma
+- **Newton fiziğinden görelilik teorisine** (Einstein): Evrensel yasalar anlayışının değişmesi [1]
+
+---
+
+**Sonuç:** Daha kapsamlı bir açıklama için felsefe tarihine dair ek kaynaklar gereklidir. Paradigma hakkında daha detaylı bilgi almak istersen, ""Thomas Kuhn"" gibi bilim felsefecilerin eserlerine başvurabilirsin.",5.45,0.8207,1,0.2589,0.1518,,,,0.5132,0.4795
+21,edebiyat,11,Recaizade Mahmut Ekrem'in 'Araba Sevdası' romanının Servet-i Fünun döneminin sanat anlayışını nasıl temsil ettiğini belirtiniz.,"'Araba Sevdası', Servet-i Fünun döneminin ince duygular ve psikolojik derinlik arayışını yansıtan bir eserdir. Roman, bir başkahramanın gösterişçi (absürt) tutumlarıyla gülmeceyi birleştirirken, aynı zamanda sosyal eleştiri de yapır. Recaizade'nin bu eserde kullandığı detaylı tasvirler, karakter analizleri ve ruh hallerinin işlenişi, Servet-i Fünun edebiyatının sanat için sanat ilkesini örneklemektedir. Eserin biçemsel başarısı ve muhteva bakımından dikkatli işlenmesi, bu dönem yazarlarının Batı romanlarından etkilenerek, Türkçe edebiyata getirdikleri sofistikasyonu göstermektedir.","# Araba Sevdası ve Servet-i Fünun Döneminin Sanat Anlayışı
+
+Maalesef verdiğiniz soru için bağlamda yeterli bilgi bulunmamaktadır. Ancak bu konuda genel bilgi sunabilirim:
+
+## Servet-i Fünun Döneminin Temel Özellikleri
+
+**Bu dönem (1896-1901) şu sanat anlayışıyla bilinir:**
+
+- **Sanatçılık ve Estetizm**: Sanat için sanat anlayışı benimsenir
+- **Biçime Önem**: İçerik kadar stilistik beceride odaklanılır
+- **Batılı Etkiler**: Avrupa edebiyatından ilham alınır
+- **Psikologik Derinlik**: Karakterlerin iç dünyasına yer verilir
+
+## Araba Sevdası'nda Beklenen Öğeler
+
+Romanın muhtemelen **Peyami Safa'nın eserlerinde** görülen şu nitelikleri taşıması beklenir:
+
+- Ayrıntılı tasvirler
+- Kozmopolit İstanbul ortamı
+- Aile ve cinsiyet ilişkilerine yeni bakış
+- Sosyal değişim ve modernleşme eleştirisi
+
+---
+
+**⚠️ Daha kapsamlı ve doğru bir cevap için:**
+- Ders kitaplarınızdaki Servet-i Fünun bölümünü
+- Araba Sevdası çalışmalarını kontrol etmenizi tavsiye ederim.
+
+Belirli bir bağlam veya metinsel örnek sağlarsanız daha detaylı yardım yapabilirim.",6.33,256,473,0.3772,0.1851,,"# 'Araba Sevdası'nın Servet-i Fünun Dönemini Temsili
+
+Maalesef bağlamda Recaizade Mahmut Ekrem'in 'Araba Sevdası' romanı hakkında **doğrudan bilgi bulunmamaktadır**. Ancak bağlamdaki genel bilgilerden hareketle, Servet-i Fünun döneminin sanat anlayışının özelliklerini belirtebilirim:
+
+## Servet-i Fünun Döneminin Karakteristik Özellikleri [1], [2]
+
+- **Sanat ve Biçeme Odaklanması**: Dönemin yazarları, toplumcu amaçlar yerine estetik başarıyı birinci plana koymaktadırlar.
+
+- **Batılı Teknikler**: Eserler, Avrupa edebiyatından etkilenen psikolojik derinlik ve duygusal titizlikle yazılmıştır.
+
+- **Sosyal Sorunların Sanatsal İşlenmesi**: Sosyal meseleler ele alınırken, sanatsal değer korunmaktadır.
+
+- **Çok Katmanlı Sosyal Gerçeklilik**: Farklı sosyal grupların (Müslüman ve gayrimüslim) ilişkileri, dönemin sosyal yapısını yansıtır.
+
+---
+
+**Daha kesin bir cevap için 'Araba Sevdası' hakkında özel kaynakların incelenmesi gereklidir.**",6.36,0.8638,1,0.4016,0.2047,,,,0.4984,0.5495
+22,tarih,12,Atatürk'ün 'sekiz ilke' (Kemalizm) nedir? Bunların temelinde hangi amaç vardır?,"Atatürk ilkeleri (Kemalizm) altı temel ilkeden oluşur: cumhuriyet, milliyetçilik, halkçılık, devletçilik, laiklik ve reformculuk. Bu ilkelerin temelinde, Osmanlı İmparatorluğu'nun yıkıntılarından çağdaş, laik ve millî bir ulus-devlet inşa etmek yatmaktadır. Her bir ilke, Türkiye'yi sosyal, siyasî ve ekonomik açıdan modernleştirmeye ve batılı medeniyetler seviyesine ulaştırmaya hizmet etmiştir.","# Atatürk'ün Sekiz İlke (Kemalizm)
+
+## Sekiz İlke Nedir?
+
+Mustafa Kemal Atatürk tarafından belirtilen ve Türkiye Cumhuriyeti'nin temelini oluşturan sekiz ilke şunlardır:
+
+1. **Cumhuriyetçilik** - Monarşi yerine cumhuriyet yönetimi
+2. **Milliyetçilik** - Türk milletinin birliği ve bağımsızlığı
+3. **Halkçılık** - Egemenliğin halka ait olması
+4. **Laiklik** - Din ve devlet işlerinin ayrılması
+5. **Devletçilik** - Devletin ekonomiye aktif katılması
+6. **İnkılapçılık** - Devamlı ilerleme ve yenilenme
+7. **Eğitim** - Eğitimin yaygınlaştırılması
+8. **Pozitivizm** - Bilim ve aklın ön planda tutulması
+
+## Temelinde Hangi Amaç Vardır?
+
+Bu ilkelerin **ortak amacı**:
+
+- **Osmanlı İmparatorluğu'ndan cumhuriyet devletine geçiş** sağlamak
+- **Modern, laic, milliyetçi bir Türk devleti** kurarak uluslaştırmayı tamamlamak
+- Türkiye'yi **Batı medeniyeti seviyesine çıkarmak**
+- **Bilim, akıl ve teknolojiye dayalı** bir toplum oluşturmak
+- **Devlet ve toplumda köklü dönüşümler** yapmak
+
+**Özet:** Kemalizm, eski yapıları yıkarak, modern ve laik bir ulus-devlet inşa etmeyi amaçlayan bir reform hareketidir.",6.22,236,512,0.3424,0.2179,,"# Atatürk'ün Sekiz İlke (Kemalizm) Hakkında
+
+Maalesef **bağlamda sekiz ilke hakkında detaylı bilgi bulunmamaktadır**. Ancak mevcut kaynaklardan yararlanarak genel çerçeveyi sunabiliyorum.
+
+## Bağlamda Bulunan İlkeler
+
+Sunulan kaynaklarda Atatürk reformlarının temelinde şu ilkeler yer almaktadır [1][3]:
+
+- **Laiklik**: Din ve devlet işlerinin ayrılması prensibinin hukuk ve yaşam alanlarına uygulanması
+- **Cumhuriyetçilik**: Cumhuriyet yönetim şeklinin benimsenişi
+- **Halkçılık**: Egemenliğin millete ait olduğu ilkesi
+- **Sekülerizm**: Modern, seküler esaslara dayalı bir devlet sistemi
+
+## Reformların Temel Amacı
+
+Bağlamdan anlaşıldığına göre, bu ilkelerin temelinde **Türkiye'yi modernleştirme ve batılaştırma** amacı vardır. Bu kapsamda:
+
+- Hukuk sistemi batı modellerine (İsviçre, İtalya) göre yeniden düzenlenmiş [1]
+- Geleneksel/İslamî sistemi sekuler sisteme dönüştürülmüş [1]
+
+## Yeterli Bilgi Olmayan Bölümler
+
+Sekiz ilkenin tamamının ayrıntılı tanımı için ek kaynaklara ihtiyaç vardır.",11.89,0.792,1,0.2727,0.157,,,,0.5369,0.4957
+23,ingilizce,9,"""My sister usually studies in the library, but yesterday she studied at home."" cümlesindeki tense kullanımı neden karışık görünüyor? Düzelterek açıkla.","Cümle, iki farklı zaman dilimini aynı anda kullanıyor, bu da konuşmacının niyetini net kılmıyor. Eğer düzenli rutinden bahsetmek istersek: ""My sister usually studies in the library, but yesterday she studied there too."" veya ""My sister usually studies in the library, but sometimes she studies at home."" diyebiliriz. Eğer contrast yapmak istersek: ""My sister usually studies in the library, but yesterday she decided to study at home."" daha iyi olur. Present Simple (usually studies) rutini gösterirken, Past Simple (studied) belirli bir geçmiş olayı gösterir. İki tense birlikte kullanılabilir ama cümlenin anlamı açık olmalıdır. Bu örnek, öğrencilere tense seçiminin cümlenin netliğini nasıl etkilediğini öğretir ve tutarlı yazılı İngilizce üretmelerine yardımcı olur.","# Tense Kullanımı Analizi
+
+## Cümle İncelemesi
+
+Aslında bu cümle **gramer açısından tamamen doğru**! Karışık görünmesinin sebebini açıklayalım:
+
+### 📌 Neden Karışık Görünebiliyor?
+
+İki farklı **time reference** (zaman referansı) içeriyor:
+
+| Kısım | Tense | Sebep |
+|-------|-------|-------|
+| ""usually studies"" | **Simple Present** | Alışkanlık (her gün) |
+| ""yesterday studied"" | **Simple Past** | Geçmiş günün özel durumu |
+
+## ✅ Açıklama
+
+1. **""usually studies in the library""** → Düzenli, tekrarlanan eylem
+2. **""but yesterday she studied at home""** → Dünkü günün istisnası
+
+## 🔄 Kontrast Yapısı
+
+Bu cümle **contrast (karşıtlık)** anlatır:
+- Genellikle kütüphanede çalışır
+- **FAKAT** dün evde çalıştı
+
+### Benzer Örnekler:
+- ✓ ""I usually go to school by bus, but yesterday I walked.""
+- ✓ ""She normally drinks tea, but today she drank coffee.""
+
+**Sonuç:** Cümle tamamen **doğru ve uygun**! İki tense arasındaki fark, aslında tense kullanımının bir **güzelliği**dir. 🎯",5.28,245,413,0.3696,0.1848,,"# Tense Kullanımının Analizi
+
+## Cümlenin Yapısı
+
+Verilen cümle: **""My sister usually studies in the library, but yesterday she studied at home.""**
+
+Bu cümle aslında **tense açısından doğru kullanılmıştır!** Karışık görünmesinin sebebi, iki farklı tense'in bilinçli olarak bir arada kullanılmasıdır.
+
+## Neden Karışık Görünüyor?
+
+- **""usually studies""** = Present Simple (düzenli, alışkanlık)
+- **""yesterday she studied""** = Past Simple (geçmişte tamamlanmış eylem)
+
+İlk bakışta iki zaman karışık görünse de, bu **aslında tamamen doğru bir kullanımdır** [3].
+
+## Açıklama
+
+| Tense | Kullanım | Örnek |
+|-------|----------|-------|
+| **Present Simple** | Düzenli aktiviteler, alışkanlıklar | ""usually studies in the library"" |
+| **Past Simple** | Geçmişte tamamlanmış belirli eylem | ""yesterday she studied at home"" |
+
+## Mantığı
+
+- **Kural**: ""Usually"" (normalde) → Present Simple
+- **İstisnai durum**: ""Yesterday"" (dün) → Past Simple
+
+Cümle öğrenciye şunu öğretir: **Aynı aktiviteyi anlatırken, normal durum ile istisnai durumları göstermek için tense'leri birbirinden ayırt etmeliyiz** [1] [3].
+
+## Örnek Karşılaştırma
+
+✅ **Doğru**: ""She usually wakes up at 7, but yesterday she woke up at 9.""
+❌ **Yanlış**: ""She usually wakes up at 7, but yesterday she wakes up at 9.""",9.19,0.8481,1,0.3989,0.1937,,,,0.5318,0.5777
+24,tarih,10,Avrupa'da Rönesans döneminin temel özelliklerini günümüz bağlamında nasıl açıklarsın?,"Rönesans, 14.-16. yüzyıllarda İtalya'dan başlayarak Avrupa'ya yayılan, antik Yunan-Roma medeniyetine dönüş isteğine dayanan bir kültür hareketi idi. Sanat, bilim ve edebiyatın ön plana alındığı bu dönem, insanı ve insan yeteneklerini merkeze alan bir bakış açısı getirmiştir. İnsan potansiyelinin ve bireysel gelişimin önem kazanması, modern Avrupa'nın ve batı medeniyetinin temellerini oluşturmuştur.","# Rönesans Döneminin Temel Özellikleri
+
+## Dönemin Tanımı
+Rönesans (14-16. yüzyıl), Avrupa'da **klasik Yunan-Roma kültürünün yeniden doğuşu** anlamına gelir. İnsanı ve dünyayı yeni gözle görmek istemiştir.
+
+## Temel Özellikler
+
+### 1. **İnsanı Merkeze Almak (Hümanizm)**
+- İnsan potansiyelinin, yaratıcılığının ve öneminin vurgulanması
+- *Günümüz bağlamında:* İnsan hakları, bireysel gelişim, yaratıcı endüstriler
+
+### 2. **Bilime ve Akla Güvenmek**
+- Gözlemsel deneyimler ve mantık ön planda
+- *Günümüz bağlamında:* Veri temelli kararlar, STEM eğitimi, inovasyon
+
+### 3. **Sanatı Yükseltmek**
+- Sanat ve tasarımı bilim kadar önemli görme
+- *Günümüz bağlamında:* Yaratıcı sektörler, dijital tasarım, etkinlik yönetimi
+
+### 4. **Eski Değerleri Sorgulamak**
+- Geleneksel düşünceye karşı çıkış
+- *Günümüz bağlamında:* Eleştirel düşünme, sosyal değişim, reformlar
+
+## Özet
+Rönesans, **geleneksel düşünceyi sorgulamayı, insanı değerlendirmeyi ve yaratıcılığı kutsamayı** öğretti—bu değerler bugünün dijital, çoğulcu dünyasında da çok geçerlidir.",6.14,235,497,0.2628,0.1825,,"# Rönesans Döneminin Temel Özellikleri ve Günümüz Bağlamı
+
+## Dönemin Temel Özellikleri
+
+Bağlama göre, Avrupa'da 15-16. yüzyılda yaşanan Rönesans, aşağıdaki temel değişimleri içermektedir:[1][2]
+
+- **Hümanizm Akımı**: Klasik antik metinlerin öğrenilmesi ve insan bilimlerine (edebiyat, tarih, felsefe) öncelik verilmesi
+- **Eğitim Devrimi**: Skolastik sistemin yerini, insanın potansiyelini geliştirmeye dayalı bir model aldı
+- **Coğrafi Keşifler**: Yeni dünyaların keşfedilmesi ve ticari genişleme
+- **Merkantilist Ekonomiye Geçiş**: Ekonomik yapıda modern kapitalizminin ilkeleri gelişmeye başladı
+- **Ulus-devlet Yapısı**: Bağımsız güçlü devletlerin oluşması
+
+## Günümüz Bağlamında Anlamı
+
+**Rönesans'ın mirası günümüzde:**
+
+1. **Bilimsel ve Rasyonel Düşünce**: O dönemde geliştirilen bireysel düşünme yeteneği, modern bilim ve teknolojinin temelini oluşturdu
+
+2. **Küresel Etki**: Avrupa'nın bu dönemdeki teknolojik ve ticari gelişmesi, 17. yüzyıldan itibaren küresel dengeyi lehine çevirmiş ve günümüz dünya düzenini şekillendirmiştir[1]
+
+3. **Eğitim Felsefesi**: İnsan odaklı, potansiyel geliştirici eğitim anlay",7.01,0.844,1,0.2806,0.1511,,,,0.5204,0.5048
+25,felsefe,12,Din felsefesinde 'ahlaki argüman' tanrının varlığı için nasıl bir kanıt teşkil eder? Açıklayınız.,"Ahlaki argüman, insanların evrensel ahlaki değerler hissettiğini ve bu değerlerin kaynağının tanrı olması gerektiğini savunur. Bu argümana göre, eğer evrenin temelinde ahlaki düzen olmasa, insanlar neden doğal olarak doğru ve yanlışın farkında olsunlar? Tanrının varlığı, bu ahlaki düzenin açıklanabilirliğini sağladığını öne sürülenler vardır. Ancak bazı eleştirmenler, ahlaki değerlerin sosyal evrim, kültürel gelişim veya psikolojik yapı ile de açıklanabileceğini ileri sürmektedir.","# Din Felsefesinde Ahlaki Argüman
+
+## Tanım
+
+Ahlaki argüman, evrendeki objektif ahlaki değerlerin ve yükümlülüklerin varlığından hareketle, Tanrı'nın varlığını kanıtlamaya çalışan bir felsefî delildir.
+
+## Temel İddia
+
+**Argümanın ana mantığı:**
+
+1. Nesnel ahlaki değerler ve yükümlülükler vardır
+2. Nesnel ahlaki değerlerin/yükümlülüklerin varlığı için en iyi açıklama Tanrı'nın varlığıdır
+3. Dolayısıyla Tanrı vardır
+
+## Nasıl Bir Kanıt Teşkil Eder?
+
+**İlkesi:**
+- Objektif ahlak (evrensel geçerli moral kurallar) varsa, bunları açıklayacak üstün bir kaynak gereklidir
+- Bu kaynak Tanrı'dır (Mutlak İyi, Ahlaki Yasa Koyucu olarak)
+
+**Örneğin:**
+- ""İnsan haklarını ihlal etmek yanlıştır"" sadece kişisel görüş değildir
+- Bu objektif bir ahlaki gerçektir
+- Bu gerçeğin kaynağı olarak Tanrı varsayılır
+
+## Güçlü ve Zayıf Yönleri
+
+| **Güçlü Yönleri** | **Zayıf Yönleri** |
+|---|---|
+| Nesnel ahlaka sezgisel bir çekicilik vardır | Ahlakın evrimsel/sosyal kökenle açıklanabileceği savı |
+| Insan deneyiminde ahlaki mutlakiyeti hissederiz | Euthyphro ikilemi (ahlak Tanrı'dan mı, yoksa k",6.27,243,512,0.3221,0.1745,,"# Din Felsefesinde Ahlaki Argüman ve Tanrının Varlığı
+
+Maalesef, sağlanan bağlam içinde **'ahlaki argüman' tanrının varlığı için nasıl bir kanıt oluşturduğu** konusunda doğrudan bilgi bulunmamaktadır.
+
+## Bağlamda Mevcut İlgili Bilgiler
+
+Bağlamda yer alan kaynaklar şunları içermektedir [1][2]:
+
+- **Tanrı problemi**: Tanrının varlığı, niteliği ve insanlarla ilişkisine dair sorgulamalar
+- **Azatlık sorusu (Kötülük Problemi)**: Tanrının tam güçlü ve tam iyi olması haliyle kötülüğün varlığı arasındaki çelişki
+- **Ahlak felsefesi**: Deontoloji ve teleoloji yaklaşımlarının farklılıkları [3]
+
+## Tavsiye
+
+Ahlaki argümanın (moral argument) tanrının varlığına ilişkin kanıt değeri hakkında detaylı bilgi almak için:
+
+- Din felsefesi kaynaklarına başvurmanız
+- Öğretmeninize danışmanız önerilir
+
+**Not:** Sorununuz din felsefesinin temel konularından olsa da, belirtilen kaynaklar bu spesifik konuya yeterince detay sunmamaktadır.",10.81,0.84,2,0.2154,0.1308,,,,0.4755,0.4379
+26,fizik,9,Kuvvet: Ağırlık ile kütle arasındaki fark nedir? Hangi konularda bu ayrımın önemli olduğunu gösteriniz.,"Kütle, bir cismin maddelerinin miktarıdır ve her yerde aynı kalır—kilogram (kg) cinsinden ölçülür. Ağırlık ise, Dünya'nın (veya başka bir gezegen'in) çekim kuvveti nedeniyle cisme etki eden kuvvettir ve Newton (N) cinsinden ölçülür. Formülle: Ağırlık=kütle×yer çekimi ivmesi (P=m·g). Ay'a gidersek, kütlemiz değişmez ama ağırlığımız altıda bire düşer çünkü Ay'ın çekim kuvveti daha zayıftır. Bu ayrım, uzay araştırmalarında, asansör problemlerinde ve hava direncinin etkili olduğu durumlarda kritik öneme sahiptir.","# Kütle ve Ağırlık Arasındaki Fark
+
+## Tanımlar
+
+### **Kütle (m)**
+- Bir cismin **içerdiği madde miktarı**
+- **Skaler bir büyüklüktür** (yalnızca sayı ile ifade edilir)
+- SI birim: **kilogram (kg)**
+- Her yerde **aynı kalır** (değişmez)
+
+### **Ağırlık (G veya W)**
+- Cismin **üzerine etki eden gravitasyonel kuvvettir**
+- **Vektörel bir büyüklüktür** (büyüklük + yön)
+- SI birim: **Newton (N)**
+- **Konuma bağlı olarak değişir**
+
+## Matematiksel İlişki
+
+```
+Ağırlık = Kütle × Yerçekimi İvmesi
+G = m × g
+```
+
+*Örneğin: m = 10 kg ise, Dünya'da G = 10 × 10 = 100 N*
+
+## Karşılaştırma Tablosu
+
+| Özellik | Kütle | Ağırlık |
+|---------|-------|---------|
+| Tanım | Madde miktarı | Yerçekimi kuvveti |
+| Tür | Skaler | Vektör |
+| Sembol | m | G, W |
+| Birim | kg | N |
+| Değişkenlik | Sabit | Konuma bağlı |
+
+## Bu Ayrımın Önemli Olduğu Konular
+
+### **1. Astronomi ve Uzay Bilimleri**
+- Ayda kütlesi aynı olan cismin ağırlığı **1/6 oranında** azalır
+- Uydu hareketleri ve yörünge hesaplamaları
+
+### **2. Mühendislik Uygulamaları**",5.54,244,512,0.4512,0.2896,,"# Ağırlık ile Kütle Arasındaki Fark
+
+## Tanımlar
+
+**Kütle:**
+- Maddenin miktarının ölçüsüdür
+- Her zaman aynı kalır, nerede olursanız olun değişmez
+- Kilogram (kg) cinsinden ölçülür
+- Skaler bir büyüklüktür (sadece sayısal değeri vardır)
+
+**Ağırlık:**
+- Bir cisme Dünya (veya başka bir gök cismi) tarafından uygulanan gravitasyonal kuvvettir
+- Mekândan mekâna değişebilir (yer çekimi değiştiğinde)
+- Newton (N) cinsinden ölçülür
+- Vektörel bir büyüklüktür (büyüklüğü ve yönü vardır)
+
+## Matematiksel İlişki
+
+Ağırlık hesaplaması:
+$$\text{Ağırlık (W)} = \text{Kütle (m)} \times \text{Yerçekimi İvmesi (g)}$$
+
+**W = m · g**
+
+Örneğin: 10 kg kütleli bir cismin ağırlığı Dünya'da yaklaşık 100 N'dir (g ≈ 10 m/s²)
+
+## Bu Ayrımın Önemli Olduğu Konular
+
+1. **Uzay İstasyonlarında [1]:** Astronotlar sıfır yerçekimi ortamında kütleleri aynı kalmasına rağmen ağırlıksız hale gelirler (ağırlıkları sıfır olur)
+
+2. **Farklı Gezegenler:** Ay'da g değeri daha düşük olduğu için, Dünya'da 60 kg olan bir kişinin ağırlığı Ay'da daha az olur
+
+3. **Newton",7.57,0.8524,1,0.4176,0.3118,,,,0.4893,0.5597
+27,edebiyat,9,Şiir analizi yaparken hangi unsurları incelemelisiniz? Sırasıyla açıklayınız.,"Şiir analizinde sırasıyla tema, imge, uyak ve ritim, dil ve üslup ile şairin amacını incelemelisiniz. Önce şiirin ana temasını (konusunu) belirleyin; örneğin sevgi, doğa veya ölüm hakkında mı yazılmıştır? Sonra imgeleri ve benzetmeleri tespit edin; şair neleri neye benzetmiştir ve neden? Uyak ve ritimdeki düzenliliği gözlemleyin; bu unsurlar ne hissi yaratmaktadır? Dil ve üslubu değerlendirin; şair basit mi yoksa karmaşık ifadeler mi kullanmıştır? Son olarak şairin niyetini anlamaya çalışın; okuyucuya ne göstermek istemiştir? Bu sistematik yöntem sayesinde şiiri derinlemesine anlayabilir ve değerlendirebilirsiniz.","# Şiir Analizi Unsurları
+
+Şiir analizi yaparken incelenmesi gereken başlıca unsurlar şunlardır:
+
+## 1. **Tema ve Konu**
+- Şiirin anlatmak istediği ana fikri ve konuyu belirleyin
+- Şairin hangi duygu, düşünce veya olayı işlediğini anlaşılır kılın
+
+## 2. **Şekil Özellikleri**
+- **Vezin**: Şiirdeki ritim ve müzikalite
+- **Kafiye**: Son seslerin benzerliği (aaxa, aabb vb.)
+- **Dörtlü/Beyit Yapısı**: Şiirin fiziksel düzenlemesi
+
+## 3. **Dil ve Anlatım**
+- **Kelime Seçimi**: Hangi kelimelerin seçildiği ve neden
+- **Üslup**: Resmi, halk dili, görkemli vb. anlatım şekli
+
+## 4. **Edebî Sanatlar**
+- **Benzetme, Teşbih, Kinaye**
+- **İstiare, Metafor**
+- **Alıntı, Pun, Ironi** gibi söz sanatları
+
+## 5. **Görüntü ve Sembolizm**
+- Kullanılan sembol ve mecazlar
+- Renk, ses, duyusal imajlar
+
+## 6. **Duygu ve Ton**
+- Şiirin duygusal havası (hüzünlü, coşkulu, kışkırtıcı vb.)
+- Okuyucuya verdiği izlenim
+
+## 7. **Bağlam**
+- Şiirin yazıldığı dönem ve tarihî koşullar
+- Şairin biyografik bilgileri
+
+Bu unsurları sırasıyla inceleyerek b",7.03,232,512,0.296,0.1372,,"# Şiir Analizi Yapılırken İncelenecek Unsurlar
+
+Sağlanan bağlamda, şiir analizi sırasında incelenecek temel unsurlar şöyle sıralanabilir:
+
+## 1. **Ritim (Devamlılık ve Düzenlilik)**
+Şiirde kullanılan ses düzeni ve okumanın akışını belirler [1]. Şiirin müziksel yönünü anlamak için ritmin nasıl kurgulandığı incelenmeli.
+
+## 2. **Uyak (Ses Benzeşmesi)**
+Satır sonlarında veya belirli düzenlilikte tekrarlanan ses benzeşmeleridir; örneğin 'gül-bül', 'ay-şay' gibi [2]. Uyaklar şiire müzikallik kazandırır ve metnin hatırlanırlığını artırır.
+
+## 3. **İmge (Görsel ve Sembolik Anlatım)**
+Sade kelimelerle zengin anlamlar ve görseller yaratmak [1]. Özellikle İkinci Yeni akımında imge ve sembol yoğun olarak kullanılır [3].
+
+## 4. **Dil Oyunları**
+Kelimelerle oynayarak ve az sayıda kelimeyle çok anlamlar üretme [1]. Bu, şiiri düzyazıdan ayıran temel özelliklerden biridir.
+
+## 5. **Anlam Katmanları ve Derinliği**
+Şiirin yüzeysel anlamın ötesinde ne anlattığı, bilinçdışı ve duygusal yönlerinin yorumlanması [3].
+
+## 6. **Form ve Yapı**
+Şiirin hangi formda yazıldığı (gazel, serbest şiir vb.) ve bu formun getirdiği özellikler [4",7.39,0.8379,1,0.2654,0.1553,,,,0.4804,0.4766
+28,biyoloji,10,Azot döngüsü nasıl gerçekleşir? Başlıca aşamaları anlatınız.,"Azot döngüsü, nitrojen gazının (N₂) canlılar tarafından kullanılabilir forma dönüştürülmesini ve geri dönüştürülmesini sağlayan bir süreçtir. Başlıca aşamalar şunlardır: Azot sabitleme, atmosferdeki N₂ gazını bazı bakteriler (örneğin Rhizobium) tarafından amonyağa (NH₃) dönüştürülür; nitrifikasyon, amonyağın diğer bakteriler tarafından nitrite ve nitrata dönüştürülmesi; asimilasyon, bitkiler nitratları alarak protein ve nükleik asitlere dahil eder; hayvanlar bu proteinleri yiyerek vücutlarına alırlar; son olarak denitirifikasyon, ölü organizmalar ve atıklar bakteriler tarafından ayrıştırılarak tekrar nitrojen gazına dönüştürülür ve atmosfere salınır.","# Azot Döngüsü
+
+Azot döngüsü, azotun atmosferden toprakta, canlılardan tekrar atmosfere döndüğü doğal bir süreçtir. Yaşam için gerekli temel döngülerden biridir.
+
+## Başlıca Aşamaları
+
+### 1. **Azot Fiksasyonu**
+- Atmosferdeki N₂ gazı, doğrudan canlılar tarafından kullanılamaz
+- **Azot sabitleyen bakteriler** (özellikle topraktaki *Rhizobium* ve *Azotobacter*) azotu amonyağa (NH₃) dönüştürür
+- Yıldırım enerjisi de azotu sabitleyebilir
+- Verimli bitkilerin (baklagiller) kök nodülleri bu bakterileri içerir
+
+### 2. **Nitrifikasyon**
+- Amonyak, **nitrifikasyon bakterileri** tarafından oksidlenir
+- İlk aşama: NH₃ → NO₂⁻ (nitrit)
+- İkinci aşama: NO₂⁻ → NO₃⁻ (nitrat)
+- Bitkiler bu nitratı kolayca alabilir ve proteinler sentezleyebilir
+
+### 3. **Asimilasyon (Benimsenme)**
+- Bitkiler topraktan nitratı emmek
+- Hayvanlar bu bitkileri yiyerek azotu vücutlarına alırlar
+- Azot protein ve DNA gibi önemli yapıları oluşturur
+
+### 4. **Denitrifikasyon**
+- Topraktaki **denitrifikasyon bakterileri** nitratı parçalar
+- NO₃⁻ → N₂ (azot gazı)
+- Azot tekrar atmosfere döner
+
+### 5. **Dekompozisyon (Ayrış",6.84,231,512,0.4082,0.3129,,"# Azot Döngüsü
+
+Maalesef sağlanan bağlam içerisinde azot döngüsü hakkında bilgi bulunmamaktadır. 
+
+**Teterli bilgi yok** - Bu soruyu yanıtlamak için gerekli kaynaklar bağlam bölümünde yer almamaktadır.
+
+## Önerim
+
+Azot döngüsü hakkında doğru ve detaylı bilgi almak için:
+- Biyoloji ders kitaplarınızı kontrol edebilirsiniz
+- Öğretmeninizle istişare edebilirsiniz
+- Güvenilir çevresel bilim kaynakları kullanabilirsiniz
+
+---
+
+*Eğer başka konulardan (su döngüsü, protein sentezi, böbrek fonksiyonları, fotosentez-solunum ilişkisi gibi) sorularınız varsa, sağlanan bağlamdan yararlanarak size yardımcı olmaktan mutluluk duyarım.*",5.21,0.8606,1,0.178,0.1356,,,,0.5948,0.4411
+29,fizik,12,"Ses dalgası havada yayılırken, ortam değişikliğinde (hava → su) kırılma olayı neden meydana gelir?","Kırılma, dalganın farklı ortamlarda farklı hızlarda yayılması sonucu gerçekleşir. Ses, havada ~340 m/s, suda ~1500 m/s hızla ilerler; suda daha hızlı hareket eder. Dalga hava-su sınırına çarptığında, sınırda kalan bölüm yavaş iken diğer kalan hızlı yayılmaya devam ettiğinden, dalga cephesi sınıra açı yaparak eğilir — bu dönüş kırılma olayıdır. Snell yasasına göre, sinθ₁/sinθ₂ = v₁/v₂ ilişkisi geçerlidir; burada θ açılar, v hızlar ortamlara işaret eder. Sonuç olarak, ortamın optik/akustik yoğunluğu değiştikçe dalga doğrultusunun değişmesi kaçınılmazdır.","# Ses Dalgasının Kırılması: Hava → Su Ortamında
+
+## Kırılma Olayının Temel Nedeni
+
+Ses dalgasının bir ortamdan diğerine geçerken kırılması **ortamdaki fiziksel özelliklerin farklılığından** kaynaklanır.
+
+## Ana Sebep: Hız Farkı
+
+Ses dalgası hava ve su gibi farklı ortamlarda **farklı hızlarda** yayılır:
+
+- **Havada ses hızı:** ~340 m/s
+- **Suda ses hızı:** ~1500 m/s
+
+## Kırılma Nasıl Meydana Gelir?
+
+```
+HAVA-SU SINIRINDA:
+
+Hava │ Su
+     │
+  ↙  │  ↙ (daha hızlı)
+Yavaş│Hızlı
+dalga│dalga
+```
+
+1. **Dalga hızı arttığında** - Aynı frekansı koruyan dalga, su ortamında daha uzun dalga boyuna sahip olur
+
+2. **Sinırda eğilme oluşur** - Dalga cephesinin farklı bölümleri farklı hızlarda hareket ettiği için yön değiştirir
+
+3. **Dalga boyunda değişim:**
+   - λ = v/f (v = hız, f = frekans)
+   - Hız artarsa dalga boyu da artar → Kırılma açısı değişir
+
+## Sonuç
+
+**Ses dalgası kırılır çünkü:** Ortamın farklı optik yoğunluğu (burada akustik yoğunluğu), dalganın yayılma hızını değiştirir ve bu da dalganın sinırda yön değiştirmesine neden olur.",6.03,240,502,0.4643,0.2798,,"# Ses Dalgasının Ortam Değişikliğinde Kırılması
+
+## Kırılma Olayının Nedeni
+
+Ses dalgası havadan suya geçerken kırılma meydana gelir çünkü **iki ortamda ışının hızı farklıdır**. [1]
+
+Ses dalgasında kırılmanın temel nedenleri:
+
+### 1. **Hız Değişikliği**
+- Ses havada yaklaşık 340 m/s hızla yayılırken, suda yaklaşık 1500 m/s hızla yayılır
+- Ortam yoğunluğu değiştiğinde, dalganın hızı değişir
+- Bu hız değişikliği **dalga yönünde sapma** yaratır [1]
+
+### 2. **Dalga Boyunun Değişmesi**
+- Ses dalgasının frekansı ortam değişikliğinde **sabit kalır** [1]
+- Ancak hız değiştiği için dalga boyu değişir
+- Formül: **λ = v/f** (v: hız, f: frekans)
+- Hız arttığında dalga boyu uzar, bu da yönün sapmasına neden olur
+
+### 3. **Snell Yasası'nın Uygulanması**
+[1]'de belirtildiği gibi, iki ortamın kırılma indisleri ve gelme açısı arasındaki matematiksel ilişki kırılmayı tanımlar. Ses dalgaları da benzer şekilde bu fizik kurallarına uyar.
+
+## Sonuç
+Ortam değişikliğinde ses dalgası kırılır çünkü **ortamın farklı yoğunluğu nedeniyle dalganın hızı değişir** ve bu hız değişikliği dalganın yönünde bir sapma meyd",10.57,0.8943,1,0.3526,0.2263,,,,0.5526,0.5386
+30,kimya,9,"Dünya'da doğal olarak bulunan ve canlı varlıklarda yaygın olan bir element seçiniz. Bu elementin periyodik sistemde konumunu, elektron yapısını ve kimyasal özelliklerini açıklayınız.","Oksijen (O) elementi seçersek; periyodik sistemde 2. periyotta, 16. grupta yer almaktadır. Oksijen atomunun elektron yapısı 1s² 2s² 2p⁴ olup, dış kabuğunda 6 elektron bulundurmaktadır. Bu yapısından dolayı oksijen, stabilitesi sağlamak için 2 elektron alma eğilimindedir ve genellikle -2 yüklü iyonu (O²⁻) oluşturur veya kovalent bağlarda elektronları çeker (yüksek elektronegativiyelik). Oksijen, neredeyse tüm organik moleküllerde (su, protein, karbohidrat) bulunması nedeniyle canlılar için gereklidir ve aynı zamanda güçlü bir oksitleyici ajanıdır.","# Karbon (C) Elementi Üzerine Detaylı İnceleme
+
+## 1. Elementin Seçimi ve Tanımı
+
+**Karbon (C)**, Dünya'da doğal olarak bulunan ve canlı varlıkların temel yapı taşı olan bir elementtir. Biyolojik bileşiklerin (proteinler, karbohidratlar, lipidler, nükleik asitler) ana bileşenidir.
+
+---
+
+## 2. Periyodik Sistemde Konumu
+
+| Özellik | Bilgi |
+|---------|-------|
+| **Atom Numarası** | 6 |
+| **Periyot** | 2. periyot |
+| **Grup** | 14. grup (IVA grubu) |
+| **Elektron Konfigürasyonu** | 1s² 2s² 2p² |
+| **Değerlik Elektronu** | 4 |
+
+---
+
+## 3. Elektron Yapısı
+
+### Temel Yapı:
+- **Toplam elektron sayısı:** 6
+- **Dağılımı:**
+  - **İç orbitaller (K kabuğu):** 2 elektron (1s²)
+  - **Dış orbitaller (L kabuğu):** 4 elektron (2s² 2p²)
+
+### Orbital Gösterimi:
+```
+1s²  |  2s²  |  2p²
+●●   |  ●●   |  ●  ●
+```
+
+---
+
+## 4. Kimyasal Özellikleri
+
+### A) Kovalent Bağlanma Yeteneği
+- **4 değerlik elektronuyla** 4 kovalent bağ oluşturabilir
+- Çoklu bağlar (ikili ve üçlü) yapabilir
+- Örnek bileşikler:
+  - CH₄ (metan)
+  - C",6.21,265,512,0.2931,0.1724,,"# Oksijen (O) Elementi Hakkında Detaylı İnceleme
+
+## 1. Element Seçimi ve Önemi
+**Oksijen (O)**, Dünya'da en yaygın elementlerden biridir. Atmosferi oluşturan başlıca bileşendir (% 21) ve canlı varlıklarda yaşamsal fonksiyonlarda kritik bir rol oynar.
+
+---
+
+## 2. Periyodik Sistemde Konumu
+
+### Konum Bilgileri:
+- **Atom Numarası:** 8
+- **Periyod:** 2. periyod
+- **Grup:** 16. grup (Kalkojenler)
+
+### Bulunduğu Bölge:
+Bağlamda [1]'e göre, oksijen 2. periyotta yer aldığından **2 elektron kabuğuna** sahiptir. Ayrıca [3]'e göre oksijen, periyodik sistemin **sağ tarafında yer alan nonmetallar** kategorisindedir.
+
+---
+
+## 3. Elektron Yapısı
+
+### Elektron Konfigürasyonu:
+**1s² 2s² 2p⁴**
+
+Bağlamda [2]'nin yöntemi takip edilerek yazılmıştır.
+
+### Valans Elektronları:
+- En dış kabuktaki (2. kabuk) elektronlar: **6 elektron** (2s² 2p⁴)
+- Oksijen 8 elektrona sahip olduğundan, tam bir okteti (8 elektron) tamamlamak için **2 elektron alması** gerekir
+
+---
+
+## 4. Kimyasal Özellikleri
+
+### Nonmetal Karakteri [3]:
+- **Elektrik iletkenliği:** Elektrik iletmeyen
+- **Görünüm:** Mat ve renksiz gaz
+- **Elektron alma eğilimi:**",7.09,0.8504,1,0.3726,0.2053,,,,0.509,0.5286

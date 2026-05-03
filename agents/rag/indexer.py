@@ -94,10 +94,15 @@ class DocumentIndexer:
         self.embedder = embedder or TurkishEmbedder()
         # timeout=30: büyük dosya upsert'lerde Qdrant ack uzayabilir.
         # client DI: testlerde in-memory client geçirilir (Sapma 33).
+        # check_compatibility=False (Sapma 36 — Sapma 9 fix): client 1.17 vs
+        # server v1.12.4 minor mismatch uyarısını sustur. Smoke + tests
+        # uyumsuzluk göstermedi; server upgrade bilinçli karar olur.
         self.client = (
             client
             if client is not None
-            else QdrantClient(url=self.qdrant_url, timeout=30.0)
+            else QdrantClient(
+                url=self.qdrant_url, timeout=30.0, check_compatibility=False
+            )
         )
 
         self.splitter = RecursiveCharacterTextSplitter(

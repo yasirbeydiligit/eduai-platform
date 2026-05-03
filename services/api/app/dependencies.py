@@ -65,8 +65,7 @@ def get_document_indexer(request: Request) -> DocumentIndexer:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=(
-                "Document indexer hazır değil — Qdrant veya embedder "
-                "altyapısı kontrol edilmeli."
+                "Document indexer hazır değil — Qdrant veya embedder altyapısı kontrol edilmeli."
             ),
         )
     return indexer

@@ -61,10 +61,13 @@ class EduRetriever:
         self.embedder = embedder or TurkishEmbedder()
         # timeout=10: query_points yanıtı kısa olmalı; uzun sürerse Qdrant
         # arızası sinyali, hızlı düşelim.
+        # check_compatibility=False (Sapma 36 — Sapma 9 fix): version uyarısı sustur.
         self.client = (
             client
             if client is not None
-            else QdrantClient(url=self.qdrant_url, timeout=10.0)
+            else QdrantClient(
+                url=self.qdrant_url, timeout=10.0, check_compatibility=False
+            )
         )
 
         logger.debug(

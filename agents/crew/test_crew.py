@@ -24,6 +24,7 @@ from dotenv import load_dotenv
 from agents.crew.agents import create_researcher_agent, create_writer_agent
 from agents.crew.tasks import create_research_task, create_writing_task
 from agents.crew.tools import search_education_materials
+from agents.crew.validators import validate_writer_output
 
 
 def _load_env_cascade() -> None:
@@ -76,12 +77,30 @@ def main() -> int:
     print("FINAL CEVAP (Writer çıktısı):")
     print("=" * 80)
     # CrewOutput.raw / .pydantic / .json_dict erişilebilir; raw text default.
-    print(result.raw if hasattr(result, "raw") else result)
+    answer_text = result.raw if hasattr(result, "raw") else str(result)
+    print(answer_text)
 
     print("\n" + "=" * 80)
     print(
         f"Token kullanımı: {result.token_usage if hasattr(result, 'token_usage') else 'N/A'}"
     )
+
+    # Sapma 37 — Writer çıktısını post-validate et (Sapma 24 follow-up).
+    # Allowed sources: index_seed.py'de yüklü dosyalar (bilinen whitelist).
+    # Production'da Researcher tool çağrılarından dinamik toplanır.
+    print("\n" + "=" * 80)
+    print("Post-validator (Sapma 24 follow-up):")
+    validation = validate_writer_output(
+        answer_text=answer_text,
+        allowed_sources={"tarih_tanzimat.txt", "fizik_newton.txt"},
+    )
+    if validation.is_clean:
+        print("  ✓ Cevap temiz — uydurma kaynak tespit edilmedi.")
+    else:
+        print(f"  ⚠ {len(validation.warnings)} uyarı:")
+        for w in validation.warnings:
+            print(f"    {w}")
+
     print("\n✓ Crew smoke test tamamlandı")
     return 0
 

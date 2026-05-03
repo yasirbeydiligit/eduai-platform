@@ -12,12 +12,16 @@ P3 Task 5 — `/ask/v2` endpoint'i LangGraph pipeline ile gerçek RAG cevabı
 
 from __future__ import annotations
 
+import json
 import time
-from typing import Annotated
+from collections.abc import AsyncIterator
+from typing import Annotated, Any
 from uuid import uuid4
 
 import structlog
 from fastapi import APIRouter, Depends, status
+from fastapi.responses import StreamingResponse
+from langchain_core.documents import Document
 
 from app.dependencies import (
     get_agent_pipeline,
@@ -121,3 +125,159 @@ async def ask_question_v2(
         processing_time_ms=elapsed_ms,
     )
     return response
+
+
+# --- Streaming endpoint (Sapma 38 — Task 4 perf) ---
+
+
+def _serialize_event_value(value: Any) -> Any:
+    """LangGraph state delta'sındaki değerleri JSON-serializable hâle getir.
+
+    LangChain `Document` nesneleri JSON-native değil → manuel dict.
+    Diğer tipler (str/int/float/list/dict) zaten serializable.
+    """
+    if isinstance(value, Document):
+        return {"page_content": value.page_content, "metadata": value.metadata}
+    if isinstance(value, list):
+        return [_serialize_event_value(item) for item in value]
+    if isinstance(value, dict):
+        return {k: _serialize_event_value(v) for k, v in value.items()}
+    return value
+
+
+def _format_sse(event_type: str, payload: dict) -> str:
+    """SSE event formatı — `event:` + `data:` + boş satır.
+
+    Frontend EventSource bu format'ı native parse eder; `event` alanı
+    listener'ları ayırmak için (`addEventListener("node_completed", ...)`).
+    """
+    data_json = json.dumps(payload, ensure_ascii=False)
+    return f"event: {event_type}\ndata: {data_json}\n\n"
+
+
+@router.post(
+    "/ask/v2/stream",
+    summary="Soru sor — node-level streaming (SSE)",
+    description=(
+        "`/ask/v2` ile aynı pipeline ama Server-Sent Events ile her node "
+        "tamamlandığında event yayını. Frontend `EventSource` API ile "
+        "dinler. Event tipleri: `node_completed` (her node sonu), "
+        "`final` (cevap + sources + confidence), `error`."
+    ),
+)
+async def ask_question_v2_stream(
+    request: QuestionRequest,
+    pipeline: Annotated[object, Depends(get_agent_pipeline)],
+    session_service: Annotated[SessionService, Depends(get_session_service)],
+) -> StreamingResponse:
+    """LangGraph pipeline'ını node-level streaming ile çalıştır."""
+    start = time.monotonic()
+
+    initial_state = {
+        "question": request.question,
+        "subject": request.subject.value,
+        "grade_level": request.grade_level,
+        "session_id": str(request.session_id),
+        "attempts": 0,
+        "needs_retry": False,
+    }
+
+    async def event_stream() -> AsyncIterator[str]:
+        # Telemetry: stream başlangıcı.
+        yield _format_sse(
+            "stream_started",
+            {
+                "session_id": str(request.session_id),
+                "subject": request.subject.value,
+            },
+        )
+
+        # Pipeline.astream stream_mode="updates" default → her step'te
+        # {node_name: state_delta} döner. Bu MVP'ye uygun (her node
+        # tamamlandığında event); token-level streaming üst katmandan
+        # ayrı bir iş paketi.
+        final_answer = ""
+        final_sources: list[str] = []
+        final_confidence = 0.0
+        final_attempts = 0
+
+        try:
+            async for event in pipeline.astream(initial_state):
+                # event: {"retrieve": {...}} veya {"generate": {...}} vs.
+                for node_name, delta in event.items():
+                    serialized_delta = _serialize_event_value(delta)
+                    # Önemli: retrieved_docs çok büyük olabilir; kullanıcıya
+                    # sadece özetini göster (tam Document listesi gereksiz noise).
+                    if isinstance(serialized_delta, dict):
+                        if "retrieved_docs" in serialized_delta:
+                            docs = serialized_delta["retrieved_docs"]
+                            serialized_delta["retrieved_docs"] = {
+                                "count": len(docs) if isinstance(docs, list) else 0,
+                                "preview": (
+                                    [d.get("metadata", {}).get("source") for d in docs[:3]]
+                                    if isinstance(docs, list)
+                                    else []
+                                ),
+                            }
+                        # Final state'i topla
+                        if "answer" in serialized_delta:
+                            final_answer = serialized_delta["answer"]
+                        if "sources" in serialized_delta:
+                            final_sources = serialized_delta["sources"]
+                        if "confidence" in serialized_delta:
+                            final_confidence = serialized_delta["confidence"]
+                        if "attempts" in serialized_delta:
+                            final_attempts = serialized_delta["attempts"]
+
+                    yield _format_sse(
+                        "node_completed",
+                        {"node": node_name, "delta": serialized_delta},
+                    )
+        except Exception as exc:
+            logger.error(
+                "ask_v2_stream_failed",
+                exc_type=type(exc).__name__,
+                exc_msg=str(exc),
+                session_id=str(request.session_id),
+            )
+            yield _format_sse("error", {"detail": str(exc)})
+            return
+
+        elapsed_ms = int((time.monotonic() - start) * 1000)
+
+        # Session record (best-effort).
+        await session_service.record_question(request.session_id, request.subject)
+
+        # Final event — frontend bu event'te response'u kullanıcıya gösterir.
+        yield _format_sse(
+            "final",
+            {
+                "question_id": str(uuid4()),
+                "answer": final_answer,
+                "confidence": final_confidence,
+                "sources": final_sources,
+                "attempts": final_attempts,
+                "processing_time_ms": elapsed_ms,
+                "session_id": str(request.session_id),
+            },
+        )
+
+        logger.info(
+            "ask_v2_stream_processed",
+            session_id=str(request.session_id),
+            subject=request.subject.value,
+            attempts=final_attempts,
+            confidence=final_confidence,
+            processing_time_ms=elapsed_ms,
+        )
+
+    # SSE-friendly headers — proxy buffering kapat, cache yok.
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",  # nginx için
+            "Connection": "keep-alive",
+        },
+    )
