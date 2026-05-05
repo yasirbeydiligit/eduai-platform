@@ -47,13 +47,22 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        # SPEC'te `requirements.txt` yazıyor, ama Task 5'te dev/prod ayrımı yapıldı
-        # → pytest artık requirements-dev.txt'te (bkz. docs/p1/IMPLEMENTATION_NOTES.md Task 6).
-        # -r ile `requirements.txt`'i otomatik inherit eder, tek komutla tam env.
-        run: pip install -r services/api/requirements-dev.txt
+        # P1 dev deps + P3 agents/ deps (Sapma 27 — services/api artık agents/'a bağımlı:
+        # routers/documents.py top-level `from agents.rag.indexer import DocumentIndexer`).
+        # Conftest dependency_override mock kullansa da Python import zinciri agents/'ın
+        # importable olmasını gerektirir → CI runner'a agents/requirements.txt da yüklenir.
+        # bitsandbytes Linux'ta CPU build install eder; test'lerde import edilmediği için
+        # runtime sorunsuz. Pip cache (setup-python `cache: pip`) ikinci run'dan saniyelere düşer.
+        run: |
+          pip install -r services/api/requirements-dev.txt
+          pip install -r agents/requirements.txt
 
       - name: Run tests
         working-directory: services/api
+        # PYTHONPATH cascade (Sapma 26): cwd services/api → P1 `app.X` import.
+        # GITHUB_WORKSPACE → repo root → `agents.X` import. İki yol birden gerekli.
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         # --tb=short: traceback'i kısalt (CI log'larında gürültü az)
         run: pytest tests/ -v --tb=short
 

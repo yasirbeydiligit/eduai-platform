@@ -44,7 +44,11 @@ def test_upload_valid_txt(client: TestClient) -> None:
     assert body["file_size_bytes"] == len(file_content), (
         "file_size_bytes yüklenen içeriğin byte sayısına eşit olmalı"
     )
-    assert body["status"] == "uploaded"
+    # P3 Task 5 sonrası: indeks başarılıysa status "ready" (Sapma 28).
+    # Mevcut conftest mock indexer 5 chunk döndürür → status="ready".
+    assert body["status"] == "ready"
+    # Sapma 28 — chunks_indexed alanı (mock 5 döndürdü).
+    assert body["chunks_indexed"] == 5
 
 
 def test_upload_invalid_format(client: TestClient) -> None:
